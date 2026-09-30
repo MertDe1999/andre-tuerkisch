@@ -253,8 +253,7 @@
     }
 
     body.learning-games-view .quiz-top,
-    body.learning-games-view .quiz-tip,
-    body.learning-games-view .grade-row{
+    body.learning-games-view .quiz-tip{
       flex:0 0 auto;
     }
 
@@ -1288,22 +1287,6 @@
       cursor:pointer;
     }
 
-    .grade-row{
-      display:none;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .grade-row.show{display:grid}
-
-    .grade{
-      border:0;
-      border-radius:18px;
-      min-height:58px;
-      font-weight:850;
-      cursor:pointer;
-    }
-
     .wrong{background:var(--rose);color:var(--rose-dark)}
     .right{background:var(--verb);color:var(--verb-dark)}
 
@@ -1590,17 +1573,12 @@
           <div id="quizTipText" class="tip-text"></div>
         </div>
 
-        <div id="gradeRow" class="grade-row">
-          <button class="grade wrong" onclick="grade(false)">Falsch</button>
-          <button class="grade right" onclick="grade(true)">Richtig</button>
-        </div>
-
       </div>
 
       <div id="completion" class="panel completion">
         <div class="big">✓</div>
         <h2>Runde geschafft</h2>
-        <p>Du hast alle Karten dieser Runde richtig beantwortet.</p>
+        <p>Du hast alle Karten dieser Runde angesehen.</p>
         <button class="restart-btn" onclick="restartQuiz()">Nochmal starten</button>
       </div>
     </div>
@@ -2479,7 +2457,7 @@
     }
 
     document.querySelector("#completion h2").textContent = "Runde geschafft";
-    document.querySelector("#completion p").textContent = "Du hast alle Karten dieser Runde richtig beantwortet.";
+    document.querySelector("#completion p").textContent = "Du hast alle Karten dieser Runde angesehen.";
     nextCard();
   }
 
@@ -2526,7 +2504,6 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
-    document.getElementById("gradeRow").classList.remove("show");
 
     renderQuizDirection(remaining[currentIndex], currentDirection);
   }
@@ -2589,27 +2566,23 @@
 
   function revealAnswer(){
     const cardEl = document.getElementById("quizCard");
-    if(cardEl.classList.contains("revealed")) return;
 
-    cardEl.classList.add("revealed");
-    document.getElementById("gradeRow").classList.add("show");
-  }
+    if(cardEl.classList.contains("revealed")){
+      if(currentIndex < 0 || currentIndex >= remaining.length) return;
 
-  function grade(isRight){
-    if(currentIndex < 0 || currentIndex >= remaining.length) return;
-
-    if(isRight){
       remaining.splice(currentIndex, 1);
       learnedCount++;
+      updateProgress();
+      nextCard();
+      return;
     }
 
-    updateProgress();
-    nextCard();
+    cardEl.classList.add("revealed");
   }
 
   function updateProgress(){
     const total = learnedCount + remaining.length;
-    document.getElementById("progressText").textContent = learnedCount + " / " + total + " gelernt";
+    document.getElementById("progressText").textContent = learnedCount + " / " + total;
     document.getElementById("barFill").style.width =
       total > 0 ? ((learnedCount / total) * 100) + "%" : "0%";
   }
