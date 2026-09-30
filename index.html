@@ -74,7 +74,27 @@
         calc(104px + env(safe-area-inset-bottom));
     }
 
-    header{padding:6px 0 16px}
+    header{
+      padding:6px 0 16px;
+      max-height:90px;
+      overflow:hidden;
+      transform:translateY(0);
+      opacity:1;
+      transition:
+        transform .32s cubic-bezier(.4,0,.2,1),
+        opacity .24s ease,
+        max-height .32s cubic-bezier(.4,0,.2,1),
+        padding .32s cubic-bezier(.4,0,.2,1);
+    }
+
+    body.game-mode-active header{
+      transform:translateY(calc(-100% - 24px));
+      opacity:0;
+      max-height:0;
+      padding-top:0;
+      padding-bottom:0;
+      pointer-events:none;
+    }
 
     .profile-island{
       display:flex;
@@ -178,6 +198,10 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
+    }
+
+    body.learning-games-view.game-mode-active .app{
+      padding-bottom:max(14px, env(safe-area-inset-bottom));
     }
 
     body.learning-games-view header{
@@ -329,6 +353,17 @@
       z-index:30;
       left:0;right:0;bottom:0;
       padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+      pointer-events:none;
+      transform:translateY(0);
+      opacity:1;
+      transition:
+        transform .32s cubic-bezier(.4,0,.2,1),
+        opacity .24s ease;
+    }
+
+    body.game-mode-active .bottom-nav-wrap{
+      transform:translateY(calc(100% + 24px));
+      opacity:0;
       pointer-events:none;
     }
 
@@ -1918,6 +1953,7 @@
   }
 
   function openLearnMode(mode){
+    document.body.classList.add("game-mode-active");
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
     document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
@@ -1935,6 +1971,7 @@
   }
 
   function backToLearnHome(){
+    document.body.classList.remove("game-mode-active");
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
     document.getElementById("sentenceBuilder").classList.remove("active");
@@ -1951,6 +1988,8 @@
   }
 
   function showView(id, btn){
+    document.body.classList.remove("game-mode-active");
+
     if(id === "flashcards"){
       window.scrollTo({top:0, behavior:"auto"});
     }
@@ -2549,6 +2588,16 @@
     document.getElementById("completion").classList.add("show");
   }
 
+  function vibrateButtonPress(event){
+    const button = event.target.closest("button");
+    if(!button || button.disabled) return;
+
+    if("vibrate" in navigator){
+      navigator.vibrate(12);
+    }
+  }
+
+  document.addEventListener("pointerdown", vibrateButtonPress, {passive:true});
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 </body>
