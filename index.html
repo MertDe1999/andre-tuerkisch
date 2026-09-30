@@ -3255,9 +3255,12 @@
 
     const built = answerTokens
       .filter(el => el.dataset.tokenKind !== "case")
-      .map(el => normalizeSentencePiece(el.dataset.word));
+      .map(el => normalizeSentencePiece(el.dataset.word))
+      .sort((a, b) => a.localeCompare(b, "tr"));
 
-    const expected = challenge.answer.map(normalizeSentencePiece);
+    const expected = challenge.answer
+      .map(normalizeSentencePiece)
+      .sort((a, b) => a.localeCompare(b, "tr"));
 
     const correct =
       !hasUnusedCaseCard &&
@@ -3272,7 +3275,7 @@
       document.getElementById("checkSentenceButton").style.display = "none";
       document.getElementById("nextSentenceButton").style.display = "block";
     }else{
-      feedback.textContent = "Noch nicht richtig – prüfe Reihenfolge und Kasus.";
+      feedback.textContent = "Noch nicht richtig – prüfe Wörter und Kasus.";
       feedback.className = "sentence-feedback bad";
     }
   }
