@@ -782,38 +782,38 @@
 
 <script>
   const flashcards = [
-    {de:"Baum", tr:"ağaç", type:"noun", tip:"Bahçede büyük bir ağaç var. · Im Garten steht ein großer Baum."},
-    {de:"Weg / Straße", tr:"yol", type:"noun", tip:"Bu yol çok uzun. · Dieser Weg ist sehr lang."},
-    {de:"Haus", tr:"ev", type:"noun", tip:"Ev çok güzel. · Das Haus ist sehr schön."},
-    {de:"Auto", tr:"araba", type:"noun", tip:"Araba evin önünde. · Das Auto steht vor dem Haus."},
-    {de:"Mama / Mutter", tr:"anne", type:"noun", tip:"Anne evde. · Mama ist zu Hause."},
-    {de:"Papa / Vater", tr:"baba", type:"noun", tip:"Baba arabada. · Papa ist im Auto."},
-    {de:"Bruder", tr:"erkek kardeş", type:"noun", tip:"Erkek kardeş evde. · Der Bruder ist zu Hause."},
-    {de:"älterer Bruder", tr:"abi", type:"noun", tip:"Abi evde. · Der ältere Bruder ist zu Hause."},
-    {de:"Schwester", tr:"kız kardeş", type:"noun", tip:"Kız kardeş evde. · Die Schwester ist zu Hause."},
-    {de:"ältere Schwester", tr:"abla", type:"noun", tip:"Abla evde. · Die ältere Schwester ist zu Hause."},
-    {de:"Penis (vulgär)", tr:"yarak", type:"noun", tip:"„Yarak“ kaba bir kelimedir. · „Yarak“ ist ein vulgäres Wort."},
+    {de:"Baum", tr:"ağaç", type:"noun", tipDe:"Im Garten steht ein großer Baum.", tipTr:"Bahçede büyük bir ağaç var."},
+    {de:"Weg / Straße", tr:"yol", type:"noun", tipDe:"Dieser Weg ist sehr lang.", tipTr:"Bu yol çok uzun."},
+    {de:"Haus", tr:"ev", type:"noun", tipDe:"Das Haus ist sehr schön.", tipTr:"Ev çok güzel."},
+    {de:"Auto", tr:"araba", type:"noun", tipDe:"Das Auto steht vor dem Haus.", tipTr:"Araba evin önünde."},
+    {de:"Mama / Mutter", tr:"anne", type:"noun", tipDe:"Mama ist zu Hause.", tipTr:"Anne evde."},
+    {de:"Papa / Vater", tr:"baba", type:"noun", tipDe:"Papa ist im Auto.", tipTr:"Baba arabada."},
+    {de:"Bruder", tr:"erkek kardeş", type:"noun", tipDe:"Mein Bruder ist zu Hause.", tipTr:"Erkek kardeşim evde."},
+    {de:"älterer Bruder", tr:"abi", type:"noun", tipDe:"Mein älterer Bruder ist zu Hause.", tipTr:"Abim evde."},
+    {de:"Schwester", tr:"kız kardeş", type:"noun", tipDe:"Meine Schwester ist zu Hause.", tipTr:"Kız kardeşim evde."},
+    {de:"ältere Schwester", tr:"abla", type:"noun", tipDe:"Meine ältere Schwester ist zu Hause.", tipTr:"Ablam evde."},
+    {de:"Penis (vulgär)", tr:"yarak", type:"noun", tipDe:"Das Wort ist sehr vulgär.", tipTr:"Bu kelime çok kaba."},
 
-    {de:"schön", tr:"güzel", type:"adj", tip:"Bu ev güzel. · Dieses Haus ist schön."},
+    {de:"schön", tr:"güzel", type:"adj", tipDe:"Das Haus ist schön.", tipTr:"Ev güzel."},
 
-    {de:"gehen", tr:"gitmek", type:"verb", tip:"Gitmek güzel. · Gehen ist schön."},
+    {de:"gehen", tr:"gitmek", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."},
 
-    {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tip:"Eve gidiyom. · Ich gehe nach Hause."},
-    {de:"aus dem Haus", tr:"evden", type:"noun", tip:"Evden geliyom. · Ich komme von zu Hause."},
-    {de:"im Haus", tr:"evde", type:"noun", tip:"Anne evde. · Mama ist zu Hause."},
-    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun", tip:"Evi görüyom. · Ich sehe das Haus."},
-    {de:"des Hauses", tr:"evin", type:"noun", tip:"Evin kapısı güzel. · Die Tür des Hauses ist schön."},
+    {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tipDe:"Ich gehe nach Hause.", tipTr:"Eve gidiyom."},
+    {de:"aus dem Haus", tr:"evden", type:"noun", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
+    {de:"im Haus", tr:"evde", type:"noun", tipDe:"Mama ist im Haus.", tipTr:"Anne evde."},
+    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun", tipDe:"Ich sehe das Haus.", tipTr:"Evi görüyom."},
+    {de:"des Hauses", tr:"evin", type:"noun", tipDe:"Die Tür des Hauses ist schön.", tipTr:"Evin kapısı güzel."},
 
-    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj", tip:"Ev güzel mi? · Ist das Haus schön?"},
-    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj", tip:"Bugün güzelim. · Heute bin ich schön."},
-    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj", tip:"Sen güzelsin. · Du bist schön."},
-    {de:"Er/Sie/Es ist schön.", tr:"Güzel.", type:"adj", tip:"Ev güzel. · Das Haus ist schön."},
+    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj", tipDe:"Ist das Haus schön?", tipTr:"Ev güzel mi?"},
+    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj", tipDe:"Heute bin ich schön.", tipTr:"Bugün güzelim."},
+    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj", tipDe:"Du bist heute schön.", tipTr:"Bugün güzelsin."},
+    {de:"Er/Sie/Es ist schön.", tr:"Güzel.", type:"adj", tipDe:"Das Haus ist schön.", tipTr:"Ev güzel."},
 
-    {de:"ich komme", tr:"geliyom", type:"verb", tip:"Evden geliyom. · Ich komme von zu Hause."},
-    {de:"du kommst", tr:"geliyon", type:"verb", tip:"Eve geliyon. · Du kommst nach Hause."},
-    {de:"er/sie/es kommt", tr:"geliyo", type:"verb", tip:"Abi eve geliyo. · Der ältere Bruder kommt nach Hause."},
-    {de:"wir kommen", tr:"geliyoz", type:"verb", tip:"Eve geliyoz. · Wir kommen nach Hause."},
-    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb", tip:"Gitmek güzel. · Gehen ist schön."}
+    {de:"ich komme", tr:"geliyom", type:"verb", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
+    {de:"du kommst", tr:"geliyon", type:"verb", tipDe:"Du kommst nach Hause.", tipTr:"Eve geliyon."},
+    {de:"er/sie/es kommt", tr:"geliyo", type:"verb", tipDe:"Mein älterer Bruder kommt nach Hause.", tipTr:"Abi eve geliyo."},
+    {de:"wir kommen", tr:"geliyoz", type:"verb", tipDe:"Wir kommen nach Hause.", tipTr:"Eve geliyoz."},
+    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."}
   ];
 
   const typeNames = {
@@ -914,7 +914,6 @@
     const item = remaining[currentIndex];
     lastGlobalIndex = item.originalIndex;
     setQuizType(item.type);
-    document.getElementById("quizTipText").textContent = item.tip || "";
 
     let direction;
     if(quizMode === "toTurkish"){
@@ -929,10 +928,12 @@
       document.getElementById("quizDirection").textContent = "Deutsch → Türkisch";
       document.getElementById("quizFront").textContent = item.de;
       document.getElementById("quizAnswer").textContent = item.tr;
+      document.getElementById("quizTipText").textContent = item.tipDe || "";
     }else{
       document.getElementById("quizDirection").textContent = "Türkisch → Deutsch";
       document.getElementById("quizFront").textContent = item.tr;
       document.getElementById("quizAnswer").textContent = item.de;
+      document.getElementById("quizTipText").textContent = item.tipTr || "";
     }
   }
 
