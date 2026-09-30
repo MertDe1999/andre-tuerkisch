@@ -267,6 +267,48 @@
     body.learning-games-view .sentence-game-card,
     body.learning-games-view .typing-game-card{
       padding:14px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    body.learning-games-view #typingGameActive{
+      display:flex;
+      flex-direction:column;
+    }
+
+    body.learning-games-view .custom-keyboard{
+      min-height:42dvh;
+      max-height:46dvh;
+      margin-top:auto;
+      padding:8px 6px max(8px, env(safe-area-inset-bottom));
+      gap:6px;
+      border-radius:22px;
+    }
+
+    body.learning-games-view .keyboard-row{
+      flex:1 1 0;
+      min-height:0;
+      gap:5px;
+    }
+
+    body.learning-games-view .key{
+      height:auto;
+      min-height:0;
+      border-radius:12px;
+      font-size:1.08rem;
+      padding:0 2px;
+    }
+
+    body.learning-games-view .key.special{
+      font-size:1rem;
+    }
+
+    body.learning-games-view .key.space{
+      font-size:.82rem;
+    }
+
+    body.learning-games-view .key.check{
+      font-size:1.2rem;
     }
 
     body.learning-games-view .sentence-prompt{
@@ -311,18 +353,7 @@
       margin:6px 2px;
     }
 
-    body.learning-games-view .custom-keyboard{
-      gap:4px;
-      padding:7px;
-    }
 
-    body.learning-games-view .keyboard-row{
-      gap:4px;
-    }
-
-    body.learning-games-view .key{
-      height:38px;
-    }
 
     .panel{
       background:var(--surface);
