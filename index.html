@@ -68,29 +68,93 @@
         calc(104px + env(safe-area-inset-bottom));
     }
 
-    header{padding:8px 4px 18px}
+    header{padding:6px 0 16px}
 
-    .eyebrow{
+    .profile-island{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border:1px solid rgba(233,225,219,.92);
+      border-radius:22px;
+      background:rgba(255,253,251,.94);
+      backdrop-filter:blur(18px);
+      box-shadow:0 10px 28px rgba(70,54,46,.08);
+    }
+
+    .profile-main{
+      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .profile-avatar{
+      width:40px;
+      height:40px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      background:var(--blue);
+      color:var(--blue-dark);
+      font-weight:900;
+      font-size:1rem;
+    }
+
+    .profile-name{
+      font-size:1rem;
+      line-height:1.1;
+      font-weight:860;
+      letter-spacing:-.02em;
+    }
+
+    .profile-meta{
+      margin-top:3px;
       color:var(--muted);
-      font-size:.82rem;
+      font-size:.76rem;
       font-weight:700;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-      margin-bottom:5px;
     }
 
-    h1{
-      margin:0;
-      font-size:2rem;
-      line-height:1.05;
-      letter-spacing:-.045em;
-      font-weight:820;
+    .profile-stats{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      flex:0 0 auto;
     }
 
-    .sub{
-      margin:7px 0 0;
+    .profile-chip{
+      min-width:46px;
+      padding:8px 10px;
+      border-radius:14px;
+      text-align:center;
+      background:var(--surface-soft);
+      border:1px solid var(--line);
+    }
+
+    .profile-chip.level{
+      background:var(--lavender);
+      border-color:#ddd3e8;
+    }
+
+    .profile-chip-label{
+      display:block;
       color:var(--muted);
-      font-size:.95rem;
+      font-size:.62rem;
+      line-height:1;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      margin-bottom:4px;
+    }
+
+    .profile-chip-value{
+      display:block;
+      color:var(--text);
+      font-size:.92rem;
+      line-height:1;
+      font-weight:900;
     }
 
     .view{display:none}
@@ -851,9 +915,26 @@
 <body>
 <div class="app">
   <header>
-    <div class="eyebrow">Türkisch lernen</div>
-    <h1>Andrés Lern-App</h1>
-    <p class="sub">Wörter, Grammatik und kleine Lernrunden.</p>
+    <div class="profile-island" aria-label="Spielerprofil">
+      <div class="profile-main">
+        <div class="profile-avatar">A</div>
+        <div>
+          <div class="profile-name">André</div>
+          <div class="profile-meta">Spieler</div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-chip">
+          <span class="profile-chip-label">Niveau</span>
+          <span class="profile-chip-value">A1</span>
+        </div>
+        <div class="profile-chip level">
+          <span class="profile-chip-label">Level</span>
+          <span class="profile-chip-value">0</span>
+        </div>
+      </div>
+    </div>
   </header>
 
   <!-- Wörterbuch -->
