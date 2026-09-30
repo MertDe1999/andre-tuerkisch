@@ -45,7 +45,13 @@
       --radius:24px;
     }
 
-    *{box-sizing:border-box}
+    *{
+      box-sizing:border-box;
+      user-select:none;
+      -webkit-user-select:none;
+      -webkit-touch-callout:none;
+    }
+
     html{-webkit-tap-highlight-color:transparent}
 
     body{
@@ -159,6 +165,140 @@
 
     .view{display:none}
     .view.active{display:block}
+
+    body.learning-games-view{
+      height:100dvh;
+      overflow:hidden;
+      overscroll-behavior:none;
+    }
+
+    body.learning-games-view .app{
+      height:100dvh;
+      min-height:0;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    body.learning-games-view header{
+      flex:0 0 auto;
+    }
+
+    body.learning-games-view #flashcards.view.active{
+      display:block;
+      flex:1 1 auto;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    body.learning-games-view #learnHome{
+      height:100%;
+      overflow:hidden;
+    }
+
+    body.learning-games-view .learn-mode.active{
+      height:100%;
+      min-height:0;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    body.learning-games-view .learn-back{
+      flex:0 0 auto;
+    }
+
+    body.learning-games-view #quizSession.active,
+    body.learning-games-view .sentence-game-card,
+    body.learning-games-view .typing-game-card{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    body.learning-games-view #activeQuiz,
+    body.learning-games-view #sentenceGameActive,
+    body.learning-games-view #typingGameActive{
+      height:100%;
+      min-height:0;
+    }
+
+    body.learning-games-view #activeQuiz{
+      display:flex;
+      flex-direction:column;
+    }
+
+    body.learning-games-view .quiz-top,
+    body.learning-games-view .quiz-tip,
+    body.learning-games-view .grade-row{
+      flex:0 0 auto;
+    }
+
+    body.learning-games-view .quiz-card{
+      flex:1 1 auto;
+      min-height:0;
+      padding:18px 18px;
+    }
+
+    body.learning-games-view .sentence-game-card,
+    body.learning-games-view .typing-game-card{
+      padding:14px;
+    }
+
+    body.learning-games-view .sentence-prompt{
+      padding:14px;
+      margin-bottom:9px;
+    }
+
+    body.learning-games-view .sentence-zone-label{
+      margin:8px 0 5px;
+    }
+
+    body.learning-games-view .drop-zone{
+      min-height:58px;
+      padding:8px;
+    }
+
+    body.learning-games-view .sentence-feedback{
+      min-height:20px;
+      margin-top:8px;
+    }
+
+    body.learning-games-view .sentence-actions{
+      margin-top:8px;
+    }
+
+    body.learning-games-view .typing-top{
+      margin-bottom:9px;
+    }
+
+    body.learning-games-view .typing-prompt{
+      padding:14px 12px;
+      margin-bottom:8px;
+    }
+
+    body.learning-games-view .typing-answer{
+      min-height:52px;
+      padding:10px 12px;
+    }
+
+    body.learning-games-view .typing-feedback{
+      min-height:18px;
+      margin:6px 2px;
+    }
+
+    body.learning-games-view .custom-keyboard{
+      gap:4px;
+      padding:7px;
+    }
+
+    body.learning-games-view .keyboard-row{
+      gap:4px;
+    }
+
+    body.learning-games-view .key{
+      height:38px;
+    }
 
     .panel{
       background:var(--surface);
@@ -1811,6 +1951,12 @@
   }
 
   function showView(id, btn){
+    if(id === "flashcards"){
+      window.scrollTo({top:0, behavior:"auto"});
+    }
+
+    document.body.classList.toggle("learning-games-view", id === "flashcards");
+
     document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 
@@ -1831,7 +1977,9 @@
       }
     }
 
-    window.scrollTo({top:0, behavior:"smooth"});
+    if(id !== "flashcards"){
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
   }
 
   function filterWords(){
