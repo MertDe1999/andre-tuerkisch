@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f8f5f2" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#171412" media="(prefers-color-scheme: dark)">
@@ -3113,12 +3114,45 @@
     const button = event.target.closest("button");
     if(!button || button.disabled) return;
 
-    if("vibrate" in navigator){
-      navigator.vibrate(12);
+    if(typeof navigator.vibrate === "function"){
+      navigator.vibrate(24);
     }
   }
 
-  document.addEventListener("pointerdown", vibrateButtonPress, {passive:true});
+  function getFullscreenElement(){
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function requestAppFullscreen(){
+    if(getFullscreenElement()) return;
+
+    const root = document.documentElement;
+    const request =
+      root.requestFullscreen ||
+      root.webkitRequestFullscreen;
+
+    if(typeof request !== "function") return;
+
+    try{
+      const result = request.call(root);
+      if(result && typeof result.catch === "function"){
+        result.catch(() => {});
+      }
+    }catch{}
+  }
+
+  function handleAppClick(event){
+    vibrateButtonPress(event);
+
+    // Browser erlauben Fullscreen erst nach einer echten Nutzerinteraktion.
+    // Dadurch startet die App beim ersten Tippen im Vollbild und kehrt
+    // nach dem Verlassen per Android-Zurück beim nächsten Tippen zurück.
+    if(event.isTrusted && !getFullscreenElement()){
+      requestAppFullscreen();
+    }
+  }
+
+  document.addEventListener("click", handleAppClick, true);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 </body>
