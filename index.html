@@ -2908,7 +2908,7 @@
 
     document.getElementById("quizLauncher").classList.add("hidden");
     document.getElementById("quizSession").classList.add("active");
-    document.getElementById("activeQuiz").style.display = "block";
+    document.getElementById("activeQuiz").style.display = "flex";
     document.getElementById("completion").classList.remove("show");
 
     updateModeSwitch();
@@ -2995,7 +2995,6 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
-    document.getElementById("gradeRow").classList.remove("show");
 
     let candidateIndices = remaining.map((_, i) => i);
 
