@@ -2427,8 +2427,14 @@
 
   function filterWords(){
     const q = document.getElementById("search").value.trim().toLowerCase();
+
     document.querySelectorAll(".word-row").forEach(row => {
-      row.style.display = row.dataset.search.toLowerCase().includes(q) ? "grid" : "none";
+      const matches = row.dataset.search.toLowerCase().includes(q);
+      const unlocked = !row.classList.contains("locked");
+
+      row.style.display =
+        q === "" ? "grid" :
+        (matches && unlocked ? "grid" : "none");
     });
   }
 
