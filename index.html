@@ -36,6 +36,11 @@
       --rose:#f2dddd;
       --rose-dark:#986060;
 
+      /* Sonstige Wortarten / Umgangssprache */
+      --other:#d8d3cf;
+      --other-soft:#ebe7e4;
+      --other-dark:#625d5a;
+
       --shadow:0 10px 28px rgba(70,54,46,.07);
       --radius:24px;
     }
@@ -234,7 +239,8 @@
     .word-row.pronoun{background:var(--blue);border-color:#d3e3ee}
     .word-row.neutral{background:#f2eef7;border-color:#e8e0ef}
     .word-row.existential{background:#f2eef7;border-color:#e8e0ef}
-    .word-row.colloquial{background:#f2eef7;border-color:#e8e0ef}
+    .word-row.colloquial,
+    .word-row.other{background:var(--other-soft);border-color:#d4ceca}
 
     .word-de{
       font-size:.84rem;
@@ -265,7 +271,8 @@
     .type-badge.pronoun{background:var(--blue);color:var(--blue-dark)}
     .type-badge.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .type-badge.existential{background:var(--lavender);color:var(--lavender-dark)}
-    .type-badge.colloquial{background:var(--lavender);color:var(--lavender-dark)}
+    .type-badge.colloquial,
+    .type-badge.other{background:var(--other);color:var(--other-dark)}
 
     /* Grammatik */
     .grammar-card{
@@ -288,6 +295,11 @@
     .grammar-card.adj{
       background:var(--adj-soft);
       border-color:#f0e6b9;
+    }
+
+    .grammar-card.pronoun{
+      background:#edf5fa;
+      border-color:#d3e3ee;
     }
 
     .grammar-card.neutral{
@@ -647,7 +659,8 @@
     .quiz-card.pronoun{background:#edf5fa;border-color:#d3e3ee}
     .quiz-card.neutral{background:#f2eef7;border-color:#e8e0ef}
     .quiz-card.existential{background:#f2eef7;border-color:#e8e0ef}
-    .quiz-card.colloquial{background:#f2eef7;border-color:#e8e0ef}
+    .quiz-card.colloquial,
+    .quiz-card.other{background:var(--other-soft);border-color:#d4ceca}
 
     .quiz-direction{
       font-size:.79rem;
@@ -670,7 +683,8 @@
     .quiz-type.pronoun{background:var(--blue);color:var(--blue-dark)}
     .quiz-type.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .quiz-type.existential{background:var(--lavender);color:var(--lavender-dark)}
-    .quiz-type.colloquial{background:var(--lavender);color:var(--lavender-dark)}
+    .quiz-type.colloquial,
+    .quiz-type.other{background:var(--other);color:var(--other-dark)}
 
     .quiz-front{
       font-size:clamp(2.1rem,11vw,3.4rem);
@@ -746,7 +760,8 @@
     .quiz-card.pronoun .answer-text{color:var(--blue-dark)}
     .quiz-card.neutral .answer-text{color:var(--lavender-dark)}
     .quiz-card.existential .answer-text{color:var(--lavender-dark)}
-    .quiz-card.colloquial .answer-text{color:var(--lavender-dark)}
+    .quiz-card.colloquial .answer-text,
+    .quiz-card.other .answer-text{color:var(--other-dark)}
 
     .reveal-btn{
       width:100%;
@@ -875,7 +890,7 @@
         <span class="legend-item legend-adj"><span class="dot"></span>Adjektive</span>
       </div>
 
-      <div class="grammar-card neutral">
+      <div class="grammar-card pronoun">
         <h3>Personalpronomen</h3>
         <div class="grammar-list">
           <div class="grammar-row"><strong>ich</strong><div>ben<span class="standard">Ben güzelim. = Ich bin schön.</span></div></div>
@@ -1161,6 +1176,7 @@
     pronoun:"Pronomen",
     existential:"Existenzwort",
     colloquial:"Umgangssprache",
+    other:"Sonstige",
     neutral:"Grammatik"
   };
 
@@ -1437,10 +1453,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","other","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","other","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential","colloquial"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","other"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
