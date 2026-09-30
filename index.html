@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f5f2">
+  <title>Andrés Türkisch</title>
+
+  <style>
+    :root{
+      --bg:#f8f5f2;
+      --surface:#fffdfb;
+      --surface-soft:#f2eee9;
+      --text:#383433;
+      --muted:#857d79;
+      --line:#e9e1db;
+
+      --peach:#f4d8cc;
+      --peach-dark:#ad6f58;
+      --mint:#dceadf;
+      --mint-dark:#52765d;
+      --lavender:#e6dff1;
+      --lavender-dark:#756589;
+      --blue:#dfeaf2;
+      --blue-dark:#5d788b;
+      --rose:#f2dddd;
+      --rose-dark:#986060;
+
+      --shadow:0 10px 28px rgba(70,54,46,.07);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html{-webkit-tap-highlight-color:transparent}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter,ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;
+      min-height:100vh;
+    }
+
+    button,input{font:inherit}
+
+    .app{
+      width:min(100%,520px);
+      min-height:100vh;
+      margin:0 auto;
+      padding:
+        max(20px, env(safe-area-inset-top))
+        16px
+        calc(104px + env(safe-area-inset-bottom));
+    }
+
+    header{
+      padding:8px 4px 18px;
+    }
+
+    .eyebrow{
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      margin-bottom:5px;
+    }
+
+    h1{
+      margin:0;
+      font-size:2rem;
+      line-height:1.05;
+      letter-spacing:-.045em;
+      font-weight:820;
+    }
+
+    .sub{
+      margin:7px 0 0;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .view{display:none}
+    .view.active{display:block}
+
+    .panel{
+      background:var(--surface);
+      border:1px solid rgba(233,225,219,.9);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+    }
+
+    .section-title{
+      margin:0 0 4px;
+      font-size:1.15rem;
+      font-weight:800;
+      letter-spacing:-.025em;
+    }
+
+    .section-sub{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.45;
+    }
+
+    /* bottom navigation */
+    .bottom-nav-wrap{
+      position:fixed;
+      z-index:30;
+      left:0;right:0;bottom:0;
+      padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+      pointer-events:none;
+    }
+
+    .bottom-nav{
+      width:min(calc(100% - 28px),492px);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      padding:7px;
+      border:1px solid rgba(233,225,219,.9);
+      border-radius:22px;
+      background:rgba(255,253,251,.92);
+      backdrop-filter:blur(18px);
+      box-shadow:0 12px 35px rgba(65,51,44,.12);
+      pointer-events:auto;
+    }
+
+    .nav-btn{
+      border:0;
+      background:transparent;
+      min-height:54px;
+      border-radius:16px;
+      color:var(--muted);
+      font-size:.75rem;
+      font-weight:750;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:3px;
+      cursor:pointer;
+    }
+
+    .nav-btn .icon{font-size:1.25rem}
+    .nav-btn.active{
+      color:var(--text);
+      background:var(--lavender);
+    }
+
+    /* dictionary */
+    .search{
+      width:100%;
+      border:1px solid var(--line);
+      outline:0;
+      border-radius:17px;
+      padding:13px 15px;
+      background:var(--surface-soft);
+      color:var(--text);
+      margin-bottom:12px;
+    }
+
+    .search:focus{
+      background:white;
+      border-color:#d9cdc5;
+    }
+
+    .word-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .word-row{
+      display:grid;
+      grid-template-columns:1fr auto;
+      align-items:center;
+      gap:12px;
+      min-height:64px;
+      padding:12px 14px;
+      border-radius:18px;
+      background:var(--surface-soft);
+    }
+
+    .word-de{
+      font-size:.84rem;
+      color:var(--muted);
+      margin-bottom:2px;
+    }
+
+    .word-tr{
+      font-weight:800;
+      font-size:1.08rem;
+    }
+
+    .word-note{
+      color:var(--muted);
+      font-size:.8rem;
+      text-align:right;
+      max-width:145px;
+    }
+
+    /* grammar */
+    .grammar-card{
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:10px;
+    }
+    .g-peach{background:#fbede7}
+    .g-mint{background:#eaf4ec}
+    .g-lavender{background:#f0ebf6}
+    .g-blue{background:#eaf2f7}
+
+    .grammar-card h3{
+      margin:0 0 10px;
+      font-size:1rem;
+    }
+
+    .grammar-list{
+      display:flex;
+      flex-direction:column;
+      gap:9px;
+    }
+
+    .grammar-row{
+      display:grid;
+      grid-template-columns:90px 1fr;
+      gap:10px;
+      line-height:1.35;
+      font-size:.91rem;
+    }
+
+    .grammar-row strong{
+      font-weight:800;
+    }
+
+    .standard{
+      color:var(--muted);
+      font-size:.78rem;
+      display:block;
+      margin-top:2px;
+    }
+
+    .spoken{
+      font-weight:850;
+      color:var(--lavender-dark);
+    }
+
+    /* quiz launcher */
+    .mode-grid{
+      display:grid;
+      gap:10px;
+    }
+
+    .mode{
+      border:0;
+      text-align:left;
+      padding:17px;
+      border-radius:20px;
+      color:var(--text);
+      cursor:pointer;
+      min-height:82px;
+    }
+
+    .mode:nth-child(1){background:var(--peach)}
+    .mode:nth-child(2){background:var(--mint)}
+    .mode:nth-child(3){background:var(--lavender)}
+
+    .mode-title{
+      font-weight:850;
+      font-size:1.02rem;
+      display:block;
+      margin-bottom:3px;
+    }
+
+    .mode-sub{
+      color:#6f6763;
+      font-size:.84rem;
+      line-height:1.35;
+    }
+
+    /* active quiz */
+    #quizSession{display:none}
+    #quizSession.active{display:block}
+    #quizLauncher.hidden{display:none}
+
+    .quiz-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .back-btn{
+      border:0;
+      background:var(--surface-soft);
+      color:var(--text);
+      width:42px;height:42px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:1.05rem;
+    }
+
+    .progress-wrap{
+      flex:1;
+    }
+
+    .progress-info{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      color:var(--muted);
+      font-size:.78rem;
+      margin-bottom:6px;
+    }
+
+    .bar{
+      height:7px;
+      border-radius:999px;
+      background:#ebe6e2;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      width:0%;
+      height:100%;
+      border-radius:999px;
+      background:var(--mint-dark);
+      transition:width .25s ease;
+    }
+
+    .quiz-card{
+      min-height:315px;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:26px 22px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      margin-bottom:12px;
+      cursor:pointer;
+    }
+
+    .quiz-direction{
+      font-size:.79rem;
+      font-weight:750;
+      color:var(--muted);
+      margin-bottom:16px;
+    }
+
+    .quiz-front{
+      font-size:clamp(2.1rem,11vw,3.4rem);
+      font-weight:880;
+      letter-spacing:-.05em;
+      line-height:1.06;
+      word-break:break-word;
+    }
+
+    .quiz-answer{
+      display:none;
+      width:100%;
+      margin-top:26px;
+      padding-top:22px;
+      border-top:1px solid var(--line);
+    }
+
+    .quiz-card.revealed .quiz-answer{display:block}
+
+    .answer-label{
+      color:var(--muted);
+      font-size:.76rem;
+      margin-bottom:5px;
+    }
+
+    .answer-text{
+      font-size:1.65rem;
+      font-weight:840;
+      color:var(--lavender-dark);
+      line-height:1.18;
+    }
+
+    .reveal-btn{
+      width:100%;
+      border:0;
+      border-radius:18px;
+      min-height:56px;
+      background:var(--blue);
+      color:var(--blue-dark);
+      font-weight:850;
+      cursor:pointer;
+    }
+
+    .grade-row{
+      display:none;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .grade-row.show{display:grid}
+
+    .grade{
+      border:0;
+      border-radius:18px;
+      min-height:58px;
+      font-weight:850;
+      cursor:pointer;
+    }
+
+    .wrong{
+      background:var(--rose);
+      color:var(--rose-dark);
+    }
+
+    .right{
+      background:var(--mint);
+      color:var(--mint-dark);
+    }
+
+    .completion{
+      display:none;
+      text-align:center;
+      padding:30px 18px;
+    }
+
+    .completion.show{display:block}
+    .completion .big{font-size:2.4rem;margin-bottom:8px}
+    .completion h2{margin:0 0 7px}
+    .completion p{color:var(--muted);margin:0 0 18px}
+
+    .restart-btn{
+      width:100%;
+      min-height:54px;
+      border:0;
+      border-radius:17px;
+      background:var(--lavender);
+      color:var(--lavender-dark);
+      font-weight:850;
+      cursor:pointer;
+    }
+
+    .session-note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.78rem;
+      text-align:center;
+    }
+
+    @media (min-width:700px){
+      .app{padding-top:36px}
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">Türkisch lernen</div>
+    <h1>Andrés Lern-App</h1>
+    <p class="sub">Wörter, Grammatik und kleine Lernrunden.</p>
+  </header>
+
+  <!-- Wörterbuch -->
+  <section id="dictionary" class="view active">
+    <div class="panel">
+      <h2 class="section-title">Wörterbuch</h2>
+      <p class="section-sub">Alles, was André bisher gelernt hat.</p>
+
+      <input id="search" class="search" type="search" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
+
+      <div id="wordList" class="word-list">
+        <div class="word-row" data-search="baum ağaç agac"><div><div class="word-de">Baum</div><div class="word-tr">ağaç</div></div></div>
+        <div class="word-row" data-search="weg straße strasse yol"><div><div class="word-de">Weg / Straße</div><div class="word-tr">yol</div></div></div>
+        <div class="word-row" data-search="haus ev"><div><div class="word-de">Haus</div><div class="word-tr">ev</div></div></div>
+        <div class="word-row" data-search="auto araba"><div><div class="word-de">Auto</div><div class="word-tr">araba</div></div></div>
+        <div class="word-row" data-search="mama mutter anne"><div><div class="word-de">Mama / Mutter</div><div class="word-tr">anne</div></div></div>
+        <div class="word-row" data-search="papa vater baba"><div><div class="word-de">Papa / Vater</div><div class="word-tr">baba</div></div></div>
+        <div class="word-row" data-search="bruder erkek kardeş kardes abi"><div><div class="word-de">Bruder</div><div class="word-tr">erkek kardeş</div></div><div class="word-note">abi = älterer Bruder</div></div>
+        <div class="word-row" data-search="schwester kız kiz kardeş kardes abla"><div><div class="word-de">Schwester</div><div class="word-tr">kız kardeş</div></div><div class="word-note">abla = ältere Schwester</div></div>
+        <div class="word-row" data-search="penis yarak"><div><div class="word-de">Penis</div><div class="word-tr">yarak</div></div><div class="word-note">vulgär</div></div>
+        <div class="word-row" data-search="schön schoen güzel guzel"><div><div class="word-de">schön</div><div class="word-tr">güzel</div></div></div>
+        <div class="word-row" data-search="gehen gitmek"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div></div><div class="word-note">auch „das Gehen“</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grammatik -->
+  <section id="grammar" class="view">
+    <div class="panel">
+      <h2 class="section-title">Grammatik</h2>
+      <p class="section-sub">Nur das, was bisher dran war.</p>
+
+      <div class="grammar-card g-peach">
+        <h3>Fälle</h3>
+        <div class="grammar-list">
+          <div class="grammar-row"><strong>Dativ</strong><div>-(y)e / -(y)a<br><span class="standard">eve = zum Haus / nach Hause</span></div></div>
+          <div class="grammar-row"><strong>Ablativ</strong><div>-den / -dan / -ten / -tan<br><span class="standard">evden = aus dem Haus</span></div></div>
+          <div class="grammar-row"><strong>Lokativ</strong><div>-de / -da / -te / -ta<br><span class="standard">evde = im Haus</span></div></div>
+          <div class="grammar-row"><strong>Akkusativ</strong><div>-(y)i / ı / u / ü<br><span class="standard">evi = das Haus</span></div></div>
+          <div class="grammar-row"><strong>Genitiv</strong><div>-(n)in / ın / un / ün<br><span class="standard">evin = des Hauses</span></div></div>
+        </div>
+      </div>
+
+      <div class="grammar-card g-mint">
+        <h3>Fragen & „sein“</h3>
+        <div class="grammar-list">
+          <div class="grammar-row"><strong>Frage</strong><div>-mi / -mı / -mu / -mü?<span class="standard">Güzel mi? = Ist es schön?</span></div></div>
+          <div class="grammar-row"><strong>ich bin</strong><div>-(y)im / -(y)ım / -(y)um / -(y)üm<span class="standard">Güzelim. = Ich bin schön.</span></div></div>
+          <div class="grammar-row"><strong>du bist</strong><div>-sin / -sın / -sun / -sün<span class="standard">Güzelsin. = Du bist schön.</span></div></div>
+          <div class="grammar-row"><strong>er/sie/es</strong><div>keine Endung<span class="standard">Güzel. = Er/Sie/Es ist schön.</span></div></div>
+        </div>
+      </div>
+
+      <div class="grammar-card g-lavender">
+        <h3>Präsens – Andrés Lautform</h3>
+        <div class="grammar-list">
+          <div class="grammar-row"><strong>ich</strong><div><span class="spoken">-iyom</span><span class="standard">Standard: -iyorum · geliyom</span></div></div>
+          <div class="grammar-row"><strong>du</strong><div><span class="spoken">-iyon</span><span class="standard">Standard: -iyorsun · geliyon</span></div></div>
+          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="spoken">-iyo</span><span class="standard">Standard: -iyor · geliyo</span></div></div>
+          <div class="grammar-row"><strong>wir</strong><div><span class="spoken">-iyoz</span><span class="standard">Standard: -iyoruz · geliyoz</span></div></div>
+        </div>
+      </div>
+
+      <div class="grammar-card g-blue">
+        <h3>Infinitiv / Tätigkeit</h3>
+        <div class="grammar-list">
+          <div class="grammar-row"><strong>-mek / -mak</strong><div>Infinitiv / Tätigkeit<span class="standard">gitmek = gehen · Gitmek güzel. = Gehen ist schön.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Karteikarten -->
+  <section id="flashcards" class="view">
+    <div id="quizLauncher">
+      <div class="panel">
+        <h2 class="section-title">Karteikarten</h2>
+        <p class="section-sub">Wähle, in welche Richtung du abgefragt werden möchtest.</p>
+
+        <div class="mode-grid">
+          <button class="mode" onclick="startQuiz('toTurkish')">
+            <span class="mode-title">Türkisch erraten</span>
+            <span class="mode-sub">Du siehst Deutsch und sagst das türkische Wort.</span>
+          </button>
+
+          <button class="mode" onclick="startQuiz('toGerman')">
+            <span class="mode-title">Deutsch erraten</span>
+            <span class="mode-sub">Du siehst Türkisch und sagst die deutsche Bedeutung.</span>
+          </button>
+
+          <button class="mode" onclick="startQuiz('roulette')">
+            <span class="mode-title">Roulette</span>
+            <span class="mode-sub">Beide Richtungen werden zufällig gemischt.</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="session-note">Bei jedem neuen Start beginnt die Runde wieder mit allen Karten.</p>
+    </div>
+
+    <div id="quizSession">
+      <div id="activeQuiz">
+        <div class="quiz-top">
+          <button class="back-btn" onclick="leaveQuiz()" aria-label="Zurück">←</button>
+          <div class="progress-wrap">
+            <div class="progress-info">
+              <span id="modeName">Roulette</span>
+              <span id="progressText">0 / 0 gelernt</span>
+            </div>
+            <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+          </div>
+        </div>
+
+        <div id="quizCard" class="quiz-card" onclick="revealAnswer()">
+          <div id="quizDirection" class="quiz-direction"></div>
+          <div id="quizFront" class="quiz-front"></div>
+          <div class="quiz-answer">
+            <div class="answer-label">Antwort</div>
+            <div id="quizAnswer" class="answer-text"></div>
+          </div>
+        </div>
+
+        <button id="revealButton" class="reveal-btn" onclick="revealAnswer()">Antwort zeigen</button>
+
+        <div id="gradeRow" class="grade-row">
+          <button class="grade wrong" onclick="grade(false)">Falsch</button>
+          <button class="grade right" onclick="grade(true)">Richtig</button>
+        </div>
+
+        <p class="session-note">
+          Richtig beantwortete Karten verschwinden für diese Runde. Falsche bleiben drin.
+        </p>
+      </div>
+
+      <div id="completion" class="panel completion">
+        <div class="big">✓</div>
+        <h2>Runde geschafft</h2>
+        <p>Du hast alle Karten dieser Runde richtig beantwortet.</p>
+        <button class="restart-btn" onclick="restartQuiz()">Nochmal starten</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="bottom-nav-wrap">
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-target="dictionary" onclick="showView('dictionary', this)">
+      <span class="icon">📖</span><span>Wörter</span>
+    </button>
+    <button class="nav-btn" data-target="grammar" onclick="showView('grammar', this)">
+      <span class="icon">✦</span><span>Grammatik</span>
+    </button>
+    <button class="nav-btn" data-target="flashcards" onclick="showView('flashcards', this)">
+      <span class="icon">◫</span><span>Karten</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+  const flashcards = [
+    {de:"Baum", tr:"ağaç"},
+    {de:"Weg / Straße", tr:"yol"},
+    {de:"Haus", tr:"ev"},
+    {de:"Auto", tr:"araba"},
+    {de:"Mama / Mutter", tr:"anne"},
+    {de:"Papa / Vater", tr:"baba"},
+    {de:"Bruder", tr:"erkek kardeş"},
+    {de:"älterer Bruder", tr:"abi"},
+    {de:"Schwester", tr:"kız kardeş"},
+    {de:"ältere Schwester", tr:"abla"},
+    {de:"Penis (vulgär)", tr:"yarak"},
+    {de:"schön", tr:"güzel"},
+    {de:"gehen", tr:"gitmek"},
+    {de:"zum Haus / nach Hause", tr:"eve"},
+    {de:"aus dem Haus", tr:"evden"},
+    {de:"im Haus", tr:"evde"},
+    {de:"das Haus (bestimmtes Objekt)", tr:"evi"},
+    {de:"des Hauses", tr:"evin"},
+    {de:"Ist es schön?", tr:"Güzel mi?"},
+    {de:"Ich bin schön.", tr:"Güzelim."},
+    {de:"Du bist schön.", tr:"Güzelsin."},
+    {de:"Er/Sie/Es ist schön.", tr:"Güzel."},
+    {de:"ich komme", tr:"geliyom"},
+    {de:"du kommst", tr:"geliyon"},
+    {de:"er/sie/es kommt", tr:"geliyo"},
+    {de:"wir kommen", tr:"geliyoz"},
+    {de:"Gehen ist schön.", tr:"Gitmek güzel."}
+  ];
+
+  let quizMode = "roulette";
+  let remaining = [];
+  let currentIndex = -1;
+  let learnedCount = 0;
+  let lastGlobalIndex = -1;
+
+  function showView(id, btn){
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    if(btn) btn.classList.add("active");
+
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function filterWords(){
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    document.querySelectorAll(".word-row").forEach(row => {
+      row.style.display = row.dataset.search.toLowerCase().includes(q) ? "grid" : "none";
+    });
+  }
+
+  function startQuiz(mode){
+    quizMode = mode;
+    remaining = flashcards.map((card, index) => ({...card, originalIndex:index}));
+    learnedCount = 0;
+    currentIndex = -1;
+    lastGlobalIndex = -1;
+
+    document.getElementById("quizLauncher").classList.add("hidden");
+    document.getElementById("quizSession").classList.add("active");
+    document.getElementById("activeQuiz").style.display = "block";
+    document.getElementById("completion").classList.remove("show");
+
+    document.getElementById("modeName").textContent =
+      mode === "toTurkish" ? "Türkisch erraten" :
+      mode === "toGerman" ? "Deutsch erraten" : "Roulette";
+
+    updateProgress();
+    nextCard();
+  }
+
+  function restartQuiz(){
+    startQuiz(quizMode);
+  }
+
+  function leaveQuiz(){
+    document.getElementById("quizSession").classList.remove("active");
+    document.getElementById("quizLauncher").classList.remove("hidden");
+    remaining = [];
+    learnedCount = 0;
+    currentIndex = -1;
+  }
+
+  function nextCard(){
+    if(remaining.length === 0){
+      finishQuiz();
+      return;
+    }
+
+    const cardEl = document.getElementById("quizCard");
+    cardEl.classList.remove("revealed");
+    document.getElementById("gradeRow").classList.remove("show");
+    document.getElementById("revealButton").style.display = "block";
+
+    let candidateIndices = remaining.map((_, i) => i);
+
+    if(remaining.length > 1 && lastGlobalIndex !== -1){
+      const filtered = candidateIndices.filter(i => remaining[i].originalIndex !== lastGlobalIndex);
+      if(filtered.length) candidateIndices = filtered;
+    }
+
+    currentIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
+    const item = remaining[currentIndex];
+    lastGlobalIndex = item.originalIndex;
+
+    let direction;
+    if(quizMode === "toTurkish"){
+      direction = "toTurkish";
+    }else if(quizMode === "toGerman"){
+      direction = "toGerman";
+    }else{
+      direction = Math.random() < 0.5 ? "toTurkish" : "toGerman";
+    }
+
+    if(direction === "toTurkish"){
+      document.getElementById("quizDirection").textContent = "Deutsch → Türkisch";
+      document.getElementById("quizFront").textContent = item.de;
+      document.getElementById("quizAnswer").textContent = item.tr;
+    }else{
+      document.getElementById("quizDirection").textContent = "Türkisch → Deutsch";
+      document.getElementById("quizFront").textContent = item.tr;
+      document.getElementById("quizAnswer").textContent = item.de;
+    }
+  }
+
+  function revealAnswer(){
+    const cardEl = document.getElementById("quizCard");
+    if(cardEl.classList.contains("revealed")) return;
+
+    cardEl.classList.add("revealed");
+    document.getElementById("revealButton").style.display = "none";
+    document.getElementById("gradeRow").classList.add("show");
+  }
+
+  function grade(isRight){
+    if(currentIndex < 0 || currentIndex >= remaining.length) return;
+
+    if(isRight){
+      remaining.splice(currentIndex, 1);
+      learnedCount++;
+    }
+
+    updateProgress();
+    nextCard();
+  }
+
+  function updateProgress(){
+    const total = flashcards.length;
+    document.getElementById("progressText").textContent = learnedCount + " / " + total + " gelernt";
+    document.getElementById("barFill").style.width = ((learnedCount / total) * 100) + "%";
+  }
+
+  function finishQuiz(){
+    document.getElementById("activeQuiz").style.display = "none";
+    document.getElementById("completion").classList.add("show");
+    document.getElementById("barFill").style.width = "100%";
+    document.getElementById("progressText").textContent = flashcards.length + " / " + flashcards.length + " gelernt";
+  }
+</script>
+</body>
+</html>
