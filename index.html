@@ -736,6 +736,10 @@
       background:var(--blue);
     }
 
+    .learn-choice.chat{
+      background:var(--lavender);
+    }
+
     .learn-choice.typing{
       background:#f1e8ef;
     }
@@ -756,6 +760,26 @@
 
     .learn-mode{display:none}
     .learn-mode.active{display:block}
+
+    .chat-placeholder{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 20px;
+      box-shadow:var(--shadow);
+      text-align:center;
+    }
+
+    .chat-placeholder h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .chat-placeholder p{
+      margin:0;
+      color:var(--muted);
+      font-weight:800;
+    }
 
     .learn-back{
       border:0;
@@ -1807,6 +1831,11 @@
             <span class="learn-choice-sub">Türkische Sätze aus Bausteinen zusammensetzen.</span>
           </button>
 
+          <button class="learn-choice chat" onclick="openLearnMode('chat')">
+            <span class="learn-choice-title">Chatten</span>
+            <span class="learn-choice-sub">Türkisch im Chat üben.</span>
+          </button>
+
         </div>
       </div>
     </div>
@@ -1916,6 +1945,14 @@
         </div>
       </div>
 
+    </div>
+
+    <div id="chatLearning" class="learn-mode">
+      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
+      <div class="chat-placeholder">
+        <h2>Chatten</h2>
+        <p>Bald verfügbar</p>
+      </div>
     </div>
 
     <div id="typingTrainer" class="learn-mode">
@@ -2303,6 +2340,7 @@
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
     document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
+    document.getElementById("chatLearning").classList.toggle("active", mode === "chat");
     document.getElementById("typingTrainer").classList.toggle("active", mode === "typing");
 
     if(mode === "cards"){
@@ -2321,6 +2359,7 @@
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
     document.getElementById("sentenceBuilder").classList.remove("active");
+    document.getElementById("chatLearning").classList.remove("active");
     document.getElementById("typingTrainer").classList.remove("active");
     document.getElementById("quizSession").classList.remove("active");
     document.getElementById("quizLauncher").classList.remove("hidden");
@@ -2352,6 +2391,7 @@
       document.getElementById("learnHome").style.display = "block";
       document.getElementById("cardsLearning").classList.remove("active");
       document.getElementById("sentenceBuilder").classList.remove("active");
+      document.getElementById("chatLearning").classList.remove("active");
       document.getElementById("typingTrainer").classList.remove("active");
       typingRemaining = [];
       typingCurrentIndex = -1;
