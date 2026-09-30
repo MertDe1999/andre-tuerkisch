@@ -336,30 +336,61 @@
     .suffix.neutral{background:var(--lavender);color:var(--lavender-dark)}
 
     /* Lernen */
-    .learn-tabs{
+    .learn-home{
+      display:block;
+    }
+
+    .learn-choice-grid{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-bottom:14px;
+      gap:10px;
     }
 
-    .learn-tab{
+    .learn-choice{
       border:0;
-      min-height:46px;
-      border-radius:15px;
-      background:var(--surface-soft);
-      color:var(--muted);
-      font-weight:850;
+      text-align:left;
+      padding:18px;
+      border-radius:20px;
+      color:var(--text);
       cursor:pointer;
+      min-height:88px;
     }
 
-    .learn-tab.active{
-      background:var(--lavender);
-      color:var(--lavender-dark);
+    .learn-choice.cards{
+      background:#e2efe4;
+    }
+
+    .learn-choice.sentences{
+      background:var(--blue);
+    }
+
+    .learn-choice-title{
+      display:block;
+      font-size:1.05rem;
+      font-weight:850;
+      margin-bottom:4px;
+    }
+
+    .learn-choice-sub{
+      display:block;
+      color:#6f6763;
+      font-size:.84rem;
+      line-height:1.35;
     }
 
     .learn-mode{display:none}
     .learn-mode.active{display:block}
+
+    .learn-back{
+      border:0;
+      background:var(--surface-soft);
+      color:var(--text);
+      min-height:42px;
+      border-radius:14px;
+      padding:0 13px;
+      font-weight:850;
+      cursor:pointer;
+      margin-bottom:12px;
+    }
 
     .sentence-game-card{
       background:var(--surface);
@@ -910,17 +941,27 @@
 
   <!-- Lernen -->
   <section id="flashcards" class="view">
-    <div class="panel">
-      <h2 class="section-title">Lernen</h2>
-      <p class="section-sub">Wähle zwischen Karteikarten und Satzbau.</p>
+    <div id="learnHome" class="learn-home">
+      <div class="panel">
+        <h2 class="section-title">Lernen</h2>
+        <p class="section-sub">Was möchtest du üben?</p>
 
-      <div class="learn-tabs">
-        <button id="cardsTab" class="learn-tab active" onclick="showLearnMode('cards')">Karteikarten</button>
-        <button id="sentencesTab" class="learn-tab" onclick="showLearnMode('sentences')">Satzbau</button>
+        <div class="learn-choice-grid">
+          <button class="learn-choice cards" onclick="openLearnMode('cards')">
+            <span class="learn-choice-title">Karteikarten</span>
+            <span class="learn-choice-sub">Wörter und Formen abfragen.</span>
+          </button>
+
+          <button class="learn-choice sentences" onclick="openLearnMode('sentences')">
+            <span class="learn-choice-title">Satzbau</span>
+            <span class="learn-choice-sub">Türkische Sätze aus Bausteinen zusammensetzen.</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div id="cardsLearning" class="learn-mode active">
+    <div id="cardsLearning" class="learn-mode">
+    <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
     <div id="quizLauncher">
       <div class="panel">
         <h2 class="section-title">Karteikarten</h2>
@@ -997,6 +1038,7 @@
     </div>
 
     <div id="sentenceBuilder" class="learn-mode">
+      <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
           <div class="sentence-progress">
@@ -1142,20 +1184,28 @@
     return a;
   }
 
-  function showLearnMode(mode){
-    const cards = document.getElementById("cardsLearning");
-    const sentences = document.getElementById("sentenceBuilder");
-    const cardsTab = document.getElementById("cardsTab");
-    const sentencesTab = document.getElementById("sentencesTab");
-
-    cards.classList.toggle("active", mode === "cards");
-    sentences.classList.toggle("active", mode === "sentences");
-    cardsTab.classList.toggle("active", mode === "cards");
-    sentencesTab.classList.toggle("active", mode === "sentences");
+  function openLearnMode(mode){
+    document.getElementById("learnHome").style.display = "none";
+    document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
+    document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
 
     if(mode === "sentences" && sentenceOrder.length === 0){
       startSentenceGame();
     }
+
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function backToLearnHome(){
+    document.getElementById("learnHome").style.display = "block";
+    document.getElementById("cardsLearning").classList.remove("active");
+    document.getElementById("sentenceBuilder").classList.remove("active");
+
+    if(document.getElementById("quizSession").classList.contains("active")){
+      leaveQuiz();
+    }
+
+    window.scrollTo({top:0, behavior:"smooth"});
   }
 
   function showView(id, btn){
@@ -1164,6 +1214,16 @@
 
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     if(btn) btn.classList.add("active");
+
+    if(id === "flashcards"){
+      document.getElementById("learnHome").style.display = "block";
+      document.getElementById("cardsLearning").classList.remove("active");
+      document.getElementById("sentenceBuilder").classList.remove("active");
+
+      if(document.getElementById("quizSession").classList.contains("active")){
+        leaveQuiz();
+      }
+    }
 
     window.scrollTo({top:0, behavior:"smooth"});
   }
