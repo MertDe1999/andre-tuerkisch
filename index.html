@@ -2255,7 +2255,33 @@
       caseBuilds:[{result:"evden", base:"ev"}]},
 
     {de:"Das Auto ist bei Mama.", answer:["Araba","annede."], distractors:["Baba"], requires:["araba","anne"],
-      caseBuilds:[{result:"annede.", base:"anne"}]}
+      caseBuilds:[{result:"annede.", base:"anne"}]},
+
+    {de:"Ich gehe nach Hause.", answer:["Ben","eve","gidiyom."], distractors:["Sen"], requires:["ben","ev","gitmek"],
+      caseBuilds:[{result:"eve", base:"ev"}]},
+
+    {de:"Ich sehe das Haus.", answer:["Ben","evi","görüyom."], distractors:["Sen"], requires:["ben","ev","görmek"],
+      caseBuilds:[{result:"evi", base:"ev"}]},
+
+    {de:"Ich gehe zu Mama.", answer:["Ben","anneye","gidiyom."], distractors:["Baba"], requires:["ben","anne","gitmek"],
+      caseBuilds:[{result:"anneye", base:"anne"}]},
+
+    {de:"Ich komme von Mama.", answer:["Ben","anneden","geliyom."], distractors:["Baba"], requires:["ben","anne","gelmek"],
+      caseBuilds:[{result:"anneden", base:"anne"}]},
+
+    {de:"Ich komme von Papa.", answer:["Ben","babadan","geliyom."], distractors:["Anne"], requires:["ben","baba","gelmek"],
+      caseBuilds:[{result:"babadan", base:"baba"}]},
+
+    {de:"Ich gehe zum Auto.", answer:["Ben","arabaya","gidiyom."], distractors:["Ev"], requires:["ben","araba","gitmek"],
+      caseBuilds:[{result:"arabaya", base:"araba"}]},
+
+    {de:"Der Penis ist im Auto.", answer:["Yarak","arabada."], distractors:["Ev"], requires:["yarak","araba"],
+      caseBuilds:[{result:"arabada.", base:"araba"}]},
+
+    {de:"Ich sehe den Penis.", answer:["Ben","yarağı","görüyom."], distractors:["Ev"], requires:["ben","yarak","görmek"],
+      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}]},
+
+    {de:"Der Penis ist schön.", answer:["Yarak","güzel."], distractors:["Ev"], requires:["yarak","güzel"]}
   ];
 
   const sentenceSuffixFamilies = [
@@ -2979,6 +3005,8 @@
   }
 
   function getCaseBuildSuffix(build){
+    if(build?.suffix) return build.suffix;
+
     const result = normalizeSentencePiece(build?.result || "");
     const base = normalizeSentencePiece(build?.base || "");
 
@@ -3037,7 +3065,8 @@
       return [{
         kind:"suffix",
         suffix:correctSuffix,
-        targetBase:normalizeSentencePiece(build.base)
+        targetBase:normalizeSentencePiece(build.base),
+        soften:!!build.soften
       }];
     }
 
@@ -3100,7 +3129,8 @@
       .map(suffix => ({
         kind:"suffix",
         suffix,
-        targetBase:normalizeSentencePiece(build.base)
+        targetBase:normalizeSentencePiece(build.base),
+        soften:!!build.soften
       }));
   }
 
@@ -3201,6 +3231,7 @@
       token.dataset.tokenKind = "suffix";
       token.dataset.suffix = descriptor.suffix;
       token.dataset.targetBase = descriptor.targetBase || "";
+      token.dataset.soften = descriptor.soften ? "true" : "false";
       token.textContent = "-" + descriptor.suffix;
     }else{
       const word = typeof descriptor === "object" ? descriptor.word : descriptor;
@@ -3287,7 +3318,7 @@
     }
   }
 
-  function returnSuffixCard(suffix, targetBase = ""){
+  function returnSuffixCard(suffix, targetBase = "", soften = false){
     const wordBank = document.getElementById("wordBank");
     if(!suffix || !wordBank) return;
 
@@ -3295,7 +3326,8 @@
     wordBank.appendChild(createSentenceToken({
       kind:"suffix",
       suffix,
-      targetBase
+      targetBase,
+      soften
     }, index));
   }
 
@@ -3324,13 +3356,15 @@
     const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
     const baseDisplay = target.dataset.baseDisplay || base;
     const targetBase = target.dataset.appliedTargetBase || base;
+    const soften = target.dataset.appliedSoften === "true";
 
-    returnSuffixCard(suffix, targetBase);
+    returnSuffixCard(suffix, targetBase, soften);
 
     target.dataset.word = base;
     delete target.dataset.appliedCase;
     delete target.dataset.appliedSuffix;
     delete target.dataset.appliedTargetBase;
+    delete target.dataset.appliedSoften;
     target.textContent = baseDisplay;
     target.classList.remove("case-applied");
 
@@ -3345,6 +3379,14 @@
     return true;
   }
 
+  function softenTurkishStem(word){
+    if(word.endsWith("p")) return word.slice(0,-1) + "b";
+    if(word.endsWith("ç")) return word.slice(0,-1) + "c";
+    if(word.endsWith("t")) return word.slice(0,-1) + "d";
+    if(word.endsWith("k")) return word.slice(0,-1) + "ğ";
+    return word;
+  }
+
   function applySentenceCase(target, suffixToken){
     const suffix = suffixToken.dataset.suffix;
     if(!suffix || !canReceiveSentenceCase(target)) return false;
@@ -3353,18 +3395,21 @@
     if(previousSuffix){
       returnSuffixCard(
         previousSuffix,
-        target.dataset.appliedTargetBase || target.dataset.baseWord || ""
+        target.dataset.appliedTargetBase || target.dataset.baseWord || "",
+        target.dataset.appliedSoften === "true"
       );
     }
 
     const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
     const displayBase = target.dataset.baseDisplay || base;
-    const inflected = displayBase + suffix;
+    const soften = suffixToken.dataset.soften === "true" && /^[aeıioöuü]/.test(suffix);
+    const inflected = (soften ? softenTurkishStem(displayBase) : displayBase) + suffix;
 
     target.dataset.baseWord = base;
     target.dataset.appliedCase = "suffix";
     target.dataset.appliedSuffix = suffix;
     target.dataset.appliedTargetBase = suffixToken.dataset.targetBase || base;
+    target.dataset.appliedSoften = suffixToken.dataset.soften || "false";
     target.dataset.word = inflected;
     target.textContent = inflected;
     target.classList.add("case-applied");
