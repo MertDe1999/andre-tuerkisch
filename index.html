@@ -3000,30 +3000,32 @@
     return null;
   }
 
-  function getRandomPairFromOtherFamily(excludedFamilyIndex){
+  function getRandomFamilyPairExcluding(excludedFamilyIndices = []){
+    const excluded = new Set(excludedFamilyIndices);
+
     const candidates = sentenceSuffixFamilies
       .map((family, familyIndex) => ({family, familyIndex}))
-      .filter(item => item.familyIndex !== excludedFamilyIndex);
+      .filter(item => !excluded.has(item.familyIndex));
 
-    const chosenFamily = candidates[Math.floor(Math.random() * candidates.length)];
-    if(!chosenFamily) return null;
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+    if(!chosen) return null;
 
-    const pair = chosenFamily.family.pairs[
-      Math.floor(Math.random() * chosenFamily.family.pairs.length)
+    const pair = chosen.family.pairs[
+      Math.floor(Math.random() * chosen.family.pairs.length)
     ];
 
     return {
-      familyIndex:chosenFamily.familyIndex,
-      family:chosenFamily.family,
+      familyIndex:chosen.familyIndex,
+      family:chosen.family,
       pair:[...pair]
     };
   }
 
-  function getRandomSuffixFromOtherFamily(excludedFamilyIndex){
-    const other = getRandomPairFromOtherFamily(excludedFamilyIndex);
-    if(!other) return "";
+  function getRandomSuffixFromFamily(family){
+    if(!family?.pairs?.length) return "";
 
-    return other.pair[Math.floor(Math.random() * other.pair.length)] || "";
+    const pair = family.pairs[Math.floor(Math.random() * family.pairs.length)];
+    return pair[Math.floor(Math.random() * pair.length)] || "";
   }
 
   function getSuffixOptionsForBuild(build){
@@ -3039,33 +3041,67 @@
       }];
     }
 
-    const correctLivesInPair = Math.random() < 0.5;
+    const correctIsInPair = Math.random() < 0.5;
     let options = [];
 
-    if(correctLivesInPair){
-      const pair = [...correctInfo.pair];
-      const otherCaseSuffix = getRandomSuffixFromOtherFamily(correctInfo.familyIndex);
+    if(correctIsInPair){
+      // 2 Formen aus dem richtigen Fall:
+      // z. B. -ye und -e. Dazu je 1 Suffix aus zwei anderen Fällen.
+      const sameCasePair = [...correctInfo.pair];
+
+      const otherFamilyA = getRandomFamilyPairExcluding([
+        correctInfo.familyIndex
+      ]);
+
+      const otherFamilyB = getRandomFamilyPairExcluding([
+        correctInfo.familyIndex,
+        otherFamilyA?.familyIndex
+      ]);
 
       options = [
-        ...pair,
-        otherCaseSuffix
+        ...sameCasePair,
+        getRandomSuffixFromFamily(otherFamilyA?.family),
+        getRandomSuffixFromFamily(otherFamilyB?.family)
       ];
     }else{
-      const otherCase = getRandomPairFromOtherFamily(correctInfo.familyIndex);
+      // Das richtige Suffix ist eine der beiden Einzelkarten.
+      // Das 2er-Paar stammt komplett aus einem falschen Fall.
+      const pairedWrongFamily = getRandomFamilyPairExcluding([
+        correctInfo.familyIndex
+      ]);
+
+      const secondSingleFamily = getRandomFamilyPairExcluding([
+        correctInfo.familyIndex,
+        pairedWrongFamily?.familyIndex
+      ]);
 
       options = [
         correctSuffix,
-        ...(otherCase?.pair || [])
+        ...(pairedWrongFamily?.pair || []),
+        getRandomSuffixFromFamily(secondSingleFamily?.family)
       ];
     }
 
-    return shuffleArray(
-      Array.from(new Set(options.filter(Boolean)))
-    ).slice(0, 3).map(suffix => ({
-      kind:"suffix",
-      suffix,
-      targetBase:normalizeSentencePiece(build.base)
-    }));
+    const uniqueOptions = Array.from(new Set(options.filter(Boolean)));
+
+    // Mit den fünf vorhandenen Fällen sollten es immer genau 4 sein.
+    // Falls später Fälle geändert werden, fehlende Plätze aus noch nicht
+    // vertretenen Suffixen auffüllen.
+    if(uniqueOptions.length < 4){
+      const allSuffixes = sentenceSuffixFamilies
+        .flatMap(family => family.pairs.flat())
+        .filter(suffix => !uniqueOptions.includes(suffix));
+
+      uniqueOptions.push(...shuffleArray(allSuffixes).slice(0, 4 - uniqueOptions.length));
+    }
+
+    return shuffleArray(uniqueOptions)
+      .slice(0, 4)
+      .map(suffix => ({
+        kind:"suffix",
+        suffix,
+        targetBase:normalizeSentencePiece(build.base)
+      }));
   }
 
   function getSentenceTokenDescriptors(challenge){
