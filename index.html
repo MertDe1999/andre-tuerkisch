@@ -2325,9 +2325,7 @@
       }else if(recoveringFromUnknown){
         feedback.textContent = "Richtig! Die andere Richtung kommt später wieder.";
       }else{
-        feedback.textContent = typingDirection === "toTurkish"
-          ? "Richtig! Jetzt fehlt noch Türkisch → Deutsch."
-          : "Richtig! Jetzt fehlt noch Deutsch → Türkisch.";
+        feedback.textContent = "";
       }
 
       feedback.style.color = "var(--verb-dark)";
