@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f8f5f2">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f8f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171412" media="(prefers-color-scheme: dark)">
   <title>Andrés Türkisch</title>
 
   <style>
@@ -1379,6 +1381,251 @@
     @media (min-width:700px){
       .app{padding-top:36px}
     }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#171412;
+        --surface:#211d1b;
+        --surface-soft:#2a2522;
+        --text:#f4efeb;
+        --muted:#b6aba5;
+        --line:#3b3430;
+
+        --noun:#6f4b34;
+        --noun-soft:#30241d;
+        --noun-dark:#e4b893;
+
+        --verb:#48664f;
+        --verb-soft:#1f2d23;
+        --verb-dark:#b8d7bd;
+
+        --adj:#6a5a25;
+        --adj-soft:#302b18;
+        --adj-dark:#e6d27e;
+
+        --lavender:#4d435a;
+        --lavender-dark:#d4c8e4;
+        --blue:#334957;
+        --blue-dark:#c0d4e0;
+        --rose:#5b3b3b;
+        --rose-dark:#e6b5b5;
+
+        --other:#49433f;
+        --other-soft:#2c2825;
+        --other-dark:#d6cec9;
+
+        --shadow:0 10px 28px rgba(0,0,0,.28);
+      }
+
+      body{
+        background:var(--bg);
+        color:var(--text);
+      }
+
+      .profile-island,
+      .bottom-nav{
+        background:rgba(33,29,27,.94);
+        border-color:var(--line);
+        box-shadow:0 12px 35px rgba(0,0,0,.28);
+      }
+
+      .profile-chip{
+        background:var(--surface-soft);
+        border-color:var(--line);
+      }
+
+      .profile-chip.level{
+        background:var(--lavender);
+        border-color:#655975;
+      }
+
+      .panel,
+      .sentence-game-card,
+      .typing-game-card,
+      .quiz-card{
+        background:var(--surface);
+        border-color:var(--line);
+      }
+
+      .unlock-floating{
+        background:rgba(62,50,59,.97);
+        border-color:#5b4c57;
+        color:var(--text);
+        box-shadow:0 10px 28px rgba(0,0,0,.3);
+      }
+
+      .nav-btn.active{
+        background:var(--lavender);
+        color:var(--text);
+      }
+
+      .search{
+        background:var(--surface-soft);
+        border-color:var(--line);
+        color:var(--text);
+      }
+
+      .search:focus{
+        background:var(--surface);
+        border-color:#665b55;
+      }
+
+      .word-row.locked::after{
+        background:rgba(23,20,18,.38);
+        color:var(--text);
+        text-shadow:0 1px 10px rgba(0,0,0,.65);
+      }
+
+      .word-row.noun,
+      .word-row.verb,
+      .word-row.adj,
+      .word-row.pronoun,
+      .word-row.neutral,
+      .word-row.existential,
+      .word-row.colloquial,
+      .word-row.other,
+      .word-row.response,
+      .word-row.conjunction,
+      .word-row.demonstrative,
+      .word-row.questionword,
+      .word-row.greeting,
+      .word-row.polite,
+      .word-row.phrase{
+        border-color:var(--line);
+      }
+
+      .word-row.pronoun{background:#26343d}
+      .word-row.neutral,
+      .word-row.existential{background:#2d2734}
+
+      .grammar-card.noun{background:var(--noun-soft);border-color:var(--line)}
+      .grammar-card.verb{background:var(--verb-soft);border-color:var(--line)}
+      .grammar-card.adj{background:var(--adj-soft);border-color:var(--line)}
+      .grammar-card.pronoun{background:#26343d;border-color:var(--line)}
+      .grammar-card.neutral{background:#2d2734;border-color:var(--line)}
+
+      .learn-choice.cards{background:var(--verb-soft)}
+      .learn-choice.sentences{background:var(--blue)}
+      .learn-choice.typing{background:var(--lavender)}
+      .learn-choice-sub,
+      .mode-sub{color:var(--muted)}
+
+      .learn-back{
+        background:var(--surface-soft);
+        color:var(--text);
+      }
+
+      .sentence-prompt{background:var(--blue)}
+      .drop-zone{border-color:#4b423d}
+      .drop-zone.answer-zone{background:var(--surface)}
+      .drop-zone.word-bank{background:var(--surface-soft)}
+      .drop-zone.drag-over{
+        border-color:var(--lavender-dark);
+        background:#332c3b;
+      }
+
+      .typing-answer{
+        background:var(--surface);
+        border-color:#48403b;
+        color:var(--text);
+      }
+
+      .typing-answer.empty{color:#91857f}
+      .typing-answer.correct{
+        border-color:#56735d;
+        background:var(--verb-soft);
+        color:var(--verb-dark);
+      }
+      .typing-answer.wrong{
+        border-color:#704d4d;
+        background:#342424;
+        color:var(--rose-dark);
+      }
+      .typing-answer.reveal{
+        border-color:#655975;
+        background:#2d2734;
+        color:var(--lavender-dark);
+      }
+
+      .custom-keyboard{
+        background:#24201e;
+        border-color:var(--line);
+        box-shadow:0 -12px 32px rgba(0,0,0,.38);
+      }
+
+      .key{
+        background:#342f2c;
+        color:var(--text);
+        box-shadow:0 2px 7px rgba(0,0,0,.22);
+      }
+
+      .key:active{background:#423b37}
+      .key.special{
+        background:var(--blue);
+        color:var(--blue-dark);
+      }
+      .key.unknown{
+        background:var(--rose);
+        color:var(--rose-dark);
+      }
+      .key.check{
+        background:var(--verb);
+        color:var(--verb-dark);
+      }
+
+      .mode:nth-child(1){background:var(--noun-soft)}
+      .mode:nth-child(2){background:var(--verb-soft)}
+      .mode:nth-child(3){background:var(--lavender)}
+
+      .mode-switch{
+        border-color:#655975;
+        background:var(--lavender);
+        color:var(--lavender-dark);
+      }
+
+      .bar{background:#3b3531}
+
+      .quiz-card.noun{background:var(--noun-soft);border-color:var(--line)}
+      .quiz-card.verb{background:var(--verb-soft);border-color:var(--line)}
+      .quiz-card.adj{background:var(--adj-soft);border-color:var(--line)}
+      .quiz-card.pronoun{background:#26343d;border-color:var(--line)}
+      .quiz-card.neutral,
+      .quiz-card.existential{background:#2d2734;border-color:var(--line)}
+      .quiz-card.colloquial,
+      .quiz-card.other,
+      .quiz-card.response,
+      .quiz-card.conjunction,
+      .quiz-card.demonstrative,
+      .quiz-card.questionword,
+      .quiz-card.greeting,
+      .quiz-card.polite,
+      .quiz-card.phrase{
+        background:var(--other-soft);
+        border-color:var(--line);
+      }
+
+      .quiz-answer{border-top-color:rgba(255,255,255,.1)}
+      .quiz-tip{
+        background:rgba(255,255,255,.035);
+        border-color:rgba(255,255,255,.08);
+      }
+
+      .sentence-btn.secondary{
+        background:var(--surface-soft);
+        color:var(--muted);
+      }
+
+      .sentence-btn.primary{
+        background:var(--verb);
+        color:var(--verb-dark);
+      }
+
+      .sentence-btn.next{
+        background:var(--lavender);
+        color:var(--lavender-dark);
+      }
+    }
+
   </style>
 </head>
 
