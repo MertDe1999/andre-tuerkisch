@@ -2259,14 +2259,12 @@
   ];
 
   const sentenceSuffixFamilies = [
-    ["e","a","ye","ya"],
-    ["de","da","te","ta"],
-    ["den","dan","ten","tan"],
-    ["i","ı","u","ü","yi","yı","yu","yü"],
-    ["in","ın","un","ün","nin","nın","nun","nün"]
+    {key:"dative", pairs:[["e","ye"],["a","ya"]]},
+    {key:"locative", pairs:[["de","te"],["da","ta"]]},
+    {key:"ablative", pairs:[["den","ten"],["dan","tan"]]},
+    {key:"accusative", pairs:[["i","yi"],["ı","yı"],["u","yu"],["ü","yü"]]},
+    {key:"genitive", pairs:[["in","nin"],["ın","nın"],["un","nun"],["ün","nün"]]}
   ];
-
-  const sentenceSuffixPool = sentenceSuffixFamilies.flat();
 
   const typeNames = {
     noun:"Nomen",
@@ -2988,45 +2986,82 @@
     return result.slice(base.length);
   }
 
-  function getSimilarWrongSuffix(correctSuffix){
-    const family = sentenceSuffixFamilies.find(items => items.includes(correctSuffix)) || [];
-    if(!family.length) return "";
+  function getSuffixFamilyInfo(suffix){
+    for(let familyIndex = 0; familyIndex < sentenceSuffixFamilies.length; familyIndex++){
+      const family = sentenceSuffixFamilies[familyIndex];
 
-    const bufferPair =
-      correctSuffix.startsWith("y") ? correctSuffix.slice(1) :
-      correctSuffix.startsWith("n") && family.includes(correctSuffix.slice(1)) ? correctSuffix.slice(1) :
-      family.includes("y" + correctSuffix) ? "y" + correctSuffix :
-      family.includes("n" + correctSuffix) ? "n" + correctSuffix :
-      "";
+      for(const pair of family.pairs){
+        if(pair.includes(suffix)){
+          return {familyIndex, family, pair};
+        }
+      }
+    }
 
-    if(bufferPair && bufferPair !== correctSuffix) return bufferPair;
+    return null;
+  }
 
-    const voicedPair =
-      correctSuffix.startsWith("d") ? "t" + correctSuffix.slice(1) :
-      correctSuffix.startsWith("t") ? "d" + correctSuffix.slice(1) :
-      "";
+  function getRandomPairFromOtherFamily(excludedFamilyIndex){
+    const candidates = sentenceSuffixFamilies
+      .map((family, familyIndex) => ({family, familyIndex}))
+      .filter(item => item.familyIndex !== excludedFamilyIndex);
 
-    if(voicedPair && family.includes(voicedPair)) return voicedPair;
+    const chosenFamily = candidates[Math.floor(Math.random() * candidates.length)];
+    if(!chosenFamily) return null;
 
-    return family.find(suffix => suffix !== correctSuffix) || "";
+    const pair = chosenFamily.family.pairs[
+      Math.floor(Math.random() * chosenFamily.family.pairs.length)
+    ];
+
+    return {
+      familyIndex:chosenFamily.familyIndex,
+      family:chosenFamily.family,
+      pair:[...pair]
+    };
+  }
+
+  function getRandomSuffixFromOtherFamily(excludedFamilyIndex){
+    const other = getRandomPairFromOtherFamily(excludedFamilyIndex);
+    if(!other) return "";
+
+    return other.pair[Math.floor(Math.random() * other.pair.length)] || "";
   }
 
   function getSuffixOptionsForBuild(build){
     const correctSuffix = getCaseBuildSuffix(build);
     if(!correctSuffix) return [];
 
-    const similarWrong = getSimilarWrongSuffix(correctSuffix);
-    const excluded = new Set([correctSuffix, similarWrong].filter(Boolean));
+    const correctInfo = getSuffixFamilyInfo(correctSuffix);
+    if(!correctInfo){
+      return [{
+        kind:"suffix",
+        suffix:correctSuffix,
+        targetBase:normalizeSentencePiece(build.base)
+      }];
+    }
 
-    const randomSuffixes = shuffleArray(
-      sentenceSuffixPool.filter(suffix => !excluded.has(suffix))
-    ).slice(0, 2);
+    const correctLivesInPair = Math.random() < 0.5;
+    let options = [];
 
-    return Array.from(new Set([
-      correctSuffix,
-      similarWrong,
-      ...randomSuffixes
-    ].filter(Boolean))).map(suffix => ({
+    if(correctLivesInPair){
+      const pair = [...correctInfo.pair];
+      const otherCaseSuffix = getRandomSuffixFromOtherFamily(correctInfo.familyIndex);
+
+      options = [
+        ...pair,
+        otherCaseSuffix
+      ];
+    }else{
+      const otherCase = getRandomPairFromOtherFamily(correctInfo.familyIndex);
+
+      options = [
+        correctSuffix,
+        ...(otherCase?.pair || [])
+      ];
+    }
+
+    return shuffleArray(
+      Array.from(new Set(options.filter(Boolean)))
+    ).slice(0, 3).map(suffix => ({
       kind:"suffix",
       suffix,
       targetBase:normalizeSentencePiece(build.base)
