@@ -975,17 +975,15 @@
     .quiz-card.revealed .quiz-answer{display:block}
 
     .quiz-tip{
-      display:none;
+      display:block;
       width:100%;
-      margin-top:20px;
+      margin:0 0 8px;
       padding:13px 15px;
       border-radius:16px;
       background:rgba(255,255,255,.55);
       border:1px solid rgba(120,100,90,.12);
       text-align:left;
     }
-
-    .quiz-card.tip-shown .quiz-tip{display:block}
 
     .tip-label{
       color:var(--muted);
@@ -1341,19 +1339,16 @@
           <div id="quizType" class="quiz-type neutral"></div>
           <div id="quizFront" class="quiz-front"></div>
 
-          <div class="quiz-tip">
-            <div class="tip-label">Beispielsatz</div>
-            <div id="quizTipText" class="tip-text"></div>
-          </div>
-
           <div class="quiz-answer">
             <div class="answer-label">Antwort</div>
             <div id="quizAnswer" class="answer-text"></div>
           </div>
         </div>
 
-        <button id="tipButton" class="tip-btn" onclick="showTip()">Tipp anzeigen</button>
-        <button id="revealButton" class="reveal-btn" onclick="revealAnswer()">Antwort zeigen</button>
+        <div class="quiz-tip">
+          <div class="tip-label">Beispielsatz</div>
+          <div id="quizTipText" class="tip-text"></div>
+        </div>
 
         <div id="gradeRow" class="grade-row">
           <button class="grade wrong" onclick="grade(false)">Falsch</button>
@@ -2188,10 +2183,8 @@
       : quizMode;
 
     const cardEl = document.getElementById("quizCard");
-    cardEl.classList.remove("revealed", "tip-shown");
+    cardEl.classList.remove("revealed");
     document.getElementById("gradeRow").classList.remove("show");
-    document.getElementById("tipButton").style.display = "block";
-    document.getElementById("revealButton").style.display = "block";
 
     renderQuizDirection(remaining[currentIndex], currentDirection);
   }
@@ -2216,10 +2209,8 @@
     }
 
     const cardEl = document.getElementById("quizCard");
-    cardEl.classList.remove("revealed", "tip-shown");
+    cardEl.classList.remove("revealed");
     document.getElementById("gradeRow").classList.remove("show");
-    document.getElementById("tipButton").style.display = "block";
-    document.getElementById("revealButton").style.display = "block";
 
     let candidateIndices = remaining.map((_, i) => i);
 
@@ -2254,18 +2245,11 @@
     }
   }
 
-  function showTip(){
-    document.getElementById("quizCard").classList.add("tip-shown");
-    document.getElementById("tipButton").style.display = "none";
-  }
-
   function revealAnswer(){
     const cardEl = document.getElementById("quizCard");
     if(cardEl.classList.contains("revealed")) return;
 
     cardEl.classList.add("revealed");
-    document.getElementById("tipButton").style.display = "none";
-    document.getElementById("revealButton").style.display = "none";
     document.getElementById("gradeRow").classList.add("show");
   }
 
