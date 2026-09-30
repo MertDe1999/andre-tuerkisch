@@ -270,18 +270,28 @@
       flex-direction:column;
     }
 
+    body.learning-games-view #typingTrainer .typing-game-card{
+      flex:0 0 auto;
+    }
+
     body.learning-games-view #typingGameActive{
       display:flex;
       flex-direction:column;
     }
 
-    body.learning-games-view .custom-keyboard{
+    body.learning-games-view #typingTrainer .custom-keyboard{
+      width:calc(100% + 32px);
       min-height:42dvh;
       max-height:46dvh;
-      margin-top:auto;
-      padding:8px 6px max(8px, env(safe-area-inset-bottom));
+      margin:auto -16px calc(-1 * max(14px, env(safe-area-inset-bottom)));
+      padding:10px 7px max(10px, env(safe-area-inset-bottom));
       gap:6px;
-      border-radius:22px;
+      border-left:0;
+      border-right:0;
+      border-bottom:0;
+      border-radius:22px 22px 0 0;
+      box-shadow:0 -10px 28px rgba(70,54,46,.08);
+      flex:0 0 auto;
     }
 
     body.learning-games-view .keyboard-row{
@@ -1645,7 +1655,6 @@
 
           <div id="typingAnswer" class="typing-answer empty" role="textbox" aria-readonly="true">Antwort tippen …</div>
           <div id="typingFeedback" class="typing-feedback"></div>
-          <div id="customKeyboard" class="custom-keyboard" aria-label="App-Tastatur"></div>
         </div>
 
         <div id="typingComplete" class="typing-complete">
@@ -1656,6 +1665,7 @@
         </div>
       </div>
 
+      <div id="customKeyboard" class="custom-keyboard" aria-label="App-Tastatur"></div>
     </div>
   </section>
 </div>
@@ -2057,6 +2067,7 @@
 
     document.getElementById("typingGameActive").style.display = "block";
     document.getElementById("typingComplete").classList.remove("show");
+    document.getElementById("customKeyboard").style.display = "flex";
 
     updateTypingProgress();
     nextTypingWord();
@@ -2065,6 +2076,7 @@
   function nextTypingWord(){
     if(typingRemaining.length === 0){
       document.getElementById("typingGameActive").style.display = "none";
+      document.getElementById("customKeyboard").style.display = "none";
       document.getElementById("typingComplete").classList.add("show");
       return;
     }
