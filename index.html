@@ -77,7 +77,7 @@
       padding:
         max(20px, env(safe-area-inset-top))
         16px
-        calc(104px + env(safe-area-inset-bottom));
+        calc(168px + env(safe-area-inset-bottom));
     }
 
     header{
@@ -423,6 +423,30 @@
       pointer-events:none;
     }
 
+    .unlock-floating{
+      width:min(calc(100% - 56px),360px);
+      min-height:50px;
+      margin:0 auto 9px;
+      border:1px solid #e3d8e0;
+      border-radius:18px;
+      background:rgba(241,232,239,.97);
+      color:var(--text);
+      box-shadow:0 10px 28px rgba(70,54,46,.13);
+      backdrop-filter:blur(18px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight:880;
+      font-size:.92rem;
+      cursor:pointer;
+      pointer-events:auto;
+    }
+
+    .unlock-floating:active{
+      transform:translateY(1px);
+    }
+
     .bottom-nav{
       width:min(calc(100% - 28px),492px);
       margin:auto;
@@ -712,13 +736,6 @@
 
     .learn-choice.typing{
       background:#f1e8ef;
-    }
-
-    .unlock-choice{
-      width:100%;
-      margin-bottom:14px;
-      box-shadow:var(--shadow);
-      border:1px solid #e3d8e0;
     }
 
     .learn-choice-title{
@@ -1529,11 +1546,6 @@
   <!-- Lernen -->
   <section id="flashcards" class="view">
     <div id="learnHome" class="learn-home">
-      <button class="learn-choice typing unlock-choice" onclick="openLearnMode('typing')">
-        <span class="learn-choice-title">Wörter Freischalten</span>
-        <span class="learn-choice-sub">Wörter durch Übersetzen freischalten.</span>
-      </button>
-
       <div class="panel">
         <h2 class="section-title">Lernspiele</h2>
   
@@ -1697,6 +1709,10 @@
 </div>
 
 <div class="bottom-nav-wrap">
+  <button class="unlock-floating" onclick="openTypingFromFloating()">
+    <span>Wörter Freischalten</span>
+  </button>
+
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="showView('dictionary', this)">
       <span class="icon">📖</span><span>Wörter</span>
@@ -2028,6 +2044,11 @@
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+  function openTypingFromFloating(){
+    showView("flashcards", null);
+    openLearnMode("typing");
   }
 
   function openLearnMode(mode){
