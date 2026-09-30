@@ -470,6 +470,44 @@
 
     .quiz-card.revealed .quiz-answer{display:block}
 
+    .quiz-tip{
+      display:none;
+      width:100%;
+      margin-top:20px;
+      padding:13px 15px;
+      border-radius:16px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(120,100,90,.12);
+      text-align:left;
+    }
+
+    .quiz-card.tip-shown .quiz-tip{display:block}
+
+    .tip-label{
+      color:var(--muted);
+      font-size:.74rem;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .tip-text{
+      font-size:.94rem;
+      line-height:1.45;
+      font-weight:650;
+    }
+
+    .tip-btn{
+      width:100%;
+      border:0;
+      border-radius:18px;
+      min-height:52px;
+      margin-bottom:8px;
+      background:var(--lavender);
+      color:var(--lavender-dark);
+      font-weight:850;
+      cursor:pointer;
+    }
+
     .answer-label{
       color:var(--muted);
       font-size:.76rem;
@@ -695,12 +733,19 @@
           <div id="quizDirection" class="quiz-direction"></div>
           <div id="quizType" class="quiz-type neutral"></div>
           <div id="quizFront" class="quiz-front"></div>
+
+          <div class="quiz-tip">
+            <div class="tip-label">Beispielsatz</div>
+            <div id="quizTipText" class="tip-text"></div>
+          </div>
+
           <div class="quiz-answer">
             <div class="answer-label">Antwort</div>
             <div id="quizAnswer" class="answer-text"></div>
           </div>
         </div>
 
+        <button id="tipButton" class="tip-btn" onclick="showTip()">Tipp anzeigen</button>
         <button id="revealButton" class="reveal-btn" onclick="revealAnswer()">Antwort zeigen</button>
 
         <div id="gradeRow" class="grade-row">
@@ -737,38 +782,38 @@
 
 <script>
   const flashcards = [
-    {de:"Baum", tr:"ağaç", type:"noun"},
-    {de:"Weg / Straße", tr:"yol", type:"noun"},
-    {de:"Haus", tr:"ev", type:"noun"},
-    {de:"Auto", tr:"araba", type:"noun"},
-    {de:"Mama / Mutter", tr:"anne", type:"noun"},
-    {de:"Papa / Vater", tr:"baba", type:"noun"},
-    {de:"Bruder", tr:"erkek kardeş", type:"noun"},
-    {de:"älterer Bruder", tr:"abi", type:"noun"},
-    {de:"Schwester", tr:"kız kardeş", type:"noun"},
-    {de:"ältere Schwester", tr:"abla", type:"noun"},
-    {de:"Penis (vulgär)", tr:"yarak", type:"noun"},
+    {de:"Baum", tr:"ağaç", type:"noun", tip:"Bahçede büyük bir ağaç var. · Im Garten steht ein großer Baum."},
+    {de:"Weg / Straße", tr:"yol", type:"noun", tip:"Bu yol çok uzun. · Dieser Weg ist sehr lang."},
+    {de:"Haus", tr:"ev", type:"noun", tip:"Ev çok güzel. · Das Haus ist sehr schön."},
+    {de:"Auto", tr:"araba", type:"noun", tip:"Araba evin önünde. · Das Auto steht vor dem Haus."},
+    {de:"Mama / Mutter", tr:"anne", type:"noun", tip:"Anne evde. · Mama ist zu Hause."},
+    {de:"Papa / Vater", tr:"baba", type:"noun", tip:"Baba arabada. · Papa ist im Auto."},
+    {de:"Bruder", tr:"erkek kardeş", type:"noun", tip:"Erkek kardeş evde. · Der Bruder ist zu Hause."},
+    {de:"älterer Bruder", tr:"abi", type:"noun", tip:"Abi evde. · Der ältere Bruder ist zu Hause."},
+    {de:"Schwester", tr:"kız kardeş", type:"noun", tip:"Kız kardeş evde. · Die Schwester ist zu Hause."},
+    {de:"ältere Schwester", tr:"abla", type:"noun", tip:"Abla evde. · Die ältere Schwester ist zu Hause."},
+    {de:"Penis (vulgär)", tr:"yarak", type:"noun", tip:"„Yarak“ kaba bir kelimedir. · „Yarak“ ist ein vulgäres Wort."},
 
-    {de:"schön", tr:"güzel", type:"adj"},
+    {de:"schön", tr:"güzel", type:"adj", tip:"Bu ev güzel. · Dieses Haus ist schön."},
 
-    {de:"gehen", tr:"gitmek", type:"verb"},
+    {de:"gehen", tr:"gitmek", type:"verb", tip:"Gitmek güzel. · Gehen ist schön."},
 
-    {de:"zum Haus / nach Hause", tr:"eve", type:"noun"},
-    {de:"aus dem Haus", tr:"evden", type:"noun"},
-    {de:"im Haus", tr:"evde", type:"noun"},
-    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun"},
-    {de:"des Hauses", tr:"evin", type:"noun"},
+    {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tip:"Eve gidiyom. · Ich gehe nach Hause."},
+    {de:"aus dem Haus", tr:"evden", type:"noun", tip:"Evden geliyom. · Ich komme von zu Hause."},
+    {de:"im Haus", tr:"evde", type:"noun", tip:"Anne evde. · Mama ist zu Hause."},
+    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun", tip:"Evi görüyom. · Ich sehe das Haus."},
+    {de:"des Hauses", tr:"evin", type:"noun", tip:"Evin kapısı güzel. · Die Tür des Hauses ist schön."},
 
-    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj"},
-    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj"},
-    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj"},
-    {de:"Er/Sie/Es ist schön.", tr:"Güzel.", type:"adj"},
+    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj", tip:"Ev güzel mi? · Ist das Haus schön?"},
+    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj", tip:"Bugün güzelim. · Heute bin ich schön."},
+    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj", tip:"Sen güzelsin. · Du bist schön."},
+    {de:"Er/Sie/Es ist schön.", tr:"Güzel.", type:"adj", tip:"Ev güzel. · Das Haus ist schön."},
 
-    {de:"ich komme", tr:"geliyom", type:"verb"},
-    {de:"du kommst", tr:"geliyon", type:"verb"},
-    {de:"er/sie/es kommt", tr:"geliyo", type:"verb"},
-    {de:"wir kommen", tr:"geliyoz", type:"verb"},
-    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb"}
+    {de:"ich komme", tr:"geliyom", type:"verb", tip:"Evden geliyom. · Ich komme von zu Hause."},
+    {de:"du kommst", tr:"geliyon", type:"verb", tip:"Eve geliyon. · Du kommst nach Hause."},
+    {de:"er/sie/es kommt", tr:"geliyo", type:"verb", tip:"Abi eve geliyo. · Der ältere Bruder kommt nach Hause."},
+    {de:"wir kommen", tr:"geliyoz", type:"verb", tip:"Eve geliyoz. · Wir kommen nach Hause."},
+    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb", tip:"Gitmek güzel. · Gehen ist schön."}
   ];
 
   const typeNames = {
@@ -853,8 +898,9 @@
     }
 
     const cardEl = document.getElementById("quizCard");
-    cardEl.classList.remove("revealed");
+    cardEl.classList.remove("revealed", "tip-shown");
     document.getElementById("gradeRow").classList.remove("show");
+    document.getElementById("tipButton").style.display = "block";
     document.getElementById("revealButton").style.display = "block";
 
     let candidateIndices = remaining.map((_, i) => i);
@@ -868,6 +914,7 @@
     const item = remaining[currentIndex];
     lastGlobalIndex = item.originalIndex;
     setQuizType(item.type);
+    document.getElementById("quizTipText").textContent = item.tip || "";
 
     let direction;
     if(quizMode === "toTurkish"){
@@ -889,11 +936,17 @@
     }
   }
 
+  function showTip(){
+    document.getElementById("quizCard").classList.add("tip-shown");
+    document.getElementById("tipButton").style.display = "none";
+  }
+
   function revealAnswer(){
     const cardEl = document.getElementById("quizCard");
     if(cardEl.classList.contains("revealed")) return;
 
     cardEl.classList.add("revealed");
+    document.getElementById("tipButton").style.display = "none";
     document.getElementById("revealButton").style.display = "none";
     document.getElementById("gradeRow").classList.add("show");
   }
