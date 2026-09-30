@@ -308,7 +308,10 @@
     .word-row.response,
     .word-row.conjunction,
     .word-row.demonstrative,
-    .word-row.questionword{background:var(--other-soft);border-color:#d4ceca}
+    .word-row.questionword,
+    .word-row.greeting,
+    .word-row.polite,
+    .word-row.phrase{background:var(--other-soft);border-color:#d4ceca}
 
     .word-de{
       font-size:.84rem;
@@ -344,7 +347,10 @@
     .type-badge.response,
     .type-badge.conjunction,
     .type-badge.demonstrative,
-    .type-badge.questionword{background:var(--other);color:var(--other-dark)}
+    .type-badge.questionword,
+    .type-badge.greeting,
+    .type-badge.polite,
+    .type-badge.phrase{background:var(--other);color:var(--other-dark)}
 
     /* Grammatik */
     .grammar-card{
@@ -753,7 +759,10 @@
     .quiz-card.response,
     .quiz-card.conjunction,
     .quiz-card.demonstrative,
-    .quiz-card.questionword{background:var(--other-soft);border-color:#d4ceca}
+    .quiz-card.questionword,
+    .quiz-card.greeting,
+    .quiz-card.polite,
+    .quiz-card.phrase{background:var(--other-soft);border-color:#d4ceca}
 
     .quiz-direction{
       font-size:.79rem;
@@ -781,7 +790,10 @@
     .quiz-type.response,
     .quiz-type.conjunction,
     .quiz-type.demonstrative,
-    .quiz-type.questionword{background:var(--other);color:var(--other-dark)}
+    .quiz-type.questionword,
+    .quiz-type.greeting,
+    .quiz-type.polite,
+    .quiz-type.phrase{background:var(--other);color:var(--other-dark)}
 
     .quiz-front{
       font-size:clamp(2.1rem,11vw,3.4rem);
@@ -862,7 +874,10 @@
     .quiz-card.response .answer-text,
     .quiz-card.conjunction .answer-text,
     .quiz-card.demonstrative .answer-text,
-    .quiz-card.questionword .answer-text{color:var(--other-dark)}
+    .quiz-card.questionword .answer-text,
+    .quiz-card.greeting .answer-text,
+    .quiz-card.polite .answer-text,
+    .quiz-card.phrase .answer-text{color:var(--other-dark)}
 
     .reveal-btn{
       width:100%;
@@ -984,6 +999,7 @@
         <div class="word-row verb" data-search="gehen gitmek verb"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div><span class="type-badge verb">Verb</span></div><div class="word-note">auch „das Gehen“</div></div>
         <div class="word-row verb" data-search="lieben mögen moegen sevmek verb"><div><div class="word-de">lieben / mögen</div><div class="word-tr">sevmek</div><span class="type-badge verb">Verb</span></div></div>
         <div class="word-row verb" data-search="kommen gelmek verb"><div><div class="word-de">kommen</div><div class="word-tr">gelmek</div><span class="type-badge verb">Verb</span></div></div>
+        <div class="word-row verb" data-search="sehen görmek gormek verb"><div><div class="word-de">sehen</div><div class="word-tr">görmek</div><span class="type-badge verb">Verb</span></div></div>
         <div class="word-row existential" data-search="var es gibt vorhanden haben existenzwort"><div><div class="word-de">es gibt / vorhanden · „haben“</div><div class="word-tr">var</div><span class="type-badge existential">Existenzwort</span></div></div>
         <div class="word-row existential" data-search="yok es gibt nicht nicht vorhanden existenzwort"><div><div class="word-de">es gibt nicht / nicht vorhanden · „nicht haben“</div><div class="word-tr">yok</div><span class="type-badge existential">Existenzwort</span></div></div>
         <div class="word-row colloquial" data-search="yo nö noe nein umgangssprache"><div><div class="word-de">nö</div><div class="word-tr">yo</div><span class="type-badge colloquial">Umgangssprache</span></div></div>
@@ -993,6 +1009,12 @@
         <div class="word-row conjunction" data-search="und ve konjunktion"><div><div class="word-de">und</div><div class="word-tr">ve</div><span class="type-badge conjunction">Konjunktion</span></div></div>
         <div class="word-row demonstrative" data-search="das dies bu demonstrativ"><div><div class="word-de">das / dies</div><div class="word-tr">bu</div><span class="type-badge demonstrative">Demonstrativ</span></div></div>
         <div class="word-row questionword" data-search="was ne fragewort"><div><div class="word-de">was</div><div class="word-tr">ne</div><span class="type-badge questionword">Fragewort</span></div></div>
+
+        <div class="word-row greeting" data-search="hallo merhaba grußformel grussformel"><div><div class="word-de">Hallo</div><div class="word-tr">merhaba</div><span class="type-badge greeting">Grußformel</span></div></div>
+        <div class="word-row greeting" data-search="tschüss tschuess auf wiedersehen güle güle gule gule grußformel grussformel"><div><div class="word-de">Tschüss / Auf Wiedersehen</div><div class="word-tr">güle güle</div><span class="type-badge greeting">Grußformel</span></div></div>
+        <div class="word-row polite" data-search="bitte lütfen lutfen höflichkeitswort hoeflichkeitswort"><div><div class="word-de">bitte</div><div class="word-tr">lütfen</div><span class="type-badge polite">Höflichkeit</span></div></div>
+        <div class="word-row phrase" data-search="gesundheit lebe lange çok yaşa cok yasa redewendung"><div><div class="word-de">Gesundheit! (Lebe lange!)</div><div class="word-tr">Çok yaşa!</div><span class="type-badge phrase">Redewendung</span></div></div>
+        <div class="word-row phrase" data-search="gleichfalls sehe es auch sen de gör sen de gor redewendung"><div><div class="word-de">Gleichfalls! (Sehe es auch!)</div><div class="word-tr">Sen de gör!</div><span class="type-badge phrase">Redewendung</span></div></div>
 
         <div class="word-row pronoun" data-search="ich ben pronomen"><div><div class="word-de">ich</div><div class="word-tr">ben</div><span class="type-badge pronoun">Pronomen</span></div></div>
         <div class="word-row pronoun" data-search="du sen pronomen"><div><div class="word-de">du</div><div class="word-tr">sen</div><span class="type-badge pronoun">Pronomen</span></div></div>
@@ -1252,6 +1274,7 @@
     {de:"gehen", tr:"gitmek", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."},
     {de:"lieben / mögen", tr:"sevmek", type:"verb", tipDe:"Ich mag dich.", tipTr:"Seni seviyom."},
     {de:"kommen", tr:"gelmek", type:"verb", tipDe:"Ich komme nach Hause.", tipTr:"Eve geliyom."},
+    {de:"sehen", tr:"görmek", type:"verb", tipDe:"Ich möchte das Haus sehen.", tipTr:"Evi görmek güzel."},
     {de:"es gibt / vorhanden · „haben“", tr:"var", type:"existential", tipDe:"Ich habe ein Auto.", tipTr:"Benim arabam var."},
     {de:"es gibt nicht / nicht vorhanden · „nicht haben“", tr:"yok", type:"existential", tipDe:"Ich habe kein Auto.", tipTr:"Benim arabam yok."},
     {de:"nö", tr:"yo", type:"colloquial", tipDe:"Nö, heute nicht.", tipTr:"Yo, bugün değil."},
@@ -1260,6 +1283,11 @@
     {de:"und", tr:"ve", type:"conjunction", tipDe:"Mama und Papa sind zu Hause.", tipTr:"Anne ve baba evde."},
     {de:"das / dies", tr:"bu", type:"demonstrative", tipDe:"Das ist schön.", tipTr:"Bu güzel."},
     {de:"was", tr:"ne", type:"questionword", tipDe:"Was ist das?", tipTr:"Bu ne?"},
+    {de:"Hallo", tr:"merhaba", type:"greeting", tipDe:"Hallo, André!", tipTr:"Merhaba, André!"},
+    {de:"Tschüss / Auf Wiedersehen", tr:"güle güle", type:"greeting", tipDe:"Tschüss, bis später!", tipTr:"Güle güle!"},
+    {de:"bitte", tr:"lütfen", type:"polite", tipDe:"Bitte, André.", tipTr:"Lütfen, André."},
+    {de:"Gesundheit! (Lebe lange!)", tr:"Çok yaşa!", type:"phrase", tipDe:"Nach dem Niesen: Gesundheit!", tipTr:"Hapşırınca: Çok yaşa!"},
+    {de:"Gleichfalls! (Sehe es auch!)", tr:"Sen de gör!", type:"phrase", tipDe:"Als Antwort: Gleichfalls!", tipTr:"Cevap: Sen de gör!"},
 
     {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tipDe:"Ich gehe nach Hause.", tipTr:"Eve gidiyom."},
     {de:"aus dem Haus", tr:"evden", type:"noun", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
@@ -1310,6 +1338,9 @@
     conjunction:"Konjunktion",
     demonstrative:"Demonstrativ",
     questionword:"Fragewort",
+    greeting:"Grußformel",
+    polite:"Höflichkeit",
+    phrase:"Redewendung",
     other:"Sonstige",
     neutral:"Grammatik"
   };
@@ -1629,10 +1660,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","other","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","other","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","other"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
