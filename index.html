@@ -959,11 +959,14 @@
 
     .sentence-token.case-card{
       min-width:72px;
+      max-width:100%;
       background:var(--lavender);
       color:var(--lavender-dark);
       text-align:center;
-      font-size:.78rem;
+      font-size:.76rem;
+      line-height:1.35;
       font-weight:850;
+      white-space:normal;
     }
 
     .sentence-case-hint{
@@ -2255,11 +2258,11 @@
   ];
 
   const sentenceCases = {
-    dative:{label:"Dativ", forms:"-e / -a"},
-    ablative:{label:"Ablativ", forms:"-den / -dan"},
-    locative:{label:"Lokativ", forms:"-de / -da"},
-    accusative:{label:"Akkusativ", forms:"-i / -ı / -u / -ü"},
-    genitive:{label:"Genitiv", forms:"-in / -ın / -un / -ün"}
+    dative:{label:"Dativ", forms:"-e / -a / -ye / -ya"},
+    ablative:{label:"Ablativ", forms:"-den / -dan / -ten / -tan"},
+    locative:{label:"Lokativ", forms:"-de / -da / -te / -ta"},
+    accusative:{label:"Akkusativ", forms:"-i / -ı / -u / -ü / -yi / -yı / -yu / -yü"},
+    genitive:{label:"Genitiv", forms:"-in / -ın / -un / -ün / -nin / -nın / -nun / -nün"}
   };
 
   const typeNames = {
