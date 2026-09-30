@@ -680,9 +680,26 @@
       cursor:pointer;
       font-weight:900;
       font-size:1.05rem;
+      flex:0 0 auto;
     }
 
-    .progress-wrap{flex:1}
+    .mode-switch{
+      border:1px solid #ddd3e8;
+      background:var(--lavender);
+      color:var(--lavender-dark);
+      min-height:42px;
+      max-width:150px;
+      padding:8px 10px;
+      border-radius:14px;
+      cursor:pointer;
+      font-size:.72rem;
+      line-height:1.15;
+      font-weight:850;
+      text-align:center;
+      flex:0 0 auto;
+    }
+
+    .progress-wrap{flex:1;min-width:0}
 
     .progress-info{
       display:flex;
@@ -1113,14 +1130,15 @@
     <div id="quizSession">
       <div id="activeQuiz">
         <div class="quiz-top">
-          <button class="back-btn" onclick="leaveQuiz()" aria-label="Zurück">←</button>
+          <button class="back-btn" onclick="leaveQuiz()" aria-label="Zurück zu Lernen">←</button>
           <div class="progress-wrap">
             <div class="progress-info">
-              <span id="modeName">Roulette</span>
+              <span>Karteikarten</span>
               <span id="progressText">0 / 0 gelernt</span>
             </div>
             <div class="bar"><div id="barFill" class="bar-fill"></div></div>
           </div>
+          <button id="quizModeSwitch" class="mode-switch" onclick="cycleQuizMode(event)">Deutsch → Türkisch</button>
         </div>
 
         <div id="quizCard" class="quiz-card neutral" onclick="revealAnswer()">
@@ -1301,7 +1319,8 @@
   let draggedSentenceToken = null;
   let pointerDrag = null;
 
-  let quizMode = "roulette";
+  let quizMode = "toTurkish";
+  let currentDirection = "toTurkish";
   let remaining = [];
   let currentIndex = -1;
   let learnedCount = 0;
@@ -1321,7 +1340,9 @@
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
     document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
 
-    if(mode === "sentences" && sentenceOrder.length === 0){
+    if(mode === "cards"){
+      startQuiz("toTurkish");
+    }else if(mode === "sentences" && sentenceOrder.length === 0){
       startSentenceGame();
     }
 
@@ -1332,11 +1353,11 @@
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
     document.getElementById("sentenceBuilder").classList.remove("active");
-
-    if(document.getElementById("quizSession").classList.contains("active")){
-      leaveQuiz();
-    }
-
+    document.getElementById("quizSession").classList.remove("active");
+    document.getElementById("quizLauncher").classList.remove("hidden");
+    remaining = [];
+    learnedCount = 0;
+    currentIndex = -1;
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
@@ -1533,8 +1554,12 @@
     renderSentenceChallenge();
   }
 
-  function startQuiz(mode){
+  function startQuiz(mode = "toTurkish"){
     quizMode = mode;
+    currentDirection = mode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : mode;
+
     remaining = flashcards.map((card, index) => ({...card, originalIndex:index}));
     learnedCount = 0;
     currentIndex = -1;
@@ -1545,10 +1570,7 @@
     document.getElementById("activeQuiz").style.display = "block";
     document.getElementById("completion").classList.remove("show");
 
-    document.getElementById("modeName").textContent =
-      mode === "toTurkish" ? "Türkisch erraten" :
-      mode === "toGerman" ? "Deutsch erraten" : "Roulette";
-
+    updateModeSwitch();
     updateProgress();
     nextCard();
   }
@@ -1560,9 +1582,47 @@
   function leaveQuiz(){
     document.getElementById("quizSession").classList.remove("active");
     document.getElementById("quizLauncher").classList.remove("hidden");
+    document.getElementById("cardsLearning").classList.remove("active");
+    document.getElementById("learnHome").style.display = "block";
     remaining = [];
     learnedCount = 0;
     currentIndex = -1;
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function updateModeSwitch(){
+    const button = document.getElementById("quizModeSwitch");
+    if(!button) return;
+
+    button.textContent =
+      quizMode === "toTurkish" ? "Deutsch → Türkisch" :
+      quizMode === "toGerman" ? "Türkisch → Deutsch" :
+      "Gemischt";
+  }
+
+  function cycleQuizMode(event){
+    event?.stopPropagation();
+
+    quizMode =
+      quizMode === "toTurkish" ? "toGerman" :
+      quizMode === "toGerman" ? "roulette" :
+      "toTurkish";
+
+    updateModeSwitch();
+
+    if(currentIndex < 0 || currentIndex >= remaining.length) return;
+
+    currentDirection = quizMode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : quizMode;
+
+    const cardEl = document.getElementById("quizCard");
+    cardEl.classList.remove("revealed", "tip-shown");
+    document.getElementById("gradeRow").classList.remove("show");
+    document.getElementById("tipButton").style.display = "block";
+    document.getElementById("revealButton").style.display = "block";
+
+    renderQuizDirection(remaining[currentIndex], currentDirection);
   }
 
   function setQuizType(type){
@@ -1602,15 +1662,14 @@
     lastGlobalIndex = item.originalIndex;
     setQuizType(item.type);
 
-    let direction;
-    if(quizMode === "toTurkish"){
-      direction = "toTurkish";
-    }else if(quizMode === "toGerman"){
-      direction = "toGerman";
-    }else{
-      direction = Math.random() < 0.5 ? "toTurkish" : "toGerman";
-    }
+    currentDirection = quizMode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : quizMode;
 
+    renderQuizDirection(item, currentDirection);
+  }
+
+  function renderQuizDirection(item, direction){
     if(direction === "toTurkish"){
       document.getElementById("quizDirection").textContent = "Deutsch → Türkisch";
       document.getElementById("quizFront").textContent = item.de;
