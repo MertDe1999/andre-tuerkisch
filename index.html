@@ -232,6 +232,7 @@
     .word-row.verb{background:var(--verb-soft);border-color:#dcecdf}
     .word-row.adj{background:var(--adj-soft);border-color:#f0e6b9}
     .word-row.pronoun{background:var(--blue);border-color:#d3e3ee}
+    .word-row.neutral{background:#f2eef7;border-color:#e8e0ef}
 
     .word-de{
       font-size:.84rem;
@@ -260,6 +261,7 @@
     .type-badge.verb{background:var(--verb);color:var(--verb-dark)}
     .type-badge.adj{background:var(--adj);color:var(--adj-dark)}
     .type-badge.pronoun{background:var(--blue);color:var(--blue-dark)}
+    .type-badge.neutral{background:var(--lavender);color:var(--lavender-dark)}
 
     /* Grammatik */
     .grammar-card{
@@ -433,7 +435,7 @@
     .quiz-card.verb{background:var(--verb-soft);border-color:#d6e8d9}
     .quiz-card.adj{background:var(--adj-soft);border-color:#eee1a9}
     .quiz-card.pronoun{background:#edf5fa;border-color:#d3e3ee}
-    .quiz-card.neutral{background:var(--surface);border-color:var(--line)}
+    .quiz-card.neutral{background:#f2eef7;border-color:#e8e0ef}
 
     .quiz-direction{
       font-size:.79rem;
@@ -631,6 +633,9 @@
         <div class="word-row adj" data-search="schön schoen güzel guzel adjektiv"><div><div class="word-de">schön</div><div class="word-tr">güzel</div><span class="type-badge adj">Adjektiv</span></div></div>
 
         <div class="word-row verb" data-search="gehen gitmek verb"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div><span class="type-badge verb">Verb</span></div><div class="word-note">auch „das Gehen“</div></div>
+        <div class="word-row verb" data-search="lieben mögen moegen sevmek verb"><div><div class="word-de">lieben / mögen</div><div class="word-tr">sevmek</div><span class="type-badge verb">Verb</span></div></div>
+        <div class="word-row verb" data-search="kommen gelmek verb"><div><div class="word-de">kommen</div><div class="word-tr">gelmek</div><span class="type-badge verb">Verb</span></div></div>
+        <div class="word-row neutral" data-search="var es gibt vorhanden haben grammatik"><div><div class="word-de">es gibt / vorhanden · „haben“</div><div class="word-tr">var</div><span class="type-badge neutral">Grammatik</span></div><div class="word-note">nicht „varmak“</div></div>
 
         <div class="word-row pronoun" data-search="ich ben pronomen"><div><div class="word-de">ich</div><div class="word-tr">ben</div><span class="type-badge pronoun">Pronomen</span></div></div>
         <div class="word-row pronoun" data-search="du sen pronomen"><div><div class="word-de">du</div><div class="word-tr">sen</div><span class="type-badge pronoun">Pronomen</span></div></div>
@@ -686,6 +691,14 @@
         <h3>Frage</h3>
         <div class="grammar-list">
           <div class="grammar-row"><strong>Frage</strong><div><span class="suffix neutral">-mi / -mı / -mu / -mü?</span><span class="standard">Güzel mi? = Ist es schön?</span></div></div>
+        </div>
+      </div>
+
+      <div class="grammar-card neutral">
+        <h3>var · vorhanden / „haben“</h3>
+        <div class="grammar-list">
+          <div class="grammar-row"><strong>var</strong><div>„es gibt / ist vorhanden“<span class="standard">Benim arabam var. = Ich habe ein Auto.</span></div></div>
+          <div class="grammar-row"><strong>nicht:</strong><div>varmak<span class="standard">varmak = ankommen / erreichen · vermek = geben</span></div></div>
         </div>
       </div>
 
@@ -817,6 +830,9 @@
     {de:"schön", tr:"güzel", type:"adj", tipDe:"Das Haus ist schön.", tipTr:"Ev güzel."},
 
     {de:"gehen", tr:"gitmek", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."},
+    {de:"lieben / mögen", tr:"sevmek", type:"verb", tipDe:"Ich mag dich.", tipTr:"Seni seviyom."},
+    {de:"kommen", tr:"gelmek", type:"verb", tipDe:"Ich komme nach Hause.", tipTr:"Eve geliyom."},
+    {de:"es gibt / vorhanden · „haben“", tr:"var", type:"neutral", tipDe:"Ich habe ein Auto.", tipTr:"Benim arabam var."},
 
     {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tipDe:"Ich gehe nach Hause.", tipTr:"Eve gidiyom."},
     {de:"aus dem Haus", tr:"evden", type:"noun", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
