@@ -2983,15 +2983,48 @@
       caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
     );
 
-    const wordDescriptors = [...challenge.answer, ...challenge.distractors].map(word => {
+    const correctWords = challenge.answer.map(word => {
       const normalized = normalizeSentencePiece(word);
-      const base = replacements.get(normalized);
-
-      return {
-        kind:"word",
-        word:base || word
-      };
+      return replacements.get(normalized) || word;
     });
+
+    const excluded = new Set(
+      correctWords.map(word => normalizeSentencePiece(word))
+    );
+
+    const unlockedDictionaryWords = getDictionaryRows()
+      .filter(row => !row.classList.contains("locked"))
+      .map(row => row.querySelector(".word-tr")?.textContent?.trim() || "")
+      .filter(Boolean)
+      .filter(word => !excluded.has(normalizeSentencePiece(word)));
+
+    const fallbackWords = (challenge.distractors || [])
+      .filter(word => !excluded.has(normalizeSentencePiece(word)));
+
+    const pool = Array.from(new Set([
+      ...unlockedDictionaryWords,
+      ...fallbackWords
+    ]));
+
+    const shuffledPool = shuffleArray(pool);
+    const distractorCount = correctWords.length;
+    const randomDistractors = shuffledPool.slice(0, distractorCount);
+
+    if(randomDistractors.length < distractorCount && shuffledPool.length){
+      while(randomDistractors.length < distractorCount){
+        randomDistractors.push(
+          shuffledPool[randomDistractors.length % shuffledPool.length]
+        );
+      }
+    }
+
+    const wordDescriptors = [
+      ...correctWords,
+      ...randomDistractors
+    ].map(word => ({
+      kind:"word",
+      word
+    }));
 
     if(caseBuilds.length){
       Object.keys(sentenceCases).forEach(caseKey => {
