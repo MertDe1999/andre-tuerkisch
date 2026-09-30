@@ -453,6 +453,10 @@
       background:var(--blue);
     }
 
+    .learn-choice.typing{
+      background:#f1e8ef;
+    }
+
     .learn-choice-title{
       display:block;
       font-size:1.05rem;
@@ -630,6 +634,163 @@
     }
 
     .sentence-complete.show{display:block}
+
+    /* Wörter tippen */
+    .typing-game-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .typing-top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .typing-progress{
+      flex:1;
+      min-width:0;
+    }
+
+    .typing-progress-info{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      color:var(--muted);
+      font-size:.76rem;
+      margin-bottom:6px;
+    }
+
+    .typing-prompt{
+      padding:20px 16px;
+      border-radius:20px;
+      background:var(--surface-soft);
+      text-align:center;
+      margin-bottom:12px;
+    }
+
+    .typing-direction{
+      color:var(--muted);
+      font-size:.75rem;
+      font-weight:800;
+      margin-bottom:7px;
+    }
+
+    .typing-word{
+      font-size:clamp(1.8rem,9vw,2.8rem);
+      line-height:1.08;
+      font-weight:880;
+      letter-spacing:-.04em;
+      word-break:break-word;
+    }
+
+    .typing-answer{
+      min-height:62px;
+      border:2px solid #e4dcd6;
+      border-radius:18px;
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-size:1.28rem;
+      line-height:1.3;
+      font-weight:820;
+      background:#fffdfb;
+      overflow-wrap:anywhere;
+    }
+
+    .typing-answer.empty{
+      color:#aaa19c;
+      font-weight:700;
+      font-size:.95rem;
+    }
+
+    .typing-answer.correct{
+      border-color:#bad7c0;
+      background:var(--verb-soft);
+      color:var(--verb-dark);
+    }
+
+    .typing-answer.wrong{
+      border-color:#e4c2c2;
+      background:#fbefef;
+      color:var(--rose-dark);
+    }
+
+    .typing-feedback{
+      min-height:24px;
+      margin:10px 2px 8px;
+      text-align:center;
+      font-size:.86rem;
+      font-weight:800;
+      color:var(--muted);
+    }
+
+    .custom-keyboard{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:10px;
+      border-radius:20px;
+      background:var(--surface-soft);
+      border:1px solid var(--line);
+    }
+
+    .keyboard-row{
+      display:flex;
+      justify-content:center;
+      gap:5px;
+    }
+
+    .key{
+      border:0;
+      min-width:0;
+      height:43px;
+      flex:1 1 0;
+      border-radius:11px;
+      background:var(--surface);
+      color:var(--text);
+      font-weight:820;
+      font-size:.92rem;
+      box-shadow:0 2px 7px rgba(70,54,46,.07);
+      cursor:pointer;
+      padding:0 3px;
+    }
+
+    .key:active{
+      transform:translateY(1px);
+      background:#eee8e3;
+    }
+
+    .key.special{
+      flex:1.5 1 0;
+      background:var(--blue);
+      color:var(--blue-dark);
+    }
+
+    .key.space{
+      flex:4 1 0;
+      font-size:.75rem;
+    }
+
+    .key.check{
+      background:var(--verb);
+      color:var(--verb-dark);
+      font-size:1.05rem;
+    }
+
+    .typing-complete{
+      display:none;
+      text-align:center;
+      padding:24px 8px 8px;
+    }
+
+    .typing-complete.show{display:block}
 
     /* Quiz launcher */
     .mode-grid{
@@ -1117,6 +1278,11 @@
             <span class="learn-choice-title">Satzbau</span>
             <span class="learn-choice-sub">Türkische Sätze aus Bausteinen zusammensetzen.</span>
           </button>
+
+          <button class="learn-choice typing" onclick="openLearnMode('typing')">
+            <span class="learn-choice-title">Wörter tippen</span>
+            <span class="learn-choice-sub">Übersetzungen mit der App-Tastatur eingeben.</span>
+          </button>
         </div>
       </div>
     </div>
@@ -1238,6 +1404,43 @@
 
       <p class="session-note">Ziehe die türkischen Bausteine in die richtige Reihenfolge. Antippen funktioniert ebenfalls.</p>
     </div>
+
+    <div id="typingTrainer" class="learn-mode">
+      <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
+
+      <div class="typing-game-card">
+        <div id="typingGameActive">
+          <div class="typing-top">
+            <div class="typing-progress">
+              <div class="typing-progress-info">
+                <span>Wörter tippen</span>
+                <span id="typingProgressText">0 / 0</span>
+              </div>
+              <div class="bar"><div id="typingBarFill" class="bar-fill"></div></div>
+            </div>
+            <button id="typingModeSwitch" class="mode-switch" onclick="cycleTypingMode(event)">Deutsch → Türkisch</button>
+          </div>
+
+          <div class="typing-prompt">
+            <div id="typingDirection" class="typing-direction">Deutsch → Türkisch</div>
+            <div id="typingPrompt" class="typing-word"></div>
+          </div>
+
+          <div id="typingAnswer" class="typing-answer empty" role="textbox" aria-readonly="true">Antwort tippen …</div>
+          <div id="typingFeedback" class="typing-feedback"></div>
+          <div id="customKeyboard" class="custom-keyboard" aria-label="App-Tastatur"></div>
+        </div>
+
+        <div id="typingComplete" class="typing-complete">
+          <div class="big">✓</div>
+          <h2>Runde geschafft</h2>
+          <p class="section-sub">Du hast alle Wörter richtig eingetippt.</p>
+          <button class="restart-btn" onclick="startTypingGame(typingMode)">Nochmal starten</button>
+        </div>
+      </div>
+
+      <p class="session-note">Die Tastatur gehört zur App – die Handy-Tastatur wird nicht geöffnet.</p>
+    </div>
   </section>
 </div>
 
@@ -1312,6 +1515,42 @@
     {de:"wir", tr:"biz", type:"pronoun", tipDe:"Wir kommen.", tipTr:"Biz geliyoz."}
   ];
 
+  const typingWords = [
+    {de:"Baum", tr:"ağaç", deAnswers:["baum"]},
+    {de:"Weg / Straße", tr:"yol", deAnswers:["weg","straße","strasse"]},
+    {de:"Haus", tr:"ev", deAnswers:["haus"]},
+    {de:"Auto", tr:"araba", deAnswers:["auto"]},
+    {de:"Mama / Mutter", tr:"anne", deAnswers:["mama","mutter"]},
+    {de:"Papa / Vater", tr:"baba", deAnswers:["papa","vater"]},
+    {de:"Bruder", tr:"erkek kardeş", deAnswers:["bruder"]},
+    {de:"älterer Bruder", tr:"abi", deAnswers:["älterer bruder","aelterer bruder"]},
+    {de:"Schwester", tr:"kız kardeş", deAnswers:["schwester"]},
+    {de:"ältere Schwester", tr:"abla", deAnswers:["ältere schwester","aeltere schwester"]},
+    {de:"Penis", tr:"yarak", deAnswers:["penis"]},
+    {de:"schön", tr:"güzel", deAnswers:["schön","schoen"]},
+    {de:"gehen", tr:"gitmek", deAnswers:["gehen"]},
+    {de:"lieben / mögen", tr:"sevmek", deAnswers:["lieben","mögen","moegen"]},
+    {de:"kommen", tr:"gelmek", deAnswers:["kommen"]},
+    {de:"sehen", tr:"görmek", deAnswers:["sehen"]},
+    {de:"es gibt / vorhanden / haben", tr:"var", deAnswers:["es gibt","vorhanden","haben"]},
+    {de:"es gibt nicht / nicht vorhanden / nicht haben", tr:"yok", deAnswers:["es gibt nicht","nicht vorhanden","nicht haben"]},
+    {de:"nö", tr:"yo", deAnswers:["nö","noe"]},
+    {de:"ja", tr:"evet", deAnswers:["ja"]},
+    {de:"nein", tr:"hayır", deAnswers:["nein"]},
+    {de:"und", tr:"ve", deAnswers:["und"]},
+    {de:"das / dies", tr:"bu", deAnswers:["das","dies"]},
+    {de:"was", tr:"ne", deAnswers:["was"]},
+    {de:"Hallo", tr:"merhaba", deAnswers:["hallo"]},
+    {de:"Tschüss / Auf Wiedersehen", tr:"güle güle", deAnswers:["tschüss","tschuess","auf wiedersehen"]},
+    {de:"bitte", tr:"lütfen", deAnswers:["bitte"]},
+    {de:"Gesundheit! / Lebe lange!", tr:"Çok yaşa!", deAnswers:["gesundheit","lebe lange"]},
+    {de:"Gleichfalls! / Sehe es auch!", tr:"Sen de gör!", deAnswers:["gleichfalls","sehe es auch"]},
+    {de:"ich", tr:"ben", deAnswers:["ich"]},
+    {de:"du", tr:"sen", deAnswers:["du"]},
+    {de:"er / sie / es", tr:"o", deAnswers:["er","sie","es"]},
+    {de:"wir", tr:"biz", deAnswers:["wir"]}
+  ];
+
   const sentenceChallenges = [
     {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O","evde"]},
     {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."]},
@@ -1350,6 +1589,14 @@
   let draggedSentenceToken = null;
   let pointerDrag = null;
 
+  let typingMode = "toTurkish";
+  let typingDirection = "toTurkish";
+  let typingRemaining = [];
+  let typingCurrentIndex = -1;
+  let typingLearnedCount = 0;
+  let typingLastIndex = -1;
+  let typedAnswer = "";
+
   let quizMode = "toTurkish";
   let currentDirection = "toTurkish";
   let remaining = [];
@@ -1370,11 +1617,14 @@
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
     document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
+    document.getElementById("typingTrainer").classList.toggle("active", mode === "typing");
 
     if(mode === "cards"){
       startQuiz("toTurkish");
     }else if(mode === "sentences" && sentenceOrder.length === 0){
       startSentenceGame();
+    }else if(mode === "typing"){
+      startTypingGame("toTurkish");
     }
 
     window.scrollTo({top:0, behavior:"smooth"});
@@ -1384,11 +1634,15 @@
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
     document.getElementById("sentenceBuilder").classList.remove("active");
+    document.getElementById("typingTrainer").classList.remove("active");
     document.getElementById("quizSession").classList.remove("active");
     document.getElementById("quizLauncher").classList.remove("hidden");
     remaining = [];
     learnedCount = 0;
     currentIndex = -1;
+    typingRemaining = [];
+    typingCurrentIndex = -1;
+    typedAnswer = "";
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
@@ -1403,6 +1657,10 @@
       document.getElementById("learnHome").style.display = "block";
       document.getElementById("cardsLearning").classList.remove("active");
       document.getElementById("sentenceBuilder").classList.remove("active");
+      document.getElementById("typingTrainer").classList.remove("active");
+      typingRemaining = [];
+      typingCurrentIndex = -1;
+      typedAnswer = "";
 
       if(document.getElementById("quizSession").classList.contains("active")){
         leaveQuiz();
@@ -1417,6 +1675,235 @@
     document.querySelectorAll(".word-row").forEach(row => {
       row.style.display = row.dataset.search.toLowerCase().includes(q) ? "grid" : "none";
     });
+  }
+
+  function normalizeTypedAnswer(value){
+    return value
+      .toLowerCase()
+      .replace(/[.,!?;:()"“”'’]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function startTypingGame(mode = "toTurkish"){
+    typingMode = mode;
+    typingDirection = mode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : mode;
+
+    typingRemaining = typingWords.map((word, index) => ({...word, originalIndex:index}));
+    typingCurrentIndex = -1;
+    typingLearnedCount = 0;
+    typingLastIndex = -1;
+    typedAnswer = "";
+
+    document.getElementById("typingGameActive").style.display = "block";
+    document.getElementById("typingComplete").classList.remove("show");
+
+    updateTypingModeSwitch();
+    updateTypingProgress();
+    nextTypingWord();
+  }
+
+  function updateTypingModeSwitch(){
+    const button = document.getElementById("typingModeSwitch");
+    if(!button) return;
+
+    button.textContent =
+      typingMode === "toTurkish" ? "Deutsch → Türkisch" :
+      typingMode === "toGerman" ? "Türkisch → Deutsch" :
+      "Gemischt";
+  }
+
+  function cycleTypingMode(event){
+    event?.stopPropagation();
+
+    typingMode =
+      typingMode === "toTurkish" ? "toGerman" :
+      typingMode === "toGerman" ? "roulette" :
+      "toTurkish";
+
+    updateTypingModeSwitch();
+
+    if(typingCurrentIndex < 0 || typingCurrentIndex >= typingRemaining.length) return;
+
+    typingDirection = typingMode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : typingMode;
+
+    typedAnswer = "";
+    renderTypingWord();
+  }
+
+  function nextTypingWord(){
+    if(typingRemaining.length === 0){
+      document.getElementById("typingGameActive").style.display = "none";
+      document.getElementById("typingComplete").classList.add("show");
+      return;
+    }
+
+    let candidates = typingRemaining.map((_, i) => i);
+
+    if(typingRemaining.length > 1 && typingLastIndex !== -1){
+      const filtered = candidates.filter(i => typingRemaining[i].originalIndex !== typingLastIndex);
+      if(filtered.length) candidates = filtered;
+    }
+
+    typingCurrentIndex = candidates[Math.floor(Math.random() * candidates.length)];
+    typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
+    typingDirection = typingMode === "roulette"
+      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
+      : typingMode;
+
+    typedAnswer = "";
+    renderTypingWord();
+  }
+
+  function renderTypingWord(){
+    const item = typingRemaining[typingCurrentIndex];
+    if(!item) return;
+
+    const toTurkish = typingDirection === "toTurkish";
+    document.getElementById("typingDirection").textContent =
+      toTurkish ? "Deutsch → Türkisch" : "Türkisch → Deutsch";
+    document.getElementById("typingPrompt").textContent =
+      toTurkish ? item.de : item.tr;
+
+    const answerEl = document.getElementById("typingAnswer");
+    answerEl.className = "typing-answer empty";
+    answerEl.textContent = "Antwort tippen …";
+
+    const feedback = document.getElementById("typingFeedback");
+    feedback.textContent = "";
+    feedback.style.color = "";
+
+    renderCustomKeyboard(toTurkish ? "tr" : "de");
+  }
+
+  function renderCustomKeyboard(language){
+    const keyboard = document.getElementById("customKeyboard");
+
+    const rows = language === "tr"
+      ? [
+          ["q","w","e","r","t","y","u","ı","o","p","ğ","ü"],
+          ["a","s","d","f","g","h","j","k","l","ş","i"],
+          ["z","x","c","v","b","n","m","ö","ç"]
+        ]
+      : [
+          ["q","w","e","r","t","z","u","i","o","p","ü"],
+          ["a","s","d","f","g","h","j","k","l","ö","ä"],
+          ["y","x","c","v","b","n","m","ß"]
+        ];
+
+    keyboard.innerHTML = "";
+
+    rows.forEach(row => {
+      const rowEl = document.createElement("div");
+      rowEl.className = "keyboard-row";
+
+      row.forEach(letter => {
+        const key = document.createElement("button");
+        key.type = "button";
+        key.className = "key";
+        key.textContent = letter;
+        key.onclick = () => typeCustomKey(letter);
+        rowEl.appendChild(key);
+      });
+
+      keyboard.appendChild(rowEl);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "keyboard-row";
+
+    const backspace = document.createElement("button");
+    backspace.type = "button";
+    backspace.className = "key special";
+    backspace.textContent = "⌫";
+    backspace.onclick = () => typeCustomKey("BACKSPACE");
+
+    const space = document.createElement("button");
+    space.type = "button";
+    space.className = "key special space";
+    space.textContent = "Leertaste";
+    space.onclick = () => typeCustomKey(" ");
+
+    const check = document.createElement("button");
+    check.type = "button";
+    check.className = "key special check";
+    check.textContent = "✓";
+    check.setAttribute("aria-label", "Antwort prüfen");
+    check.onclick = checkTypedAnswer;
+
+    actions.append(backspace, space, check);
+    keyboard.appendChild(actions);
+  }
+
+  function typeCustomKey(key){
+    const answerEl = document.getElementById("typingAnswer");
+
+    if(key === "BACKSPACE"){
+      typedAnswer = Array.from(typedAnswer).slice(0, -1).join("");
+    }else if(typedAnswer.length < 60){
+      typedAnswer += key;
+    }
+
+    answerEl.classList.remove("correct","wrong");
+
+    if(typedAnswer.length === 0){
+      answerEl.className = "typing-answer empty";
+      answerEl.textContent = "Antwort tippen …";
+    }else{
+      answerEl.className = "typing-answer";
+      answerEl.textContent = typedAnswer;
+    }
+
+    const feedback = document.getElementById("typingFeedback");
+    feedback.textContent = "";
+    feedback.style.color = "";
+  }
+
+  function checkTypedAnswer(){
+    const item = typingRemaining[typingCurrentIndex];
+    if(!item || !typedAnswer.trim()) return;
+
+    const entered = normalizeTypedAnswer(typedAnswer);
+    const accepted = typingDirection === "toTurkish"
+      ? [item.tr]
+      : (item.deAnswers?.length ? item.deAnswers : [item.de]);
+
+    const correct = accepted
+      .map(normalizeTypedAnswer)
+      .includes(entered);
+
+    const answerEl = document.getElementById("typingAnswer");
+    const feedback = document.getElementById("typingFeedback");
+
+    if(correct){
+      answerEl.classList.remove("wrong","empty");
+      answerEl.classList.add("correct");
+      feedback.textContent = "Richtig!";
+      feedback.style.color = "var(--verb-dark)";
+
+      typingRemaining.splice(typingCurrentIndex, 1);
+      typingLearnedCount++;
+      updateTypingProgress();
+
+      window.setTimeout(nextTypingWord, 550);
+    }else{
+      answerEl.classList.remove("correct","empty");
+      answerEl.classList.add("wrong");
+      feedback.textContent = "Noch nicht richtig.";
+      feedback.style.color = "var(--rose-dark)";
+    }
+  }
+
+  function updateTypingProgress(){
+    const total = typingWords.length;
+    document.getElementById("typingProgressText").textContent =
+      typingLearnedCount + " / " + total + " richtig";
+    document.getElementById("typingBarFill").style.width =
+      ((typingLearnedCount / total) * 100) + "%";
   }
 
   function startSentenceGame(){
