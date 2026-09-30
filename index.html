@@ -958,27 +958,12 @@
     }
 
     .sentence-token.case-card{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap:1px;
-      min-width:92px;
+      min-width:72px;
       background:var(--lavender);
       color:var(--lavender-dark);
-      text-align:left;
-    }
-
-    .sentence-token.case-card .case-name{
-      font-size:.82rem;
-      font-weight:900;
-      line-height:1.05;
-    }
-
-    .sentence-token.case-card .case-form{
-      font-size:.66rem;
-      font-weight:760;
-      opacity:.8;
-      line-height:1.1;
+      text-align:center;
+      font-size:.78rem;
+      font-weight:850;
     }
 
     .sentence-case-hint{
@@ -2058,7 +2043,7 @@
           <div id="answerZone" class="drop-zone answer-zone"></div>
 
           <div class="sentence-zone-label">Wörter & Kasus</div>
-          <div class="sentence-case-hint">Zieh eine Kasus-Karte direkt auf ein Nomen, um es zu verändern.</div>
+          <div class="sentence-case-hint">Zieh ein Suffix direkt auf ein Nomen.</div>
           <div id="wordBank" class="drop-zone word-bank"></div>
 
           <div id="sentenceFeedback" class="sentence-feedback"></div>
@@ -3054,16 +3039,7 @@
       token.classList.add("case-card");
       token.dataset.tokenKind = "case";
       token.dataset.caseKey = descriptor.caseKey;
-
-      const name = document.createElement("span");
-      name.className = "case-name";
-      name.textContent = info.label;
-
-      const form = document.createElement("span");
-      form.className = "case-form";
-      form.textContent = info.forms;
-
-      token.append(name, form);
+      token.textContent = info.forms;
     }else{
       const word = typeof descriptor === "object" ? descriptor.word : descriptor;
       token.dataset.tokenKind = "word";
@@ -3183,7 +3159,7 @@
     target.classList.remove("case-applied");
 
     const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = sentenceCases[caseKey].label + " entfernt";
+    feedback.textContent = "Suffix entfernt";
     feedback.className = "sentence-feedback";
 
     if(typeof navigator.vibrate === "function"){
@@ -3215,7 +3191,7 @@
     caseToken.remove();
 
     const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = sentenceCases[caseKey].label + ": " + base + " → " + inflected;
+    feedback.textContent = base + " → " + inflected;
     feedback.className = "sentence-feedback";
 
     if(typeof navigator.vibrate === "function"){
