@@ -73,6 +73,41 @@
 
     button,input{font:inherit}
 
+    .pull-refresh{
+      position:fixed;
+      z-index:50000;
+      top:max(8px, env(safe-area-inset-top));
+      left:50%;
+      transform:translate(-50%,-72px) scale(.92);
+      opacity:0;
+      pointer-events:none;
+      min-width:148px;
+      padding:9px 14px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,253,251,.96);
+      color:var(--muted);
+      box-shadow:0 8px 22px rgba(70,54,46,.10);
+      backdrop-filter:blur(16px);
+      text-align:center;
+      font-size:.76rem;
+      font-weight:850;
+      transition:opacity .16s ease, transform .16s ease;
+    }
+
+    .pull-refresh.visible{
+      opacity:1;
+    }
+
+    .pull-refresh.ready{
+      color:var(--verb-dark);
+      background:var(--verb-soft);
+    }
+
+    body.game-mode-active .pull-refresh{
+      display:none;
+    }
+
     .app{
       width:min(100%,520px);
       min-height:100vh;
@@ -97,6 +132,10 @@
         opacity .24s ease,
         max-height .32s cubic-bezier(.4,0,.2,1),
         padding .32s cubic-bezier(.4,0,.2,1);
+    }
+
+    body.game-mode-active{
+      overscroll-behavior-y:none;
     }
 
     body.game-mode-active header{
@@ -1783,6 +1822,7 @@
 </head>
 
 <body>
+<div id="pullRefresh" class="pull-refresh" aria-hidden="true">Zum Aktualisieren ziehen</div>
 <div class="app">
   <header>
     <div class="profile-island" aria-label="Spielerprofil">
@@ -3706,6 +3746,110 @@
     document.getElementById("activeQuiz").style.display = "none";
     document.getElementById("completion").classList.add("show");
   }
+
+  const pullRefreshThreshold = 82;
+  let pullRefreshStartX = null;
+  let pullRefreshStartY = null;
+  let pullRefreshDistance = 0;
+  let pullRefreshActive = false;
+
+  function resetPullRefresh(){
+    const indicator = document.getElementById("pullRefresh");
+
+    pullRefreshStartX = null;
+    pullRefreshStartY = null;
+    pullRefreshDistance = 0;
+    pullRefreshActive = false;
+
+    if(indicator){
+      indicator.classList.remove("visible","ready");
+      indicator.textContent = "Zum Aktualisieren ziehen";
+      indicator.style.transform = "translate(-50%,-72px) scale(.92)";
+    }
+  }
+
+  document.addEventListener("touchstart", event => {
+    if(
+      event.touches.length !== 1 ||
+      document.body.classList.contains("game-mode-active") ||
+      window.scrollY > 0
+    ){
+      resetPullRefresh();
+      return;
+    }
+
+    const touch = event.touches[0];
+    pullRefreshStartX = touch.clientX;
+    pullRefreshStartY = touch.clientY;
+    pullRefreshDistance = 0;
+    pullRefreshActive = true;
+  }, {passive:true});
+
+  document.addEventListener("touchmove", event => {
+    if(
+      !pullRefreshActive ||
+      pullRefreshStartX === null ||
+      pullRefreshStartY === null ||
+      event.touches.length !== 1 ||
+      document.body.classList.contains("game-mode-active")
+    ) return;
+
+    const touch = event.touches[0];
+    const dx = touch.clientX - pullRefreshStartX;
+    const dy = touch.clientY - pullRefreshStartY;
+
+    if(dy <= 0 || Math.abs(dx) > Math.abs(dy)){
+      if(Math.abs(dx) > 16) resetPullRefresh();
+      return;
+    }
+
+    event.preventDefault();
+
+    pullRefreshDistance = Math.min(dy * .62, 112);
+
+    const indicator = document.getElementById("pullRefresh");
+    if(!indicator) return;
+
+    const progress = Math.min(pullRefreshDistance / pullRefreshThreshold, 1);
+    const translateY = -72 + (progress * 88);
+
+    indicator.classList.add("visible");
+    indicator.classList.toggle("ready", pullRefreshDistance >= pullRefreshThreshold);
+    indicator.textContent =
+      pullRefreshDistance >= pullRefreshThreshold
+        ? "Loslassen zum Aktualisieren"
+        : "Zum Aktualisieren ziehen";
+    indicator.style.transform =
+      "translate(-50%," + translateY + "px) scale(" + (.92 + progress * .08) + ")";
+  }, {passive:false});
+
+  document.addEventListener("touchend", () => {
+    if(!pullRefreshActive) return;
+
+    const shouldRefresh =
+      !document.body.classList.contains("game-mode-active") &&
+      pullRefreshDistance >= pullRefreshThreshold;
+
+    if(shouldRefresh){
+      const indicator = document.getElementById("pullRefresh");
+      if(indicator){
+        indicator.classList.add("visible","ready");
+        indicator.textContent = "Aktualisiere …";
+        indicator.style.transform = "translate(-50%,16px) scale(1)";
+      }
+
+      if(typeof navigator.vibrate === "function"){
+        navigator.vibrate(18);
+      }
+
+      setTimeout(() => window.location.reload(), 90);
+      return;
+    }
+
+    resetPullRefresh();
+  }, {passive:true});
+
+  document.addEventListener("touchcancel", resetPullRefresh, {passive:true});
 
   let horizontalSwipeStartX = null;
   let horizontalSwipeStartY = null;
