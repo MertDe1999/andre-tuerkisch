@@ -940,6 +940,54 @@
       box-shadow:0 3px 9px rgba(70,54,46,.06);
     }
 
+    .sentence-token.case-target{
+      background:var(--noun-soft);
+      color:var(--noun-dark);
+      border:1px solid rgba(155,100,66,.18);
+    }
+
+    .sentence-token.case-applied{
+      background:var(--noun);
+      color:var(--noun-dark);
+    }
+
+    .sentence-token.case-drop-over{
+      outline:3px solid var(--lavender-dark);
+      outline-offset:3px;
+      transform:scale(1.04);
+    }
+
+    .sentence-token.case-card{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:1px;
+      min-width:92px;
+      background:var(--lavender);
+      color:var(--lavender-dark);
+      text-align:left;
+    }
+
+    .sentence-token.case-card .case-name{
+      font-size:.82rem;
+      font-weight:900;
+      line-height:1.05;
+    }
+
+    .sentence-token.case-card .case-form{
+      font-size:.66rem;
+      font-weight:760;
+      opacity:.8;
+      line-height:1.1;
+    }
+
+    .sentence-case-hint{
+      color:var(--muted);
+      font-size:.72rem;
+      line-height:1.35;
+      margin:-2px 0 7px;
+    }
+
     .sentence-token.dragging{
       opacity:.25;
     }
@@ -1616,6 +1664,22 @@
         background:#332c3b;
       }
 
+      .sentence-token.case-target{
+        background:var(--noun-soft);
+        color:var(--noun-dark);
+        border-color:var(--line);
+      }
+
+      .sentence-token.case-applied{
+        background:var(--noun);
+        color:var(--noun-dark);
+      }
+
+      .sentence-token.case-card{
+        background:var(--lavender);
+        color:var(--lavender-dark);
+      }
+
       .typing-answer{
         background:var(--surface);
         border-color:#48403b;
@@ -1993,7 +2057,8 @@
           <div class="sentence-zone-label">Dein Satz</div>
           <div id="answerZone" class="drop-zone answer-zone"></div>
 
-          <div class="sentence-zone-label">Bausteine</div>
+          <div class="sentence-zone-label">Wörter & Kasus</div>
+          <div class="sentence-case-hint">Zieh eine Kasus-Karte direkt auf ein Nomen, um es zu verändern.</div>
           <div id="wordBank" class="drop-zone word-bank"></div>
 
           <div id="sentenceFeedback" class="sentence-feedback"></div>
@@ -2172,19 +2237,45 @@
   ];
 
   const sentenceChallenges = [
-    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O","evde"], requires:["ev","güzel"]},
+    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O"], requires:["ev","güzel"]},
     {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."], requires:["ben","güzel"]},
     {de:"Du bist schön.", answer:["Sen","güzelsin."], distractors:["Ben","güzelim."], requires:["sen","güzel"]},
     {de:"Er/Sie/Es ist schön.", answer:["O","güzel."], distractors:["Ev","güzelim."], requires:["o","güzel"]},
-    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba","eve."], requires:["anne","ev"]},
-    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne","evden."], requires:["baba","ev"]},
-    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","evde","geliyon."], requires:["ben","ev","gelmek"]},
-    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","evden","geliyom."], requires:["sen","ev","gelmek"]},
-    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","evde","geliyoz."], requires:["o","ev","gelmek"]},
-    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","evden","geliyo."], requires:["biz","ev","gelmek"]},
+
+    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba"], requires:["anne","ev"],
+      caseBuilds:[{result:"evde.", base:"ev"}]},
+
+    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne"], requires:["baba","ev"],
+      caseBuilds:[{result:"evde.", base:"ev"}]},
+
+    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
+      caseBuilds:[{result:"eve", base:"ev"}]},
+
+    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","geliyom."], requires:["sen","ev","gelmek"],
+      caseBuilds:[{result:"eve", base:"ev"}]},
+
+    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","geliyoz."], requires:["o","ev","gelmek"],
+      caseBuilds:[{result:"eve", base:"ev"}]},
+
+    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","geliyo."], requires:["biz","ev","gelmek"],
+      caseBuilds:[{result:"eve", base:"ev"}]},
+
     {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."], requires:["gitmek","güzel"]},
-    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","eve","geliyon."], requires:["ben","ev","gelmek"]}
+
+    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
+      caseBuilds:[{result:"evden", base:"ev"}]},
+
+    {de:"Das Auto ist bei Mama.", answer:["Araba","annede."], distractors:["Baba"], requires:["araba","anne"],
+      caseBuilds:[{result:"annede.", base:"anne"}]}
   ];
+
+  const sentenceCases = {
+    dative:{label:"Dativ", forms:"-e / -a"},
+    ablative:{label:"Ablativ", forms:"-den / -dan"},
+    locative:{label:"Lokativ", forms:"-de / -da"},
+    accusative:{label:"Akkusativ", forms:"-i / -ı / -u / -ü"},
+    genitive:{label:"Genitiv", forms:"-in / -ın / -un / -ün"}
+  };
 
   const typeNames = {
     noun:"Nomen",
@@ -2424,7 +2515,7 @@
 
     if(mode === "cards"){
       startQuiz("toTurkish");
-    }else if(mode === "sentences" && sentenceOrder.length === 0){
+    }else if(mode === "sentences"){
       startSentenceGame();
     }else if(mode === "typing"){
       startTypingGame();
@@ -2834,6 +2925,95 @@
     renderSentenceChallenge();
   }
 
+  function normalizeSentencePiece(value){
+    return (value || "")
+      .toLocaleLowerCase("tr-TR")
+      .replace(/[.!?,;:]+$/g, "")
+      .trim();
+  }
+
+  function getLastTurkishVowel(word){
+    const matches = (word || "").toLocaleLowerCase("tr-TR").match(/[aeıioöuü]/g);
+    return matches?.at(-1) || "e";
+  }
+
+  function twoWayHarmony(word){
+    return ["e","i","ö","ü"].includes(getLastTurkishVowel(word)) ? "e" : "a";
+  }
+
+  function fourWayHarmony(word){
+    const vowel = getLastTurkishVowel(word);
+    if(["a","ı"].includes(vowel)) return "ı";
+    if(["e","i"].includes(vowel)) return "i";
+    if(["o","u"].includes(vowel)) return "u";
+    return "ü";
+  }
+
+  function applyTurkishCase(baseWord, caseKey){
+    const base = (baseWord || "").replace(/[.!?,;:]+$/g, "");
+    const lower = base.toLocaleLowerCase("tr-TR");
+    const lastChar = lower.slice(-1);
+    const endsWithVowel = /[aeıioöuü]/.test(lastChar);
+    const harmony2 = twoWayHarmony(lower);
+    const harmony4 = fourWayHarmony(lower);
+    const stop = /[çfhkpsşt]/.test(lastChar);
+
+    if(caseKey === "dative"){
+      return base + (endsWithVowel ? "y" : "") + harmony2;
+    }
+
+    if(caseKey === "ablative"){
+      return base + (stop ? "t" : "d") + harmony2 + "n";
+    }
+
+    if(caseKey === "locative"){
+      return base + (stop ? "t" : "d") + harmony2;
+    }
+
+    if(caseKey === "accusative"){
+      return base + (endsWithVowel ? "y" : "") + harmony4;
+    }
+
+    if(caseKey === "genitive"){
+      return base + (endsWithVowel ? "n" : "") + harmony4 + "n";
+    }
+
+    return base;
+  }
+
+  function isKnownNounWord(word){
+    const key = unlockWordKey(normalizeSentencePiece(word));
+    return getDictionaryRows().some(row =>
+      row.classList.contains("noun") &&
+      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === key
+    );
+  }
+
+  function getSentenceTokenDescriptors(challenge){
+    const caseBuilds = challenge.caseBuilds || [];
+    const replacements = new Map(
+      caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
+    );
+
+    const wordDescriptors = [...challenge.answer, ...challenge.distractors].map(word => {
+      const normalized = normalizeSentencePiece(word);
+      const base = replacements.get(normalized);
+
+      return {
+        kind:"word",
+        word:base || word
+      };
+    });
+
+    if(caseBuilds.length){
+      Object.keys(sentenceCases).forEach(caseKey => {
+        wordDescriptors.push({kind:"case", caseKey});
+      });
+    }
+
+    return shuffleArray(wordDescriptors);
+  }
+
   function renderSentenceChallenge(){
     if(sentenceRoundIndex >= sentenceOrder.length){
       document.getElementById("sentenceGameActive").style.display = "none";
@@ -2851,9 +3031,9 @@
     answerZone.innerHTML = "";
     wordBank.innerHTML = "";
 
-    const tokens = shuffleArray([...challenge.answer, ...challenge.distractors]);
-    tokens.forEach((word, index) => {
-      wordBank.appendChild(createSentenceToken(word, index));
+    const tokens = getSentenceTokenDescriptors(challenge);
+    tokens.forEach((descriptor, index) => {
+      wordBank.appendChild(createSentenceToken(descriptor, index));
     });
 
     const feedback = document.getElementById("sentenceFeedback");
@@ -2863,13 +3043,38 @@
     document.getElementById("nextSentenceButton").style.display = "none";
   }
 
-  function createSentenceToken(word, index){
+  function createSentenceToken(descriptor, index){
     const token = document.createElement("button");
     token.type = "button";
     token.className = "sentence-token";
-    token.textContent = word;
-    token.dataset.word = word;
     token.dataset.tokenId = "sentence-" + sentenceRoundIndex + "-" + index + "-" + Math.random().toString(36).slice(2);
+
+    if(typeof descriptor === "object" && descriptor.kind === "case"){
+      const info = sentenceCases[descriptor.caseKey];
+      token.classList.add("case-card");
+      token.dataset.tokenKind = "case";
+      token.dataset.caseKey = descriptor.caseKey;
+
+      const name = document.createElement("span");
+      name.className = "case-name";
+      name.textContent = info.label;
+
+      const form = document.createElement("span");
+      form.className = "case-form";
+      form.textContent = info.forms;
+
+      token.append(name, form);
+    }else{
+      const word = typeof descriptor === "object" ? descriptor.word : descriptor;
+      token.dataset.tokenKind = "word";
+      token.dataset.word = word;
+      token.textContent = word;
+
+      if(isKnownNounWord(word)){
+        token.classList.add("case-target");
+        token.dataset.baseWord = normalizeSentencePiece(word);
+      }
+    }
 
     token.addEventListener("pointerdown", beginSentencePointerDrag);
     return token;
@@ -2891,6 +3096,17 @@
     token.addEventListener("pointermove", moveSentencePointerDrag);
     token.addEventListener("pointerup", endSentencePointerDrag);
     token.addEventListener("pointercancel", endSentencePointerDrag);
+  }
+
+  function clearSentenceDragHighlights(){
+    document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
+    document.querySelectorAll(".sentence-token").forEach(t => t.classList.remove("case-drop-over"));
+  }
+
+  function canReceiveSentenceCase(token){
+    return !!token &&
+      token.dataset.tokenKind === "word" &&
+      token.classList.contains("case-target");
   }
 
   function moveSentencePointerDrag(event){
@@ -2916,11 +3132,59 @@
       pointerDrag.ghost.style.left = event.clientX + "px";
       pointerDrag.ghost.style.top = event.clientY + "px";
 
-      document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
+      clearSentenceDragHighlights();
+
       const under = document.elementFromPoint(event.clientX, event.clientY);
-      const zone = under?.closest(".drop-zone");
-      if(zone) zone.classList.add("drag-over");
+
+      if(pointerDrag.token.dataset.tokenKind === "case"){
+        const target = under?.closest(".sentence-token");
+        if(target !== pointerDrag.token && canReceiveSentenceCase(target)){
+          target.classList.add("case-drop-over");
+        }
+      }else{
+        const zone = under?.closest(".drop-zone");
+        if(zone) zone.classList.add("drag-over");
+      }
     }
+  }
+
+  function returnCaseCard(caseKey){
+    const wordBank = document.getElementById("wordBank");
+    if(!caseKey || !wordBank) return;
+
+    const index = wordBank.children.length + Math.floor(Math.random() * 1000);
+    wordBank.appendChild(createSentenceToken({kind:"case", caseKey}, index));
+  }
+
+  function applySentenceCase(target, caseToken){
+    const caseKey = caseToken.dataset.caseKey;
+    if(!caseKey || !canReceiveSentenceCase(target)) return false;
+
+    const previousCase = target.dataset.appliedCase;
+    if(previousCase){
+      returnCaseCard(previousCase);
+    }
+
+    const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
+    const inflected = applyTurkishCase(base, caseKey);
+
+    target.dataset.baseWord = base;
+    target.dataset.appliedCase = caseKey;
+    target.dataset.word = inflected;
+    target.textContent = inflected;
+    target.classList.add("case-applied");
+
+    caseToken.remove();
+
+    const feedback = document.getElementById("sentenceFeedback");
+    feedback.textContent = sentenceCases[caseKey].label + ": " + base + " → " + inflected;
+    feedback.className = "sentence-feedback";
+
+    if(typeof navigator.vibrate === "function"){
+      navigator.vibrate(18);
+    }
+
+    return true;
   }
 
   function endSentencePointerDrag(event){
@@ -2933,29 +3197,48 @@
     token.removeEventListener("pointerup", endSentencePointerDrag);
     token.removeEventListener("pointercancel", endSentencePointerDrag);
 
-    document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
+    clearSentenceDragHighlights();
 
     if(state.dragging){
       const under = document.elementFromPoint(event.clientX, event.clientY);
-      const zone = under?.closest(".drop-zone");
 
-      if(zone){
-        const targetToken = under?.closest(".sentence-token");
-        if(targetToken && targetToken !== token && targetToken.parentElement === zone){
-          const rect = targetToken.getBoundingClientRect();
-          const before = event.clientX < rect.left + rect.width / 2;
-          zone.insertBefore(token, before ? targetToken : targetToken.nextSibling);
-        }else{
-          zone.appendChild(token);
+      if(token.dataset.tokenKind === "case"){
+        const target = under?.closest(".sentence-token");
+
+        if(target !== token && applySentenceCase(target, token)){
+          state.ghost?.remove();
+          pointerDrag = null;
+          return;
+        }
+
+        document.getElementById("wordBank").appendChild(token);
+      }else{
+        const zone = under?.closest(".drop-zone");
+
+        if(zone){
+          const targetToken = under?.closest(".sentence-token");
+          if(targetToken && targetToken !== token && targetToken.parentElement === zone){
+            const rect = targetToken.getBoundingClientRect();
+            const before = event.clientX < rect.left + rect.width / 2;
+            zone.insertBefore(token, before ? targetToken : targetToken.nextSibling);
+          }else{
+            zone.appendChild(token);
+          }
         }
       }
 
       token.classList.remove("dragging");
       state.ghost?.remove();
     }else{
-      const answerZone = document.getElementById("answerZone");
-      const wordBank = document.getElementById("wordBank");
-      (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+      if(token.dataset.tokenKind === "case"){
+        const feedback = document.getElementById("sentenceFeedback");
+        feedback.textContent = "Zieh die Kasus-Karte direkt auf ein Nomen.";
+        feedback.className = "sentence-feedback";
+      }else{
+        const answerZone = document.getElementById("answerZone");
+        const wordBank = document.getElementById("wordBank");
+        (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+      }
     }
 
     pointerDrag = null;
@@ -2967,12 +3250,19 @@
 
   function checkSentence(){
     const challenge = sentenceOrder[sentenceRoundIndex];
-    const built = Array.from(document.querySelectorAll("#answerZone .sentence-token"))
-      .map(el => el.dataset.word);
+    const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
+    const hasUnusedCaseCard = answerTokens.some(el => el.dataset.tokenKind === "case");
+
+    const built = answerTokens
+      .filter(el => el.dataset.tokenKind !== "case")
+      .map(el => normalizeSentencePiece(el.dataset.word));
+
+    const expected = challenge.answer.map(normalizeSentencePiece);
 
     const correct =
-      built.length === challenge.answer.length &&
-      built.every((word, i) => word === challenge.answer[i]);
+      !hasUnusedCaseCard &&
+      built.length === expected.length &&
+      built.every((word, i) => word === expected[i]);
 
     const feedback = document.getElementById("sentenceFeedback");
 
@@ -2982,7 +3272,7 @@
       document.getElementById("checkSentenceButton").style.display = "none";
       document.getElementById("nextSentenceButton").style.display = "block";
     }else{
-      feedback.textContent = "Noch nicht richtig – probier die Reihenfolge nochmal.";
+      feedback.textContent = "Noch nicht richtig – prüfe Reihenfolge und Kasus.";
       feedback.className = "sentence-feedback bad";
     }
   }
