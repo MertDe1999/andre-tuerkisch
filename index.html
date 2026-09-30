@@ -331,6 +331,181 @@
     .suffix.adj{background:var(--adj);color:var(--adj-dark)}
     .suffix.neutral{background:var(--lavender);color:var(--lavender-dark)}
 
+    /* Lernen */
+    .learn-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .learn-tab{
+      border:0;
+      min-height:46px;
+      border-radius:15px;
+      background:var(--surface-soft);
+      color:var(--muted);
+      font-weight:850;
+      cursor:pointer;
+    }
+
+    .learn-tab.active{
+      background:var(--lavender);
+      color:var(--lavender-dark);
+    }
+
+    .learn-mode{display:none}
+    .learn-mode.active{display:block}
+
+    .sentence-game-card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .sentence-progress{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:.78rem;
+      margin-bottom:12px;
+    }
+
+    .sentence-prompt{
+      padding:18px;
+      border-radius:18px;
+      background:var(--blue);
+      margin-bottom:14px;
+    }
+
+    .sentence-prompt-label{
+      color:var(--blue-dark);
+      font-size:.75rem;
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .sentence-prompt-text{
+      font-size:1.25rem;
+      line-height:1.3;
+      font-weight:850;
+      color:var(--text);
+    }
+
+    .sentence-zone-label{
+      color:var(--muted);
+      font-size:.76rem;
+      font-weight:800;
+      margin:12px 0 6px;
+    }
+
+    .drop-zone{
+      min-height:72px;
+      border:2px dashed #ddd3cc;
+      border-radius:18px;
+      padding:10px;
+      display:flex;
+      align-items:flex-start;
+      align-content:flex-start;
+      flex-wrap:wrap;
+      gap:8px;
+      transition:border-color .15s ease,background .15s ease;
+    }
+
+    .drop-zone.answer-zone{
+      background:#fbfaf8;
+    }
+
+    .drop-zone.word-bank{
+      border-style:solid;
+      border-width:1px;
+      background:var(--surface-soft);
+    }
+
+    .drop-zone.drag-over{
+      border-color:var(--lavender-dark);
+      background:#f4f0f8;
+    }
+
+    .sentence-token{
+      border:0;
+      border-radius:12px;
+      padding:10px 13px;
+      background:var(--verb);
+      color:var(--verb-dark);
+      font-weight:850;
+      cursor:grab;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:none;
+      box-shadow:0 3px 9px rgba(70,54,46,.06);
+    }
+
+    .sentence-token.dragging{
+      opacity:.25;
+    }
+
+    .drag-ghost{
+      position:fixed;
+      z-index:9999;
+      pointer-events:none;
+      transform:translate(-50%,-50%) scale(1.04);
+      box-shadow:0 10px 24px rgba(70,54,46,.16);
+    }
+
+    .sentence-feedback{
+      min-height:24px;
+      margin:12px 2px 0;
+      font-size:.88rem;
+      font-weight:800;
+    }
+
+    .sentence-feedback.ok{color:var(--verb-dark)}
+    .sentence-feedback.bad{color:var(--rose-dark)}
+
+    .sentence-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .sentence-btn{
+      border:0;
+      border-radius:16px;
+      min-height:50px;
+      font-weight:850;
+      cursor:pointer;
+    }
+
+    .sentence-btn.secondary{
+      background:var(--surface-soft);
+      color:var(--muted);
+    }
+
+    .sentence-btn.primary{
+      background:var(--verb);
+      color:var(--verb-dark);
+    }
+
+    .sentence-btn.next{
+      display:none;
+      grid-column:1 / -1;
+      background:var(--lavender);
+      color:var(--lavender-dark);
+    }
+
+    .sentence-complete{
+      display:none;
+      text-align:center;
+      padding:24px 8px 8px;
+    }
+
+    .sentence-complete.show{display:block}
+
     /* Quiz launcher */
     .mode-grid{
       display:grid;
@@ -721,8 +896,19 @@
     </div>
   </section>
 
-  <!-- Karteikarten -->
+  <!-- Lernen -->
   <section id="flashcards" class="view">
+    <div class="panel">
+      <h2 class="section-title">Lernen</h2>
+      <p class="section-sub">Wähle zwischen Karteikarten und Satzbau.</p>
+
+      <div class="learn-tabs">
+        <button id="cardsTab" class="learn-tab active" onclick="showLearnMode('cards')">Karteikarten</button>
+        <button id="sentencesTab" class="learn-tab" onclick="showLearnMode('sentences')">Satzbau</button>
+      </div>
+    </div>
+
+    <div id="cardsLearning" class="learn-mode active">
     <div id="quizLauncher">
       <div class="panel">
         <h2 class="section-title">Karteikarten</h2>
@@ -796,6 +982,46 @@
         <button class="restart-btn" onclick="restartQuiz()">Nochmal starten</button>
       </div>
     </div>
+    </div>
+
+    <div id="sentenceBuilder" class="learn-mode">
+      <div class="sentence-game-card">
+        <div id="sentenceGameActive">
+          <div class="sentence-progress">
+            <span>Satzbau</span>
+            <span id="sentenceProgressText">1 / 1</span>
+          </div>
+
+          <div class="sentence-prompt">
+            <div class="sentence-prompt-label">Deutsch → Türkisch</div>
+            <div id="sentencePrompt" class="sentence-prompt-text"></div>
+          </div>
+
+          <div class="sentence-zone-label">Dein Satz</div>
+          <div id="answerZone" class="drop-zone answer-zone"></div>
+
+          <div class="sentence-zone-label">Bausteine</div>
+          <div id="wordBank" class="drop-zone word-bank"></div>
+
+          <div id="sentenceFeedback" class="sentence-feedback"></div>
+
+          <div class="sentence-actions">
+            <button class="sentence-btn secondary" onclick="resetSentence()">Zurücksetzen</button>
+            <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
+            <button id="nextSentenceButton" class="sentence-btn next" onclick="nextSentence()">Nächster Satz</button>
+          </div>
+        </div>
+
+        <div id="sentenceComplete" class="sentence-complete">
+          <div class="big">✓</div>
+          <h2>Alle Sätze geschafft</h2>
+          <p class="section-sub">Du hast alle Satzbau-Aufgaben richtig gelöst.</p>
+          <button class="restart-btn" onclick="startSentenceGame()">Nochmal starten</button>
+        </div>
+      </div>
+
+      <p class="session-note">Ziehe die türkischen Bausteine in die richtige Reihenfolge. Antippen funktioniert ebenfalls.</p>
+    </div>
   </section>
 </div>
 
@@ -808,7 +1034,7 @@
       <span class="icon">✦</span><span>Grammatik</span>
     </button>
     <button class="nav-btn" onclick="showView('flashcards', this)">
-      <span class="icon">◫</span><span>Karten</span>
+      <span class="icon">◫</span><span>Lernen</span>
     </button>
   </nav>
 </div>
@@ -857,6 +1083,21 @@
     {de:"wir", tr:"biz", type:"pronoun", tipDe:"Wir kommen.", tipTr:"Biz geliyoz."}
   ];
 
+  const sentenceChallenges = [
+    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O","evde"]},
+    {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."]},
+    {de:"Du bist schön.", answer:["Sen","güzelsin."], distractors:["Ben","güzelim."]},
+    {de:"Er/Sie/Es ist schön.", answer:["O","güzel."], distractors:["Ev","güzelim."]},
+    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba","eve."]},
+    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne","evden."]},
+    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","evde","geliyon."]},
+    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","evden","geliyom."]},
+    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","evde","geliyoz."]},
+    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","evden","geliyo."]},
+    {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."]},
+    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","eve","geliyon."]}
+  ];
+
   const typeNames = {
     noun:"Nomen",
     verb:"Verb",
@@ -865,11 +1106,41 @@
     neutral:"Grammatik"
   };
 
+  let sentenceOrder = [];
+  let sentenceRoundIndex = 0;
+  let draggedSentenceToken = null;
+  let pointerDrag = null;
+
   let quizMode = "roulette";
   let remaining = [];
   let currentIndex = -1;
   let learnedCount = 0;
   let lastGlobalIndex = -1;
+
+  function shuffleArray(items){
+    const a = [...items];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function showLearnMode(mode){
+    const cards = document.getElementById("cardsLearning");
+    const sentences = document.getElementById("sentenceBuilder");
+    const cardsTab = document.getElementById("cardsTab");
+    const sentencesTab = document.getElementById("sentencesTab");
+
+    cards.classList.toggle("active", mode === "cards");
+    sentences.classList.toggle("active", mode === "sentences");
+    cardsTab.classList.toggle("active", mode === "cards");
+    sentencesTab.classList.toggle("active", mode === "sentences");
+
+    if(mode === "sentences" && sentenceOrder.length === 0){
+      startSentenceGame();
+    }
+  }
 
   function showView(id, btn){
     document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
@@ -886,6 +1157,172 @@
     document.querySelectorAll(".word-row").forEach(row => {
       row.style.display = row.dataset.search.toLowerCase().includes(q) ? "grid" : "none";
     });
+  }
+
+  function startSentenceGame(){
+    sentenceOrder = shuffleArray(sentenceChallenges);
+    sentenceRoundIndex = 0;
+    document.getElementById("sentenceGameActive").style.display = "block";
+    document.getElementById("sentenceComplete").classList.remove("show");
+    renderSentenceChallenge();
+  }
+
+  function renderSentenceChallenge(){
+    if(sentenceRoundIndex >= sentenceOrder.length){
+      document.getElementById("sentenceGameActive").style.display = "none";
+      document.getElementById("sentenceComplete").classList.add("show");
+      return;
+    }
+
+    const challenge = sentenceOrder[sentenceRoundIndex];
+    document.getElementById("sentencePrompt").textContent = challenge.de;
+    document.getElementById("sentenceProgressText").textContent =
+      (sentenceRoundIndex + 1) + " / " + sentenceOrder.length;
+
+    const answerZone = document.getElementById("answerZone");
+    const wordBank = document.getElementById("wordBank");
+    answerZone.innerHTML = "";
+    wordBank.innerHTML = "";
+
+    const tokens = shuffleArray([...challenge.answer, ...challenge.distractors]);
+    tokens.forEach((word, index) => {
+      wordBank.appendChild(createSentenceToken(word, index));
+    });
+
+    const feedback = document.getElementById("sentenceFeedback");
+    feedback.textContent = "";
+    feedback.className = "sentence-feedback";
+    document.getElementById("checkSentenceButton").style.display = "block";
+    document.getElementById("nextSentenceButton").style.display = "none";
+  }
+
+  function createSentenceToken(word, index){
+    const token = document.createElement("button");
+    token.type = "button";
+    token.className = "sentence-token";
+    token.textContent = word;
+    token.dataset.word = word;
+    token.dataset.tokenId = "sentence-" + sentenceRoundIndex + "-" + index + "-" + Math.random().toString(36).slice(2);
+
+    token.addEventListener("pointerdown", beginSentencePointerDrag);
+    return token;
+  }
+
+  function beginSentencePointerDrag(event){
+    if(event.button !== undefined && event.button !== 0) return;
+
+    const token = event.currentTarget;
+    pointerDrag = {
+      token,
+      startX:event.clientX,
+      startY:event.clientY,
+      dragging:false,
+      ghost:null
+    };
+
+    token.setPointerCapture?.(event.pointerId);
+    token.addEventListener("pointermove", moveSentencePointerDrag);
+    token.addEventListener("pointerup", endSentencePointerDrag);
+    token.addEventListener("pointercancel", endSentencePointerDrag);
+  }
+
+  function moveSentencePointerDrag(event){
+    if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
+
+    const dx = event.clientX - pointerDrag.startX;
+    const dy = event.clientY - pointerDrag.startY;
+
+    if(!pointerDrag.dragging && Math.hypot(dx, dy) > 8){
+      pointerDrag.dragging = true;
+      pointerDrag.token.classList.add("dragging");
+
+      const ghost = pointerDrag.token.cloneNode(true);
+      ghost.classList.remove("dragging");
+      ghost.classList.add("drag-ghost");
+      ghost.style.width = pointerDrag.token.offsetWidth + "px";
+      document.body.appendChild(ghost);
+      pointerDrag.ghost = ghost;
+    }
+
+    if(pointerDrag.dragging){
+      event.preventDefault();
+      pointerDrag.ghost.style.left = event.clientX + "px";
+      pointerDrag.ghost.style.top = event.clientY + "px";
+
+      document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
+      const under = document.elementFromPoint(event.clientX, event.clientY);
+      const zone = under?.closest(".drop-zone");
+      if(zone) zone.classList.add("drag-over");
+    }
+  }
+
+  function endSentencePointerDrag(event){
+    if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
+
+    const state = pointerDrag;
+    const token = state.token;
+
+    token.removeEventListener("pointermove", moveSentencePointerDrag);
+    token.removeEventListener("pointerup", endSentencePointerDrag);
+    token.removeEventListener("pointercancel", endSentencePointerDrag);
+
+    document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
+
+    if(state.dragging){
+      const under = document.elementFromPoint(event.clientX, event.clientY);
+      const zone = under?.closest(".drop-zone");
+
+      if(zone){
+        const targetToken = under?.closest(".sentence-token");
+        if(targetToken && targetToken !== token && targetToken.parentElement === zone){
+          const rect = targetToken.getBoundingClientRect();
+          const before = event.clientX < rect.left + rect.width / 2;
+          zone.insertBefore(token, before ? targetToken : targetToken.nextSibling);
+        }else{
+          zone.appendChild(token);
+        }
+      }
+
+      token.classList.remove("dragging");
+      state.ghost?.remove();
+    }else{
+      const answerZone = document.getElementById("answerZone");
+      const wordBank = document.getElementById("wordBank");
+      (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+    }
+
+    pointerDrag = null;
+  }
+
+  function resetSentence(){
+    renderSentenceChallenge();
+  }
+
+  function checkSentence(){
+    const challenge = sentenceOrder[sentenceRoundIndex];
+    const built = Array.from(document.querySelectorAll("#answerZone .sentence-token"))
+      .map(el => el.dataset.word);
+
+    const correct =
+      built.length === challenge.answer.length &&
+      built.every((word, i) => word === challenge.answer[i]);
+
+    const feedback = document.getElementById("sentenceFeedback");
+
+    if(correct){
+      feedback.textContent = "Richtig!";
+      feedback.className = "sentence-feedback ok";
+      document.getElementById("checkSentenceButton").style.display = "none";
+      document.getElementById("nextSentenceButton").style.display = "block";
+    }else{
+      feedback.textContent = "Noch nicht richtig – probier die Reihenfolge nochmal.";
+      feedback.className = "sentence-feedback bad";
+    }
+  }
+
+  function nextSentence(){
+    sentenceRoundIndex++;
+    renderSentenceChallenge();
   }
 
   function startQuiz(mode){
