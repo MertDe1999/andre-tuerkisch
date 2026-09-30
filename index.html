@@ -1017,6 +1017,28 @@
       white-space:nowrap;
     }
 
+    .sentence-token.verb-ending-card{
+      min-width:58px;
+      max-width:100%;
+      padding:9px 11px;
+      background:var(--verb);
+      color:var(--verb-dark);
+      text-align:center;
+      font-size:.82rem;
+      line-height:1;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .sentence-token.verb-target{
+      border-color:rgba(84,120,92,.24);
+    }
+
+    .sentence-token.verb-ending-applied{
+      background:var(--verb);
+      color:var(--verb-dark);
+    }
+
     .sentence-case-hint{
       color:var(--muted);
       font-size:.72rem;
@@ -2286,51 +2308,65 @@
       caseBuilds:[{result:"evde.", base:"ev"}]},
 
     {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}]},
+      caseBuilds:[{result:"eve", base:"ev"}],
+      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
 
     {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","geliyom."], requires:["sen","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}]},
+      caseBuilds:[{result:"eve", base:"ev"}],
+      verbBuilds:[{result:"geliyon.", base:"gelmek", ending:"iyon"}]},
 
     {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","geliyoz."], requires:["o","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}]},
+      caseBuilds:[{result:"eve", base:"ev"}],
+      verbBuilds:[{result:"geliyo.", base:"gelmek", ending:"iyo"}]},
 
     {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","geliyo."], requires:["biz","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}]},
+      caseBuilds:[{result:"eve", base:"ev"}],
+      verbBuilds:[{result:"geliyoz.", base:"gelmek", ending:"iyoz"}]},
 
     {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."], requires:["gitmek","güzel"]},
 
     {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
-      caseBuilds:[{result:"evden", base:"ev"}]},
+      caseBuilds:[{result:"evden", base:"ev"}],
+      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
 
     {de:"Das Auto ist bei Mama.", answer:["Araba","annede."], distractors:["Baba"], requires:["araba","anne"],
       caseBuilds:[{result:"annede.", base:"anne"}]},
 
     {de:"Ich gehe nach Hause.", answer:["Ben","eve","gidiyom."], distractors:["Sen"], requires:["ben","ev","gitmek"],
-      caseBuilds:[{result:"eve", base:"ev"}]},
+      caseBuilds:[{result:"eve", base:"ev"}],
+      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
 
     {de:"Ich sehe das Haus.", answer:["Ben","evi","görüyom."], distractors:["Sen"], requires:["ben","ev","görmek"],
-      caseBuilds:[{result:"evi", base:"ev"}]},
+      caseBuilds:[{result:"evi", base:"ev"}],
+      verbBuilds:[{result:"görüyom.", base:"görmek", ending:"iyom"}]},
 
     {de:"Ich gehe zu Mama.", answer:["Ben","anneye","gidiyom."], distractors:["Baba"], requires:["ben","anne","gitmek"],
-      caseBuilds:[{result:"anneye", base:"anne"}]},
+      caseBuilds:[{result:"anneye", base:"anne"}],
+      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
 
     {de:"Ich komme von Mama.", answer:["Ben","anneden","geliyom."], distractors:["Baba"], requires:["ben","anne","gelmek"],
-      caseBuilds:[{result:"anneden", base:"anne"}]},
+      caseBuilds:[{result:"anneden", base:"anne"}],
+      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
 
     {de:"Ich komme von Papa.", answer:["Ben","babadan","geliyom."], distractors:["Anne"], requires:["ben","baba","gelmek"],
-      caseBuilds:[{result:"babadan", base:"baba"}]},
+      caseBuilds:[{result:"babadan", base:"baba"}],
+      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
 
     {de:"Ich gehe zum Auto.", answer:["Ben","arabaya","gidiyom."], distractors:["Ev"], requires:["ben","araba","gitmek"],
-      caseBuilds:[{result:"arabaya", base:"araba"}]},
+      caseBuilds:[{result:"arabaya", base:"araba"}],
+      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
 
     {de:"Der Penis ist im Auto.", answer:["Yarak","arabada."], distractors:["Ev"], requires:["yarak","araba"],
       caseBuilds:[{result:"arabada.", base:"araba"}]},
 
     {de:"Ich sehe den Penis.", answer:["Ben","yarağı","görüyom."], distractors:["Ev"], requires:["ben","yarak","görmek"],
-      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}]},
+      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}],
+      verbBuilds:[{result:"görüyom.", base:"görmek", ending:"iyom"}]},
 
     {de:"Der Penis ist schön.", answer:["Yarak","güzel."], distractors:["Ev"], requires:["yarak","güzel"]}
   ];
+
+  const sentenceVerbEndings = ["iyom","iyon","iyo","iyoz"];
 
   const sentenceSuffixFamilies = [
     {key:"dative", pairs:[["e","ye"],["a","ya"]]},
@@ -3182,11 +3218,36 @@
       }));
   }
 
+  function getVerbEndingOptionsForBuild(build){
+    const correctEnding = build?.ending;
+    if(!correctEnding) return [];
+
+    const wrongEndings = shuffleArray(
+      sentenceVerbEndings.filter(ending => ending !== correctEnding)
+    ).slice(0, 2);
+
+    return shuffleArray([correctEnding, ...wrongEndings]).map(ending => ({
+      kind:"verb-ending",
+      ending,
+      targetBase:normalizeSentencePiece(build.base)
+    }));
+  }
+
+  function isKnownVerbWord(word){
+    const key = unlockWordKey(normalizeSentencePiece(word));
+    return getDictionaryRows().some(row =>
+      row.classList.contains("verb") &&
+      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === key
+    );
+  }
+
   function getSentenceTokenDescriptors(challenge){
     const caseBuilds = challenge.caseBuilds || [];
-    const replacements = new Map(
-      caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
-    );
+    const verbBuilds = challenge.verbBuilds || [];
+    const replacements = new Map([
+      ...caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base]),
+      ...verbBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
+    ]);
 
     const correctWords = challenge.answer.map(word => {
       const normalized = normalizeSentencePiece(word);
@@ -3232,10 +3293,12 @@
     }));
 
     const suffixDescriptors = caseBuilds.flatMap(getSuffixOptionsForBuild);
+    const verbEndingDescriptors = verbBuilds.flatMap(getVerbEndingOptionsForBuild);
 
     return shuffleArray([
       ...wordDescriptors,
-      ...suffixDescriptors
+      ...suffixDescriptors,
+      ...verbEndingDescriptors
     ]);
   }
 
@@ -3281,6 +3344,12 @@
       token.dataset.targetBase = descriptor.targetBase || "";
       token.dataset.soften = descriptor.soften ? "true" : "false";
       token.textContent = "-" + descriptor.suffix;
+    }else if(typeof descriptor === "object" && descriptor.kind === "verb-ending"){
+      token.classList.add("verb-ending-card");
+      token.dataset.tokenKind = "verb-ending";
+      token.dataset.ending = descriptor.ending;
+      token.dataset.targetBase = descriptor.targetBase || "";
+      token.textContent = "-" + descriptor.ending;
     }else{
       const word = typeof descriptor === "object" ? descriptor.word : descriptor;
       token.dataset.tokenKind = "word";
@@ -3291,6 +3360,12 @@
         token.classList.add("case-target");
         token.dataset.baseWord = normalizeSentencePiece(word);
         token.dataset.baseDisplay = word.replace(/[.!?,;:]+$/g, "");
+      }
+
+      if(isKnownVerbWord(word)){
+        token.classList.add("verb-target");
+        token.dataset.baseVerb = normalizeSentencePiece(word);
+        token.dataset.baseVerbDisplay = word.replace(/[.!?,;:]+$/g, "");
       }
     }
 
@@ -3327,6 +3402,12 @@
       token.classList.contains("case-target");
   }
 
+  function canReceiveVerbEnding(token){
+    return !!token &&
+      token.dataset.tokenKind === "word" &&
+      token.classList.contains("verb-target");
+  }
+
   function moveSentencePointerDrag(event){
     if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
 
@@ -3357,6 +3438,11 @@
       if(pointerDrag.token.dataset.tokenKind === "suffix"){
         const target = under?.closest(".sentence-token");
         if(target !== pointerDrag.token && canReceiveSentenceCase(target)){
+          target.classList.add("case-drop-over");
+        }
+      }else if(pointerDrag.token.dataset.tokenKind === "verb-ending"){
+        const target = under?.closest(".sentence-token");
+        if(target !== pointerDrag.token && canReceiveVerbEnding(target)){
           target.classList.add("case-drop-over");
         }
       }else{
@@ -3475,6 +3561,132 @@
     return true;
   }
 
+  function returnVerbEndingCard(ending, targetBase = ""){
+    const wordBank = document.getElementById("wordBank");
+    if(!ending || !wordBank) return;
+
+    const index = wordBank.children.length + Math.floor(Math.random() * 1000);
+    wordBank.appendChild(createSentenceToken({
+      kind:"verb-ending",
+      ending,
+      targetBase
+    }, index));
+  }
+
+  function getAutomaticVerbTarget(endingToken){
+    const targets = Array.from(
+      document.querySelectorAll("#answerZone .sentence-token.verb-target")
+    );
+
+    if(!targets.length) return null;
+
+    const preferredBase = endingToken?.dataset.targetBase || "";
+    const matching = preferredBase
+      ? targets.filter(token => token.dataset.baseVerb === preferredBase)
+      : targets;
+
+    const usable = matching.length ? matching : targets;
+    const withoutEnding = usable.filter(token => !token.dataset.appliedVerbEnding);
+
+    return (withoutEnding.length ? withoutEnding : usable).at(-1) || null;
+  }
+
+  function getLastTurkishVowelForVerb(word){
+    const vowels = "aeıioöuü";
+    const lower = (word || "").toLocaleLowerCase("tr-TR");
+
+    for(let i = lower.length - 1; i >= 0; i--){
+      if(vowels.includes(lower[i])) return lower[i];
+    }
+
+    return "e";
+  }
+
+  function getProgressiveVowel(word){
+    const last = getLastTurkishVowelForVerb(word);
+    if(last === "a" || last === "ı") return "ı";
+    if(last === "o" || last === "u") return "u";
+    if(last === "ö" || last === "ü") return "ü";
+    return "i";
+  }
+
+  function buildColloquialPresent(infinitive, ending){
+    let stem = (infinitive || "").replace(/(?:mek|mak)$/i, "");
+    const lowerStem = stem.toLocaleLowerCase("tr-TR");
+
+    if(lowerStem === "git"){
+      stem = stem.slice(0,-1) + "d";
+    }
+
+    const progressiveVowel = getProgressiveVowel(stem);
+    const endingTail = ending.replace(/^i/, "");
+
+    return stem + progressiveVowel + endingTail;
+  }
+
+  function removeVerbEnding(target){
+    const ending = target?.dataset.appliedVerbEnding;
+    if(!ending) return false;
+
+    const base = target.dataset.baseVerb || normalizeSentencePiece(target.dataset.word);
+    const display = target.dataset.baseVerbDisplay || base;
+    const targetBase = target.dataset.appliedVerbTargetBase || base;
+
+    returnVerbEndingCard(ending, targetBase);
+
+    target.dataset.word = base;
+    delete target.dataset.appliedVerbEnding;
+    delete target.dataset.appliedVerbTargetBase;
+    target.textContent = display;
+    target.classList.remove("verb-ending-applied");
+
+    const feedback = document.getElementById("sentenceFeedback");
+    feedback.textContent = "Verbendung entfernt";
+    feedback.className = "sentence-feedback";
+
+    if(typeof navigator.vibrate === "function"){
+      navigator.vibrate(14);
+    }
+
+    return true;
+  }
+
+  function applyVerbEnding(target, endingToken){
+    const ending = endingToken.dataset.ending;
+    if(!ending || !canReceiveVerbEnding(target)) return false;
+
+    const previousEnding = target.dataset.appliedVerbEnding;
+    if(previousEnding){
+      returnVerbEndingCard(
+        previousEnding,
+        target.dataset.appliedVerbTargetBase || target.dataset.baseVerb || ""
+      );
+    }
+
+    const base = target.dataset.baseVerb || normalizeSentencePiece(target.dataset.word);
+    const display = target.dataset.baseVerbDisplay || base;
+    const conjugated = buildColloquialPresent(display, ending);
+
+    target.dataset.baseVerb = base;
+    target.dataset.appliedVerbEnding = ending;
+    target.dataset.appliedVerbTargetBase = endingToken.dataset.targetBase || base;
+    target.dataset.word = conjugated;
+    target.textContent = conjugated;
+    target.classList.add("verb-ending-applied");
+
+    endingToken.remove();
+
+    const feedback = document.getElementById("sentenceFeedback");
+    feedback.textContent = base + " → " + conjugated;
+    feedback.className = "sentence-feedback";
+
+    if(typeof navigator.vibrate === "function"){
+      navigator.vibrate(18);
+    }
+
+    return true;
+  }
+
   function endSentencePointerDrag(event){
     if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
 
@@ -3494,6 +3706,16 @@
         const target = under?.closest(".sentence-token");
 
         if(target !== token && applySentenceCase(target, token)){
+          state.ghost?.remove();
+          pointerDrag = null;
+          return;
+        }
+
+        document.getElementById("wordBank").appendChild(token);
+      }else if(token.dataset.tokenKind === "verb-ending"){
+        const target = under?.closest(".sentence-token");
+
+        if(target !== token && applyVerbEnding(target, token)){
           state.ghost?.remove();
           pointerDrag = null;
           return;
@@ -3528,12 +3750,24 @@
           feedback.textContent = "Setz zuerst ein Nomen in deinen Satz.";
           feedback.className = "sentence-feedback";
         }
+      }else if(token.dataset.tokenKind === "verb-ending"){
+        const target = getAutomaticVerbTarget(token);
+        const feedback = document.getElementById("sentenceFeedback");
+
+        if(target){
+          applyVerbEnding(target, token);
+        }else{
+          feedback.textContent = "Setz zuerst ein Verb im Infinitiv in deinen Satz.";
+          feedback.className = "sentence-feedback";
+        }
       }else{
         const answerZone = document.getElementById("answerZone");
         const wordBank = document.getElementById("wordBank");
 
         if(token.parentElement === answerZone && token.dataset.appliedCase){
           removeSentenceCase(token);
+        }else if(token.parentElement === answerZone && token.dataset.appliedVerbEnding){
+          removeVerbEnding(token);
         }else{
           (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
         }
@@ -3550,10 +3784,15 @@
   function checkSentence(){
     const challenge = sentenceOrder[sentenceRoundIndex];
     const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
-    const hasUnusedCaseCard = answerTokens.some(el => el.dataset.tokenKind === "suffix");
+    const hasUnusedBuilderCard = answerTokens.some(el =>
+      el.dataset.tokenKind === "suffix" || el.dataset.tokenKind === "verb-ending"
+    );
 
     const built = answerTokens
-      .filter(el => el.dataset.tokenKind !== "suffix")
+      .filter(el =>
+        el.dataset.tokenKind !== "suffix" &&
+        el.dataset.tokenKind !== "verb-ending"
+      )
       .map(el => normalizeSentencePiece(el.dataset.word))
       .sort((a, b) => a.localeCompare(b, "tr"));
 
@@ -3562,7 +3801,7 @@
       .sort((a, b) => a.localeCompare(b, "tr"));
 
     const correct =
-      !hasUnusedCaseCard &&
+      !hasUnusedBuilderCard &&
       built.length === expected.length &&
       built.every((word, i) => word === expected[i]);
 
@@ -3574,7 +3813,7 @@
       document.getElementById("checkSentenceButton").style.display = "none";
       document.getElementById("nextSentenceButton").style.display = "block";
     }else{
-      feedback.textContent = "Noch nicht richtig – prüfe Wörter und Kasus.";
+      feedback.textContent = "Noch nicht richtig – prüfe Wörter, Suffixe und Verbendungen.";
       feedback.className = "sentence-feedback bad";
     }
   }
