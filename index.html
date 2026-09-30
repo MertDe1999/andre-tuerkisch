@@ -457,6 +457,13 @@
       background:#f1e8ef;
     }
 
+    .unlock-choice{
+      width:100%;
+      margin-bottom:14px;
+      box-shadow:var(--shadow);
+      border:1px solid #e3d8e0;
+    }
+
     .learn-choice-title{
       display:block;
       font-size:1.05rem;
@@ -1271,6 +1278,11 @@
   <!-- Lernen -->
   <section id="flashcards" class="view">
     <div id="learnHome" class="learn-home">
+      <button class="learn-choice typing unlock-choice" onclick="openLearnMode('typing')">
+        <span class="learn-choice-title">Wörter Freischalten</span>
+        <span class="learn-choice-sub">Wörter durch Übersetzen freischalten.</span>
+      </button>
+
       <div class="panel">
         <h2 class="section-title">Lernen</h2>
   
@@ -1285,10 +1297,6 @@
             <span class="learn-choice-sub">Türkische Sätze aus Bausteinen zusammensetzen.</span>
           </button>
 
-          <button class="learn-choice typing" onclick="openLearnMode('typing')">
-            <span class="learn-choice-title">Wörter tippen</span>
-            <span class="learn-choice-sub">Übersetzungen mit der App-Tastatur eingeben.</span>
-          </button>
         </div>
       </div>
     </div>
@@ -1413,12 +1421,11 @@
           <div class="typing-top">
             <div class="typing-progress">
               <div class="typing-progress-info">
-                <span>Wörter tippen</span>
+                <span>Wörter Freischalten</span>
                 <span id="typingProgressText">0 / 0</span>
               </div>
               <div class="bar"><div id="typingBarFill" class="bar-fill"></div></div>
             </div>
-            <button id="typingModeSwitch" class="mode-switch" onclick="cycleTypingMode(event)">Deutsch → Türkisch</button>
           </div>
 
           <div class="typing-prompt">
@@ -1435,7 +1442,7 @@
           <div class="big">✓</div>
           <h2>Runde geschafft</h2>
           <p class="section-sub">Du hast alle Wörter richtig eingetippt.</p>
-          <button class="restart-btn" onclick="startTypingGame(typingMode)">Nochmal starten</button>
+          <button class="restart-btn" onclick="startTypingGame()">Nochmal starten</button>
         </div>
       </div>
 
@@ -1586,7 +1593,6 @@
   let draggedSentenceToken = null;
   let pointerDrag = null;
 
-  let typingMode = "toTurkish";
   let typingDirection = "toTurkish";
   let typingRemaining = [];
   let typingCurrentIndex = -1;
@@ -1671,7 +1677,7 @@
     }else if(mode === "sentences" && sentenceOrder.length === 0){
       startSentenceGame();
     }else if(mode === "typing"){
-      startTypingGame("toTurkish");
+      startTypingGame();
     }
 
     window.scrollTo({top:0, behavior:"smooth"});
@@ -1732,11 +1738,8 @@
       .trim();
   }
 
-  function startTypingGame(mode = "toTurkish"){
-    typingMode = mode;
-    typingDirection = mode === "roulette"
-      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
-      : mode;
+  function startTypingGame(){
+    typingDirection = Math.random() < 0.5 ? "toTurkish" : "toGerman";
 
     typingRemaining = typingWords.map((word, index) => ({...word, originalIndex:index}));
     typingCurrentIndex = -1;
@@ -1747,39 +1750,8 @@
     document.getElementById("typingGameActive").style.display = "block";
     document.getElementById("typingComplete").classList.remove("show");
 
-    updateTypingModeSwitch();
     updateTypingProgress();
     nextTypingWord();
-  }
-
-  function updateTypingModeSwitch(){
-    const button = document.getElementById("typingModeSwitch");
-    if(!button) return;
-
-    button.textContent =
-      typingMode === "toTurkish" ? "Deutsch → Türkisch" :
-      typingMode === "toGerman" ? "Türkisch → Deutsch" :
-      "Gemischt";
-  }
-
-  function cycleTypingMode(event){
-    event?.stopPropagation();
-
-    typingMode =
-      typingMode === "toTurkish" ? "toGerman" :
-      typingMode === "toGerman" ? "roulette" :
-      "toTurkish";
-
-    updateTypingModeSwitch();
-
-    if(typingCurrentIndex < 0 || typingCurrentIndex >= typingRemaining.length) return;
-
-    typingDirection = typingMode === "roulette"
-      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
-      : typingMode;
-
-    typedAnswer = "";
-    renderTypingWord();
   }
 
   function nextTypingWord(){
@@ -1798,9 +1770,7 @@
 
     typingCurrentIndex = candidates[Math.floor(Math.random() * candidates.length)];
     typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
-    typingDirection = typingMode === "roulette"
-      ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
-      : typingMode;
+    typingDirection = Math.random() < 0.5 ? "toTurkish" : "toGerman";
 
     typedAnswer = "";
     renderTypingWord();
