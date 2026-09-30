@@ -234,6 +234,7 @@
     .word-row.pronoun{background:var(--blue);border-color:#d3e3ee}
     .word-row.neutral{background:#f2eef7;border-color:#e8e0ef}
     .word-row.existential{background:#f2eef7;border-color:#e8e0ef}
+    .word-row.colloquial{background:#f2eef7;border-color:#e8e0ef}
 
     .word-de{
       font-size:.84rem;
@@ -264,6 +265,7 @@
     .type-badge.pronoun{background:var(--blue);color:var(--blue-dark)}
     .type-badge.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .type-badge.existential{background:var(--lavender);color:var(--lavender-dark)}
+    .type-badge.colloquial{background:var(--lavender);color:var(--lavender-dark)}
 
     /* Grammatik */
     .grammar-card{
@@ -614,6 +616,7 @@
     .quiz-card.pronoun{background:#edf5fa;border-color:#d3e3ee}
     .quiz-card.neutral{background:#f2eef7;border-color:#e8e0ef}
     .quiz-card.existential{background:#f2eef7;border-color:#e8e0ef}
+    .quiz-card.colloquial{background:#f2eef7;border-color:#e8e0ef}
 
     .quiz-direction{
       font-size:.79rem;
@@ -636,6 +639,7 @@
     .quiz-type.pronoun{background:var(--blue);color:var(--blue-dark)}
     .quiz-type.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .quiz-type.existential{background:var(--lavender);color:var(--lavender-dark)}
+    .quiz-type.colloquial{background:var(--lavender);color:var(--lavender-dark)}
 
     .quiz-front{
       font-size:clamp(2.1rem,11vw,3.4rem);
@@ -711,6 +715,7 @@
     .quiz-card.pronoun .answer-text{color:var(--blue-dark)}
     .quiz-card.neutral .answer-text{color:var(--lavender-dark)}
     .quiz-card.existential .answer-text{color:var(--lavender-dark)}
+    .quiz-card.colloquial .answer-text{color:var(--lavender-dark)}
 
     .reveal-btn{
       width:100%;
@@ -816,6 +821,8 @@
         <div class="word-row verb" data-search="lieben mögen moegen sevmek verb"><div><div class="word-de">lieben / mögen</div><div class="word-tr">sevmek</div><span class="type-badge verb">Verb</span></div></div>
         <div class="word-row verb" data-search="kommen gelmek verb"><div><div class="word-de">kommen</div><div class="word-tr">gelmek</div><span class="type-badge verb">Verb</span></div></div>
         <div class="word-row existential" data-search="var es gibt vorhanden haben existenzwort"><div><div class="word-de">es gibt / vorhanden · „haben“</div><div class="word-tr">var</div><span class="type-badge existential">Existenzwort</span></div></div>
+        <div class="word-row existential" data-search="yok es gibt nicht nicht vorhanden existenzwort"><div><div class="word-de">es gibt nicht / nicht vorhanden · „nicht haben“</div><div class="word-tr">yok</div><span class="type-badge existential">Existenzwort</span></div></div>
+        <div class="word-row colloquial" data-search="yo nö noe nein umgangssprache"><div><div class="word-de">nö</div><div class="word-tr">yo</div><span class="type-badge colloquial">Umgangssprache</span></div></div>
 
         <div class="word-row pronoun" data-search="ich ben pronomen"><div><div class="word-de">ich</div><div class="word-tr">ben</div><span class="type-badge pronoun">Pronomen</span></div></div>
         <div class="word-row pronoun" data-search="du sen pronomen"><div><div class="word-de">du</div><div class="word-tr">sen</div><span class="type-badge pronoun">Pronomen</span></div></div>
@@ -875,9 +882,10 @@
       </div>
 
       <div class="grammar-card neutral">
-        <h3>Existenzwort · var</h3>
+        <h3>Existenzwörter · var / yok</h3>
         <div class="grammar-list">
           <div class="grammar-row"><strong>var</strong><div>„es gibt / ist vorhanden“<span class="standard">Benim arabam var. = Ich habe ein Auto.</span></div></div>
+          <div class="grammar-row"><strong>yok</strong><div>„es gibt nicht / ist nicht vorhanden“<span class="standard">Benim arabam yok. = Ich habe kein Auto.</span></div></div>
         </div>
       </div>
 
@@ -1063,6 +1071,8 @@
     {de:"lieben / mögen", tr:"sevmek", type:"verb", tipDe:"Ich mag dich.", tipTr:"Seni seviyom."},
     {de:"kommen", tr:"gelmek", type:"verb", tipDe:"Ich komme nach Hause.", tipTr:"Eve geliyom."},
     {de:"es gibt / vorhanden · „haben“", tr:"var", type:"existential", tipDe:"Ich habe ein Auto.", tipTr:"Benim arabam var."},
+    {de:"es gibt nicht / nicht vorhanden · „nicht haben“", tr:"yok", type:"existential", tipDe:"Ich habe kein Auto.", tipTr:"Benim arabam yok."},
+    {de:"nö", tr:"yo", type:"colloquial", tipDe:"Nö, heute nicht.", tipTr:"Yo, bugün değil."},
 
     {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tipDe:"Ich gehe nach Hause.", tipTr:"Eve gidiyom."},
     {de:"aus dem Haus", tr:"evden", type:"noun", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
@@ -1108,6 +1118,7 @@
     adj:"Adjektiv",
     pronoun:"Pronomen",
     existential:"Existenzwort",
+    colloquial:"Umgangssprache",
     neutral:"Grammatik"
   };
 
@@ -1366,10 +1377,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
