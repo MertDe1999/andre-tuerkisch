@@ -425,6 +425,10 @@
       pointer-events:none;
     }
 
+    body.unlock-complete .app{
+      padding-bottom:calc(104px + env(safe-area-inset-bottom));
+    }
+
     .unlock-floating{
       width:min(calc(100% - 56px),360px);
       min-height:50px;
@@ -1993,7 +1997,7 @@
 </div>
 
 <div class="bottom-nav-wrap">
-  <button class="unlock-floating" onclick="openTypingFromFloating()">
+  <button id="unlockFloatingButton" class="unlock-floating" onclick="openTypingFromFloating()">
     <span>Wörter Freischalten</span>
   </button>
 
@@ -2259,6 +2263,15 @@
     if(value){
       value.textContent = unlockedCount + " / " + rows.length;
     }
+
+    const allUnlocked = rows.length > 0 && unlockedCount === rows.length;
+    const unlockButton = document.getElementById("unlockFloatingButton");
+
+    if(unlockButton){
+      unlockButton.hidden = allUnlocked;
+    }
+
+    document.body.classList.toggle("unlock-complete", allUnlocked);
   }
 
   function refreshUnlockUI(){
