@@ -3073,6 +3073,7 @@
       if(isKnownNounWord(word)){
         token.classList.add("case-target");
         token.dataset.baseWord = normalizeSentencePiece(word);
+        token.dataset.baseDisplay = word.replace(/[.!?,;:]+$/g, "");
       }
     }
 
@@ -3156,6 +3157,42 @@
     wordBank.appendChild(createSentenceToken({kind:"case", caseKey}, index));
   }
 
+  function getAutomaticSentenceCaseTarget(){
+    const targets = Array.from(
+      document.querySelectorAll("#answerZone .sentence-token.case-target")
+    );
+
+    if(!targets.length) return null;
+
+    const withoutCase = targets.filter(token => !token.dataset.appliedCase);
+    return (withoutCase.length ? withoutCase : targets).at(-1) || null;
+  }
+
+  function removeSentenceCase(target){
+    const caseKey = target?.dataset.appliedCase;
+    if(!caseKey) return false;
+
+    const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
+    const baseDisplay = target.dataset.baseDisplay || base;
+
+    returnCaseCard(caseKey);
+
+    target.dataset.word = base;
+    delete target.dataset.appliedCase;
+    target.textContent = baseDisplay;
+    target.classList.remove("case-applied");
+
+    const feedback = document.getElementById("sentenceFeedback");
+    feedback.textContent = sentenceCases[caseKey].label + " entfernt";
+    feedback.className = "sentence-feedback";
+
+    if(typeof navigator.vibrate === "function"){
+      navigator.vibrate(14);
+    }
+
+    return true;
+  }
+
   function applySentenceCase(target, caseToken){
     const caseKey = caseToken.dataset.caseKey;
     if(!caseKey || !canReceiveSentenceCase(target)) return false;
@@ -3166,7 +3203,8 @@
     }
 
     const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
-    const inflected = applyTurkishCase(base, caseKey);
+    const displayBase = target.dataset.baseDisplay || base;
+    const inflected = applyTurkishCase(displayBase, caseKey);
 
     target.dataset.baseWord = base;
     target.dataset.appliedCase = caseKey;
@@ -3231,13 +3269,24 @@
       state.ghost?.remove();
     }else{
       if(token.dataset.tokenKind === "case"){
+        const target = getAutomaticSentenceCaseTarget();
         const feedback = document.getElementById("sentenceFeedback");
-        feedback.textContent = "Zieh die Kasus-Karte direkt auf ein Nomen.";
-        feedback.className = "sentence-feedback";
+
+        if(target){
+          applySentenceCase(target, token);
+        }else{
+          feedback.textContent = "Setz zuerst ein Nomen in deinen Satz.";
+          feedback.className = "sentence-feedback";
+        }
       }else{
         const answerZone = document.getElementById("answerZone");
         const wordBank = document.getElementById("wordBank");
-        (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+
+        if(token.parentElement === answerZone && token.dataset.appliedCase){
+          removeSentenceCase(token);
+        }else{
+          (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+        }
       }
     }
 
