@@ -1310,7 +1310,7 @@
       </button>
 
       <div class="panel">
-        <h2 class="section-title">Lernen</h2>
+        <h2 class="section-title">Lernspiele</h2>
   
         <div class="learn-choice-grid">
           <button class="learn-choice cards" onclick="openLearnMode('cards')">
@@ -1328,7 +1328,7 @@
     </div>
 
     <div id="cardsLearning" class="learn-mode">
-    <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
+    <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
     <div id="quizLauncher">
       <div class="panel">
         <h2 class="section-title">Karteikarten</h2>
@@ -1401,7 +1401,7 @@
     </div>
 
     <div id="sentenceBuilder" class="learn-mode">
-      <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
+      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
           <div class="sentence-progress">
@@ -1440,7 +1440,7 @@
     </div>
 
     <div id="typingTrainer" class="learn-mode">
-      <button class="learn-back" onclick="backToLearnHome()">← Lernen</button>
+      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
 
       <div class="typing-game-card">
         <div id="typingGameActive">
@@ -1485,7 +1485,7 @@
       <span class="icon">✦</span><span>Grammatik</span>
     </button>
     <button class="nav-btn" onclick="showView('flashcards', this)">
-      <span class="icon">◫</span><span>Lernen</span>
+      <span class="icon">◫</span><span>Lernspiele</span>
     </button>
   </nav>
 </div>
@@ -1582,18 +1582,18 @@
   ];
 
   const sentenceChallenges = [
-    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O","evde"]},
-    {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."]},
-    {de:"Du bist schön.", answer:["Sen","güzelsin."], distractors:["Ben","güzelim."]},
-    {de:"Er/Sie/Es ist schön.", answer:["O","güzel."], distractors:["Ev","güzelim."]},
-    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba","eve."]},
-    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne","evden."]},
-    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","evde","geliyon."]},
-    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","evden","geliyom."]},
-    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","evde","geliyoz."]},
-    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","evden","geliyo."]},
-    {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."]},
-    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","eve","geliyon."]}
+    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O","evde"], requires:["ev","güzel"]},
+    {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."], requires:["ben","güzel"]},
+    {de:"Du bist schön.", answer:["Sen","güzelsin."], distractors:["Ben","güzelim."], requires:["sen","güzel"]},
+    {de:"Er/Sie/Es ist schön.", answer:["O","güzel."], distractors:["Ev","güzelim."], requires:["o","güzel"]},
+    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba","eve."], requires:["anne","ev"]},
+    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne","evden."], requires:["baba","ev"]},
+    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","evde","geliyon."], requires:["ben","ev","gelmek"]},
+    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","evden","geliyom."], requires:["sen","ev","gelmek"]},
+    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","evde","geliyoz."], requires:["o","ev","gelmek"]},
+    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","evden","geliyo."], requires:["biz","ev","gelmek"]},
+    {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."], requires:["gitmek","güzel"]},
+    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","eve","geliyon."], requires:["ben","ev","gelmek"]}
   ];
 
   const typeNames = {
@@ -1711,6 +1711,54 @@
   function refreshUnlockUI(){
     updateWordLocks();
     updateLearnedWordsDisplay();
+  }
+
+  function areWordsUnlocked(words){
+    const progress = getUnlockProgress();
+    return words.every(word => isWordUnlocked(word, progress));
+  }
+
+  function getFlashcardRequirements(card){
+    const directKey = unlockWordKey(card.tr);
+    const dictionaryKeys = new Set(
+      getDictionaryRows()
+        .map(row => unlockWordKey(row.querySelector(".word-tr")?.textContent || ""))
+        .filter(Boolean)
+    );
+
+    if(dictionaryKeys.has(directKey)) return [card.tr];
+
+    const special = {
+      "eve":["ev"],
+      "evden":["ev"],
+      "evde":["ev"],
+      "evi":["ev"],
+      "evin":["ev"],
+      "güzel mi?":["güzel"],
+      "güzelim.":["güzel"],
+      "güzelsin.":["güzel"],
+      "o güzel.":["o","güzel"],
+      "geliyom":["gelmek"],
+      "geliyon":["gelmek"],
+      "geliyo":["gelmek"],
+      "geliyoz":["gelmek"],
+      "gitmek güzel.":["gitmek","güzel"]
+    };
+
+    return special[directKey] || [];
+  }
+
+  function getAvailableFlashcards(){
+    return flashcards.filter(card => {
+      const requirements = getFlashcardRequirements(card);
+      return requirements.length > 0 && areWordsUnlocked(requirements);
+    });
+  }
+
+  function getAvailableSentenceChallenges(){
+    return sentenceChallenges.filter(challenge =>
+      areWordsUnlocked(challenge.requires || [])
+    );
   }
 
   let quizMode = "toTurkish";
@@ -2008,10 +2056,21 @@
   }
 
   function startSentenceGame(){
-    sentenceOrder = shuffleArray(sentenceChallenges);
+    sentenceOrder = shuffleArray(getAvailableSentenceChallenges());
     sentenceRoundIndex = 0;
+
+    if(sentenceOrder.length === 0){
+      document.getElementById("sentenceGameActive").style.display = "none";
+      document.getElementById("sentenceComplete").classList.add("show");
+      document.querySelector("#sentenceComplete h2").textContent = "Noch keine passenden Sätze";
+      document.querySelector("#sentenceComplete p").textContent = "Schalte zuerst die Wörter frei, die für einen Satz gebraucht werden.";
+      return;
+    }
+
     document.getElementById("sentenceGameActive").style.display = "block";
     document.getElementById("sentenceComplete").classList.remove("show");
+    document.querySelector("#sentenceComplete h2").textContent = "Alle Sätze geschafft";
+    document.querySelector("#sentenceComplete p").textContent = "Du hast alle Satzbau-Aufgaben richtig gelöst.";
     renderSentenceChallenge();
   }
 
@@ -2179,7 +2238,8 @@
       ? (Math.random() < 0.5 ? "toTurkish" : "toGerman")
       : mode;
 
-    remaining = flashcards.map((card, index) => ({...card, originalIndex:index}));
+    const availableCards = getAvailableFlashcards();
+    remaining = availableCards.map((card, index) => ({...card, originalIndex:index}));
     learnedCount = 0;
     currentIndex = -1;
     lastGlobalIndex = -1;
@@ -2191,6 +2251,17 @@
 
     updateModeSwitch();
     updateProgress();
+
+    if(remaining.length === 0){
+      document.getElementById("activeQuiz").style.display = "none";
+      document.getElementById("completion").classList.add("show");
+      document.querySelector("#completion h2").textContent = "Noch keine Wörter freigeschaltet";
+      document.querySelector("#completion p").textContent = "Schalte zuerst Wörter frei, damit sie hier erscheinen.";
+      return;
+    }
+
+    document.querySelector("#completion h2").textContent = "Runde geschafft";
+    document.querySelector("#completion p").textContent = "Du hast alle Karten dieser Runde richtig beantwortet.";
     nextCard();
   }
 
@@ -2319,9 +2390,10 @@
   }
 
   function updateProgress(){
-    const total = flashcards.length;
+    const total = learnedCount + remaining.length;
     document.getElementById("progressText").textContent = learnedCount + " / " + total + " gelernt";
-    document.getElementById("barFill").style.width = ((learnedCount / total) * 100) + "%";
+    document.getElementById("barFill").style.width =
+      total > 0 ? ((learnedCount / total) * 100) + "%" : "0%";
   }
 
   function finishQuiz(){
