@@ -295,6 +295,32 @@
       padding:12px 14px;
       border-radius:18px;
       border:1px solid transparent;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .word-row.locked > *{
+      filter:blur(6px);
+      opacity:.42;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    .word-row.locked::after{
+      content:"Gesperrt";
+      position:absolute;
+      inset:0;
+      z-index:2;
+      display:grid;
+      place-items:center;
+      background:rgba(248,245,242,.18);
+      color:#514b48;
+      font-size:.86rem;
+      font-weight:900;
+      letter-spacing:.025em;
+      text-shadow:0 1px 10px rgba(255,255,255,.95);
+      pointer-events:none;
     }
 
     .word-row.noun{background:var(--noun-soft);border-color:#f1ddcf}
@@ -1441,7 +1467,7 @@
         <div id="typingComplete" class="typing-complete">
           <div class="big">✓</div>
           <h2>Runde geschafft</h2>
-          <p class="section-sub">Du hast alle Wörter richtig eingetippt.</p>
+          <p class="section-sub">Du hast alle Wörter freigeschaltet.</p>
           <button class="restart-btn" onclick="startTypingGame()">Nochmal starten</button>
         </div>
       </div>
@@ -1600,54 +1626,91 @@
   let typingLastIndex = -1;
   let typedAnswer = "";
 
-  const learnedWordsStorageKey = "andreTurkishLearnedWords";
+  const unlockProgressStorageKey = "andreTurkishUnlockProgressV1";
 
-  function getDictionaryWords(){
-    return Array.from(document.querySelectorAll("#wordList .word-row"))
-      .map(row => row.querySelector(".word-tr")?.textContent?.trim())
-      .filter(Boolean);
+  function unlockWordKey(turkishWord){
+    return (turkishWord || "").trim().toLocaleLowerCase("tr-TR");
   }
 
-  function getLearnedWords(){
+  function getUnlockProgress(){
     try{
-      const saved = JSON.parse(localStorage.getItem(learnedWordsStorageKey) || "[]");
-      return new Set(Array.isArray(saved) ? saved : []);
+      const saved = JSON.parse(localStorage.getItem(unlockProgressStorageKey) || "{}");
+      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
     }catch{
-      return new Set();
+      return {};
     }
   }
 
-  function saveLearnedWords(set){
+  function saveUnlockProgress(progress){
     try{
-      localStorage.setItem(learnedWordsStorageKey, JSON.stringify([...set]));
+      localStorage.setItem(unlockProgressStorageKey, JSON.stringify(progress));
     }catch{}
   }
 
-  function markWordLearned(turkishWord){
-    if(!turkishWord) return;
+  function getDictionaryRows(){
+    return Array.from(document.querySelectorAll("#wordList .word-row"));
+  }
 
-    const dictionaryWords = new Set(getDictionaryWords().map(word => word.toLocaleLowerCase("tr-TR")));
-    const normalized = turkishWord.trim().toLocaleLowerCase("tr-TR");
+  function isWordUnlocked(turkishWord, progress = getUnlockProgress()){
+    const state = progress[unlockWordKey(turkishWord)];
+    return !!(state?.toTurkish && state?.toGerman);
+  }
 
-    if(!dictionaryWords.has(normalized)) return;
+  function markUnlockDirection(turkishWord, direction){
+    const key = unlockWordKey(turkishWord);
+    if(!key) return false;
 
-    const learned = getLearnedWords();
-    learned.add(normalized);
-    saveLearnedWords(learned);
-    updateLearnedWordsDisplay();
+    const progress = getUnlockProgress();
+    const state = progress[key] || {toTurkish:false, toGerman:false};
+
+    if(direction === "toTurkish") state.toTurkish = true;
+    if(direction === "toGerman") state.toGerman = true;
+
+    progress[key] = state;
+    saveUnlockProgress(progress);
+    refreshUnlockUI();
+
+    return !!(state.toTurkish && state.toGerman);
+  }
+
+  function getMissingUnlockDirections(turkishWord){
+    const progress = getUnlockProgress();
+    const state = progress[unlockWordKey(turkishWord)] || {};
+    const missing = [];
+
+    if(!state.toTurkish) missing.push("toTurkish");
+    if(!state.toGerman) missing.push("toGerman");
+
+    return missing;
+  }
+
+  function updateWordLocks(){
+    const progress = getUnlockProgress();
+
+    getDictionaryRows().forEach(row => {
+      const turkishWord = row.querySelector(".word-tr")?.textContent?.trim() || "";
+      row.classList.toggle("locked", !isWordUnlocked(turkishWord, progress));
+    });
   }
 
   function updateLearnedWordsDisplay(){
-    const dictionaryWords = getDictionaryWords();
-    const dictionarySet = new Set(dictionaryWords.map(word => word.toLocaleLowerCase("tr-TR")));
-    const learned = getLearnedWords();
+    const rows = getDictionaryRows();
+    const progress = getUnlockProgress();
 
-    const learnedCount = [...learned].filter(word => dictionarySet.has(word)).length;
+    const unlockedCount = rows.filter(row => {
+      const turkishWord = row.querySelector(".word-tr")?.textContent?.trim() || "";
+      return isWordUnlocked(turkishWord, progress);
+    }).length;
+
     const value = document.getElementById("learnedWordsValue");
-
     if(value){
-      value.textContent = learnedCount + " / " + dictionaryWords.length;
+      value.textContent = unlockedCount + " / " + rows.length;
     }
+  }
+
+  function refreshUnlockUI(){
+    updateWordLocks();
+    updateLearnedWordsDisplay();
   }
 
   let quizMode = "toTurkish";
@@ -1739,9 +1802,10 @@
   }
 
   function startTypingGame(){
-    typingDirection = Math.random() < 0.5 ? "toTurkish" : "toGerman";
+    typingRemaining = typingWords
+      .map((word, index) => ({...word, originalIndex:index}))
+      .filter(word => !isWordUnlocked(word.tr));
 
-    typingRemaining = typingWords.map((word, index) => ({...word, originalIndex:index}));
     typingCurrentIndex = -1;
     typingLearnedCount = 0;
     typingLastIndex = -1;
@@ -1770,7 +1834,17 @@
 
     typingCurrentIndex = candidates[Math.floor(Math.random() * candidates.length)];
     typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
-    typingDirection = Math.random() < 0.5 ? "toTurkish" : "toGerman";
+
+    const item = typingRemaining[typingCurrentIndex];
+    const missingDirections = getMissingUnlockDirections(item.tr);
+
+    if(missingDirections.length === 0){
+      typingRemaining.splice(typingCurrentIndex, 1);
+      nextTypingWord();
+      return;
+    }
+
+    typingDirection = missingDirections[Math.floor(Math.random() * missingDirections.length)];
 
     typedAnswer = "";
     renderTypingWord();
@@ -1899,15 +1973,22 @@
     if(correct){
       answerEl.classList.remove("wrong","empty");
       answerEl.classList.add("correct");
-      feedback.textContent = "Richtig!";
-      feedback.style.color = "var(--verb-dark)";
 
-      markWordLearned(item.tr);
-      typingRemaining.splice(typingCurrentIndex, 1);
-      typingLearnedCount++;
+      const unlockedNow = markUnlockDirection(item.tr, typingDirection);
+
+      if(unlockedNow){
+        feedback.textContent = "Freigeschaltet!";
+        typingRemaining.splice(typingCurrentIndex, 1);
+      }else{
+        feedback.textContent = typingDirection === "toTurkish"
+          ? "Richtig! Jetzt fehlt noch Türkisch → Deutsch."
+          : "Richtig! Jetzt fehlt noch Deutsch → Türkisch.";
+      }
+
+      feedback.style.color = "var(--verb-dark)";
       updateTypingProgress();
 
-      window.setTimeout(nextTypingWord, 550);
+      window.setTimeout(nextTypingWord, unlockedNow ? 650 : 750);
     }else{
       answerEl.classList.remove("correct","empty");
       answerEl.classList.add("wrong");
@@ -1918,10 +1999,12 @@
 
   function updateTypingProgress(){
     const total = typingWords.length;
+    const unlockedCount = typingWords.filter(word => isWordUnlocked(word.tr)).length;
+
     document.getElementById("typingProgressText").textContent =
-      typingLearnedCount + " / " + total + " richtig";
+      unlockedCount + " / " + total + " freigeschaltet";
     document.getElementById("typingBarFill").style.width =
-      ((typingLearnedCount / total) * 100) + "%";
+      ((unlockedCount / total) * 100) + "%";
   }
 
   function startSentenceGame(){
@@ -2227,7 +2310,6 @@
     if(currentIndex < 0 || currentIndex >= remaining.length) return;
 
     if(isRight){
-      markWordLearned(remaining[currentIndex]?.tr);
       remaining.splice(currentIndex, 1);
       learnedCount++;
     }
@@ -2247,7 +2329,7 @@
     document.getElementById("completion").classList.add("show");
   }
 
-  window.addEventListener("DOMContentLoaded", updateLearnedWordsDisplay);
+  window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 </body>
 </html>
