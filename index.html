@@ -986,6 +986,13 @@
       color:var(--rose-dark);
     }
 
+    .typing-answer.reveal{
+      border-color:#ddd3e8;
+      background:#f2eef7;
+      color:var(--lavender-dark);
+      font-size:1.05rem;
+    }
+
     .typing-feedback{
       min-height:24px;
       margin:10px 2px 8px;
@@ -1046,6 +1053,13 @@
       background:var(--verb);
       color:var(--verb-dark);
       font-size:1.05rem;
+    }
+
+    .key.unknown{
+      flex:1 1 100%;
+      background:var(--rose);
+      color:var(--rose-dark);
+      font-size:.9rem;
     }
 
     .typing-complete{
@@ -1831,6 +1845,8 @@
   let typingLearnedCount = 0;
   let typingLastIndex = -1;
   let typedAnswer = "";
+  let typingUnknownState = {};
+  let typingRevealPending = false;
 
   const unlockProgressStorageKey = "andreTurkishUnlockProgressV1";
 
@@ -1888,6 +1904,37 @@
     if(!state.toGerman) missing.push("toGerman");
 
     return missing;
+  }
+
+  function resetUnlockDirections(turkishWord){
+    const key = unlockWordKey(turkishWord);
+    if(!key) return;
+
+    const progress = getUnlockProgress();
+    progress[key] = {toTurkish:false, toGerman:false};
+    saveUnlockProgress(progress);
+    refreshUnlockUI();
+  }
+
+  function getUnknownState(turkishWord){
+    const key = unlockWordKey(turkishWord);
+    if(!typingUnknownState[key]){
+      typingUnknownState[key] = {toTurkish:false, toGerman:false};
+    }
+    return typingUnknownState[key];
+  }
+
+  function clearUnknownState(turkishWord){
+    delete typingUnknownState[unlockWordKey(turkishWord)];
+  }
+
+  function getTypingDirections(item){
+    const unknown = getUnknownState(item.tr);
+
+    if(unknown.toTurkish && !unknown.toGerman) return ["toGerman"];
+    if(unknown.toGerman && !unknown.toTurkish) return ["toTurkish"];
+
+    return getMissingUnlockDirections(item.tr);
   }
 
   function updateWordLocks(){
@@ -2076,6 +2123,8 @@
     typingLearnedCount = 0;
     typingLastIndex = -1;
     typedAnswer = "";
+    typingUnknownState = {};
+    typingRevealPending = false;
 
     document.getElementById("typingGameActive").style.display = "block";
     document.getElementById("typingComplete").classList.remove("show");
@@ -2104,17 +2153,18 @@
     typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
 
     const item = typingRemaining[typingCurrentIndex];
-    const missingDirections = getMissingUnlockDirections(item.tr);
+    const availableDirections = getTypingDirections(item);
 
-    if(missingDirections.length === 0){
+    if(availableDirections.length === 0){
       typingRemaining.splice(typingCurrentIndex, 1);
       nextTypingWord();
       return;
     }
 
-    typingDirection = missingDirections[Math.floor(Math.random() * missingDirections.length)];
+    typingDirection = availableDirections[Math.floor(Math.random() * availableDirections.length)];
 
     typedAnswer = "";
+    typingRevealPending = false;
     renderTypingWord();
   }
 
@@ -2155,6 +2205,18 @@
         ];
 
     keyboard.innerHTML = "";
+
+    const unknownRow = document.createElement("div");
+    unknownRow.className = "keyboard-row";
+
+    const unknown = document.createElement("button");
+    unknown.type = "button";
+    unknown.className = "key unknown";
+    unknown.textContent = "Keine Ahnung";
+    unknown.onclick = handleDontKnow;
+
+    unknownRow.appendChild(unknown);
+    keyboard.appendChild(unknownRow);
 
     rows.forEach(row => {
       const rowEl = document.createElement("div");
@@ -2199,6 +2261,8 @@
   }
 
   function typeCustomKey(key){
+    if(typingRevealPending) return;
+
     const answerEl = document.getElementById("typingAnswer");
 
     if(key === "BACKSPACE"){
@@ -2223,6 +2287,8 @@
   }
 
   function checkTypedAnswer(){
+    if(typingRevealPending) return;
+
     const item = typingRemaining[typingCurrentIndex];
     if(!item || !typedAnswer.trim()) return;
 
@@ -2242,11 +2308,22 @@
       answerEl.classList.remove("wrong","empty");
       answerEl.classList.add("correct");
 
+      const unknown = getUnknownState(item.tr);
+      const oppositeDirection = typingDirection === "toTurkish" ? "toGerman" : "toTurkish";
+      const recoveringFromUnknown = unknown[oppositeDirection];
+
       const unlockedNow = markUnlockDirection(item.tr, typingDirection);
+
+      if(recoveringFromUnknown){
+        clearUnknownState(item.tr);
+      }
 
       if(unlockedNow){
         feedback.textContent = "Freigeschaltet!";
         typingRemaining.splice(typingCurrentIndex, 1);
+        clearUnknownState(item.tr);
+      }else if(recoveringFromUnknown){
+        feedback.textContent = "Richtig! Die andere Richtung kommt später wieder.";
       }else{
         feedback.textContent = typingDirection === "toTurkish"
           ? "Richtig! Jetzt fehlt noch Türkisch → Deutsch."
@@ -2263,6 +2340,49 @@
       feedback.textContent = "Noch nicht richtig.";
       feedback.style.color = "var(--rose-dark)";
     }
+  }
+
+  function handleDontKnow(){
+    if(typingRevealPending) return;
+
+    const item = typingRemaining[typingCurrentIndex];
+    if(!item) return;
+
+    typedAnswer = "";
+
+    const unknown = getUnknownState(item.tr);
+    unknown[typingDirection] = true;
+
+    const oppositeDirection = typingDirection === "toTurkish" ? "toGerman" : "toTurkish";
+    const answerEl = document.getElementById("typingAnswer");
+    const feedback = document.getElementById("typingFeedback");
+
+    if(unknown[oppositeDirection]){
+      typingRevealPending = true;
+
+      resetUnlockDirections(item.tr);
+      clearUnknownState(item.tr);
+
+      answerEl.className = "typing-answer reveal";
+      answerEl.textContent = item.de + " ↔ " + item.tr;
+      feedback.textContent = "Übersetzung";
+      feedback.style.color = "var(--lavender-dark)";
+
+      document.querySelectorAll("#customKeyboard .key").forEach(key => {
+        key.disabled = true;
+      });
+
+      updateTypingProgress();
+      window.setTimeout(nextTypingWord, 1700);
+      return;
+    }
+
+    answerEl.className = "typing-answer empty";
+    answerEl.textContent = "Antwort tippen …";
+    feedback.textContent = "Okay – dieses Wort kommt jetzt zuerst in der anderen Richtung.";
+    feedback.style.color = "var(--muted)";
+
+    window.setTimeout(nextTypingWord, 650);
   }
 
   function updateTypingProgress(){
