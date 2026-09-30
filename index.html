@@ -1123,8 +1123,8 @@
           <span class="profile-chip-value">A1</span>
         </div>
         <div class="profile-chip level">
-          <span class="profile-chip-label">Level</span>
-          <span class="profile-chip-value">0</span>
+          <span class="profile-chip-label">Gelernt</span>
+          <span id="learnedWordsValue" class="profile-chip-value">0 / 0</span>
         </div>
       </div>
     </div>
@@ -1603,6 +1603,56 @@
   let typingLastIndex = -1;
   let typedAnswer = "";
 
+  const learnedWordsStorageKey = "andreTurkishLearnedWords";
+
+  function getDictionaryWords(){
+    return Array.from(document.querySelectorAll("#wordList .word-row"))
+      .map(row => row.querySelector(".word-tr")?.textContent?.trim())
+      .filter(Boolean);
+  }
+
+  function getLearnedWords(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(learnedWordsStorageKey) || "[]");
+      return new Set(Array.isArray(saved) ? saved : []);
+    }catch{
+      return new Set();
+    }
+  }
+
+  function saveLearnedWords(set){
+    try{
+      localStorage.setItem(learnedWordsStorageKey, JSON.stringify([...set]));
+    }catch{}
+  }
+
+  function markWordLearned(turkishWord){
+    if(!turkishWord) return;
+
+    const dictionaryWords = new Set(getDictionaryWords().map(word => word.toLocaleLowerCase("tr-TR")));
+    const normalized = turkishWord.trim().toLocaleLowerCase("tr-TR");
+
+    if(!dictionaryWords.has(normalized)) return;
+
+    const learned = getLearnedWords();
+    learned.add(normalized);
+    saveLearnedWords(learned);
+    updateLearnedWordsDisplay();
+  }
+
+  function updateLearnedWordsDisplay(){
+    const dictionaryWords = getDictionaryWords();
+    const dictionarySet = new Set(dictionaryWords.map(word => word.toLocaleLowerCase("tr-TR")));
+    const learned = getLearnedWords();
+
+    const learnedCount = [...learned].filter(word => dictionarySet.has(word)).length;
+    const value = document.getElementById("learnedWordsValue");
+
+    if(value){
+      value.textContent = learnedCount + " / " + dictionaryWords.length;
+    }
+  }
+
   let quizMode = "toTurkish";
   let currentDirection = "toTurkish";
   let remaining = [];
@@ -1891,6 +1941,7 @@
       feedback.textContent = "Richtig!";
       feedback.style.color = "var(--verb-dark)";
 
+      markWordLearned(item.tr);
       typingRemaining.splice(typingCurrentIndex, 1);
       typingLearnedCount++;
       updateTypingProgress();
@@ -2226,6 +2277,7 @@
     if(currentIndex < 0 || currentIndex >= remaining.length) return;
 
     if(isRight){
+      markWordLearned(remaining[currentIndex]?.tr);
       remaining.splice(currentIndex, 1);
       learnedCount++;
     }
@@ -2244,6 +2296,8 @@
     document.getElementById("activeQuiz").style.display = "none";
     document.getElementById("completion").classList.add("show");
   }
+
+  window.addEventListener("DOMContentLoaded", updateLearnedWordsDisplay);
 </script>
 </body>
 </html>
