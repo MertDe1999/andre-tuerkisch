@@ -15,6 +15,17 @@
       --muted:#857d79;
       --line:#e9e1db;
 
+      /* Wortarten: Nomen = Orange, Verben = Grün, Adjektive = Gelb */
+      --noun:#f6d7bf;
+      --noun-soft:#fff0e5;
+      --noun-dark:#9b6442;
+      --verb:#d9eadb;
+      --verb-soft:#edf7ee;
+      --verb-dark:#54785c;
+      --adj:#f4e6a9;
+      --adj-soft:#fff8d9;
+      --adj-dark:#8b762d;
+
       --peach:#f4d8cc;
       --peach-dark:#ad6f58;
       --mint:#dceadf;
@@ -204,6 +215,26 @@
       max-width:145px;
     }
 
+    .word-row.noun{background:var(--noun-soft);border:1px solid #f1ddcf}
+    .word-row.verb{background:var(--verb-soft);border:1px solid #dcecdf}
+    .word-row.adj{background:var(--adj-soft);border:1px solid #f0e6b9}
+
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin:0 0 14px;
+    }
+    .legend span{
+      padding:6px 9px;
+      border-radius:999px;
+      font-size:.75rem;
+      font-weight:800;
+    }
+    .legend .noun{background:var(--noun-soft);color:var(--noun-dark)}
+    .legend .verb{background:var(--verb-soft);color:var(--verb-dark)}
+    .legend .adj{background:var(--adj-soft);color:var(--adj-dark)}
+
     /* grammar */
     .grammar-card{
       border-radius:20px;
@@ -247,8 +278,19 @@
 
     .spoken{
       font-weight:850;
-      color:var(--lavender-dark);
+      color:var(--verb-dark);
     }
+
+    .suffix{
+      display:inline-block;
+      border-radius:9px;
+      padding:2px 6px;
+      font-weight:850;
+    }
+    .suffix.noun{background:var(--noun);color:var(--noun-dark)}
+    .suffix.verb{background:var(--verb);color:var(--verb-dark)}
+    .suffix.adj{background:var(--adj);color:var(--adj-dark)}
+    .suffix.neutral{background:var(--lavender);color:var(--lavender-dark)}
 
     /* quiz launcher */
     .mode-grid{
@@ -349,7 +391,12 @@
       text-align:center;
       margin-bottom:12px;
       cursor:pointer;
+      transition:background .2s ease,border-color .2s ease;
     }
+
+    .quiz-card.noun{background:var(--noun-soft);border-color:#edd7c7}
+    .quiz-card.verb{background:var(--verb-soft);border-color:#d6e8d9}
+    .quiz-card.adj{background:var(--adj-soft);border-color:#eee1a9}
 
     .quiz-direction{
       font-size:.79rem;
@@ -475,20 +522,26 @@
       <h2 class="section-title">Wörterbuch</h2>
       <p class="section-sub">Alles, was André bisher gelernt hat.</p>
 
+      <div class="legend">
+        <span class="noun">Nomen</span>
+        <span class="verb">Verben</span>
+        <span class="adj">Adjektive</span>
+      </div>
+
       <input id="search" class="search" type="search" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
 
       <div id="wordList" class="word-list">
-        <div class="word-row" data-search="baum ağaç agac"><div><div class="word-de">Baum</div><div class="word-tr">ağaç</div></div></div>
-        <div class="word-row" data-search="weg straße strasse yol"><div><div class="word-de">Weg / Straße</div><div class="word-tr">yol</div></div></div>
-        <div class="word-row" data-search="haus ev"><div><div class="word-de">Haus</div><div class="word-tr">ev</div></div></div>
-        <div class="word-row" data-search="auto araba"><div><div class="word-de">Auto</div><div class="word-tr">araba</div></div></div>
-        <div class="word-row" data-search="mama mutter anne"><div><div class="word-de">Mama / Mutter</div><div class="word-tr">anne</div></div></div>
-        <div class="word-row" data-search="papa vater baba"><div><div class="word-de">Papa / Vater</div><div class="word-tr">baba</div></div></div>
-        <div class="word-row" data-search="bruder erkek kardeş kardes abi"><div><div class="word-de">Bruder</div><div class="word-tr">erkek kardeş</div></div><div class="word-note">abi = älterer Bruder</div></div>
-        <div class="word-row" data-search="schwester kız kiz kardeş kardes abla"><div><div class="word-de">Schwester</div><div class="word-tr">kız kardeş</div></div><div class="word-note">abla = ältere Schwester</div></div>
-        <div class="word-row" data-search="penis yarak"><div><div class="word-de">Penis</div><div class="word-tr">yarak</div></div><div class="word-note">vulgär</div></div>
-        <div class="word-row" data-search="schön schoen güzel guzel"><div><div class="word-de">schön</div><div class="word-tr">güzel</div></div></div>
-        <div class="word-row" data-search="gehen gitmek"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div></div><div class="word-note">auch „das Gehen“</div></div>
+        <div class="word-row noun" data-search="baum ağaç agac"><div><div class="word-de">Baum</div><div class="word-tr">ağaç</div></div></div>
+        <div class="word-row noun" data-search="weg straße strasse yol"><div><div class="word-de">Weg / Straße</div><div class="word-tr">yol</div></div></div>
+        <div class="word-row noun" data-search="haus ev"><div><div class="word-de">Haus</div><div class="word-tr">ev</div></div></div>
+        <div class="word-row noun" data-search="auto araba"><div><div class="word-de">Auto</div><div class="word-tr">araba</div></div></div>
+        <div class="word-row noun" data-search="mama mutter anne"><div><div class="word-de">Mama / Mutter</div><div class="word-tr">anne</div></div></div>
+        <div class="word-row noun" data-search="papa vater baba"><div><div class="word-de">Papa / Vater</div><div class="word-tr">baba</div></div></div>
+        <div class="word-row noun" data-search="bruder erkek kardeş kardes abi"><div><div class="word-de">Bruder</div><div class="word-tr">erkek kardeş</div></div><div class="word-note">abi = älterer Bruder</div></div>
+        <div class="word-row noun" data-search="schwester kız kiz kardeş kardes abla"><div><div class="word-de">Schwester</div><div class="word-tr">kız kardeş</div></div><div class="word-note">abla = ältere Schwester</div></div>
+        <div class="word-row noun" data-search="penis yarak"><div><div class="word-de">Penis</div><div class="word-tr">yarak</div></div><div class="word-note">vulgär</div></div>
+        <div class="word-row adj" data-search="schön schoen güzel guzel"><div><div class="word-de">schön</div><div class="word-tr">güzel</div></div></div>
+        <div class="word-row verb" data-search="gehen gitmek"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div></div><div class="word-note">auch „das Gehen“</div></div>
       </div>
     </div>
   </section>
@@ -499,34 +552,40 @@
       <h2 class="section-title">Grammatik</h2>
       <p class="section-sub">Nur das, was bisher dran war.</p>
 
+      <div class="legend">
+        <span class="noun">Nomen / Kasus</span>
+        <span class="verb">Verben</span>
+        <span class="adj">Adjektive</span>
+      </div>
+
       <div class="grammar-card g-peach">
         <h3>Fälle</h3>
         <div class="grammar-list">
-          <div class="grammar-row"><strong>Dativ</strong><div>-(y)e / -(y)a<br><span class="standard">eve = zum Haus / nach Hause</span></div></div>
-          <div class="grammar-row"><strong>Ablativ</strong><div>-den / -dan / -ten / -tan<br><span class="standard">evden = aus dem Haus</span></div></div>
-          <div class="grammar-row"><strong>Lokativ</strong><div>-de / -da / -te / -ta<br><span class="standard">evde = im Haus</span></div></div>
-          <div class="grammar-row"><strong>Akkusativ</strong><div>-(y)i / ı / u / ü<br><span class="standard">evi = das Haus</span></div></div>
-          <div class="grammar-row"><strong>Genitiv</strong><div>-(n)in / ın / un / ün<br><span class="standard">evin = des Hauses</span></div></div>
+          <div class="grammar-row"><strong>Dativ</strong><div><span class="suffix noun">-(y)e / -(y)a</span><br><span class="standard">eve = zum Haus / nach Hause</span></div></div>
+          <div class="grammar-row"><strong>Ablativ</strong><div><span class="suffix noun">-den / -dan / -ten / -tan</span><br><span class="standard">evden = aus dem Haus</span></div></div>
+          <div class="grammar-row"><strong>Lokativ</strong><div><span class="suffix noun">-de / -da / -te / -ta</span><br><span class="standard">evde = im Haus</span></div></div>
+          <div class="grammar-row"><strong>Akkusativ</strong><div><span class="suffix noun">-(y)i / ı / u / ü</span><br><span class="standard">evi = das Haus</span></div></div>
+          <div class="grammar-row"><strong>Genitiv</strong><div><span class="suffix noun">-(n)in / ın / un / ün</span><br><span class="standard">evin = des Hauses</span></div></div>
         </div>
       </div>
 
       <div class="grammar-card g-mint">
         <h3>Fragen & „sein“</h3>
         <div class="grammar-list">
-          <div class="grammar-row"><strong>Frage</strong><div>-mi / -mı / -mu / -mü?<span class="standard">Güzel mi? = Ist es schön?</span></div></div>
-          <div class="grammar-row"><strong>ich bin</strong><div>-(y)im / -(y)ım / -(y)um / -(y)üm<span class="standard">Güzelim. = Ich bin schön.</span></div></div>
-          <div class="grammar-row"><strong>du bist</strong><div>-sin / -sın / -sun / -sün<span class="standard">Güzelsin. = Du bist schön.</span></div></div>
-          <div class="grammar-row"><strong>er/sie/es</strong><div>keine Endung<span class="standard">Güzel. = Er/Sie/Es ist schön.</span></div></div>
+          <div class="grammar-row"><strong>Frage</strong><div><span class="suffix neutral">-mi / -mı / -mu / -mü?</span><span class="standard">Güzel mi? = Ist es schön?</span></div></div>
+          <div class="grammar-row"><strong>ich bin</strong><div><span class="suffix adj">-(y)im / -(y)ım / -(y)um / -(y)üm</span><span class="standard">Güzelim. = Ich bin schön.</span></div></div>
+          <div class="grammar-row"><strong>du bist</strong><div><span class="suffix adj">-sin / -sın / -sun / -sün</span><span class="standard">Güzelsin. = Du bist schön.</span></div></div>
+          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="suffix adj">keine Endung</span><span class="standard">Güzel. = Er/Sie/Es ist schön.</span></div></div>
         </div>
       </div>
 
       <div class="grammar-card g-lavender">
         <h3>Präsens – Andrés Lautform</h3>
         <div class="grammar-list">
-          <div class="grammar-row"><strong>ich</strong><div><span class="spoken">-iyom</span><span class="standard">Standard: -iyorum · geliyom</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div><span class="spoken">-iyon</span><span class="standard">Standard: -iyorsun · geliyon</span></div></div>
-          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="spoken">-iyo</span><span class="standard">Standard: -iyor · geliyo</span></div></div>
-          <div class="grammar-row"><strong>wir</strong><div><span class="spoken">-iyoz</span><span class="standard">Standard: -iyoruz · geliyoz</span></div></div>
+          <div class="grammar-row"><strong>ich</strong><div><span class="suffix verb">-iyom</span><span class="standard">Standard: <span class="suffix verb">-iyorum</span> · geliyom / geliyorum</span></div></div>
+          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">-iyon</span><span class="standard">Standard: <span class="suffix verb">-iyorsun</span> · geliyon / geliyorsun</span></div></div>
+          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="suffix verb">-iyo</span><span class="standard">Standard: <span class="suffix verb">-iyor</span> · geliyo / geliyor</span></div></div>
+          <div class="grammar-row"><strong>wir</strong><div><span class="suffix verb">-iyoz</span><span class="standard">Standard: <span class="suffix verb">-iyoruz</span> · geliyoz / geliyoruz</span></div></div>
         </div>
       </div>
 
@@ -627,33 +686,33 @@
 
 <script>
   const flashcards = [
-    {de:"Baum", tr:"ağaç"},
-    {de:"Weg / Straße", tr:"yol"},
-    {de:"Haus", tr:"ev"},
-    {de:"Auto", tr:"araba"},
-    {de:"Mama / Mutter", tr:"anne"},
-    {de:"Papa / Vater", tr:"baba"},
-    {de:"Bruder", tr:"erkek kardeş"},
-    {de:"älterer Bruder", tr:"abi"},
-    {de:"Schwester", tr:"kız kardeş"},
-    {de:"ältere Schwester", tr:"abla"},
-    {de:"Penis (vulgär)", tr:"yarak"},
-    {de:"schön", tr:"güzel"},
-    {de:"gehen", tr:"gitmek"},
-    {de:"zum Haus / nach Hause", tr:"eve"},
-    {de:"aus dem Haus", tr:"evden"},
-    {de:"im Haus", tr:"evde"},
-    {de:"das Haus (bestimmtes Objekt)", tr:"evi"},
-    {de:"des Hauses", tr:"evin"},
-    {de:"Ist es schön?", tr:"Güzel mi?"},
-    {de:"Ich bin schön.", tr:"Güzelim."},
-    {de:"Du bist schön.", tr:"Güzelsin."},
-    {de:"Er/Sie/Es ist schön.", tr:"Güzel."},
-    {de:"ich komme", tr:"geliyom"},
-    {de:"du kommst", tr:"geliyon"},
-    {de:"er/sie/es kommt", tr:"geliyo"},
-    {de:"wir kommen", tr:"geliyoz"},
-    {de:"Gehen ist schön.", tr:"Gitmek güzel."}
+    {de:"Baum", tr:"ağaç", type:"noun"},
+    {de:"Weg / Straße", tr:"yol", type:"noun"},
+    {de:"Haus", tr:"ev", type:"noun"},
+    {de:"Auto", tr:"araba", type:"noun"},
+    {de:"Mama / Mutter", tr:"anne", type:"noun"},
+    {de:"Papa / Vater", tr:"baba", type:"noun"},
+    {de:"Bruder", tr:"erkek kardeş", type:"noun"},
+    {de:"älterer Bruder", tr:"abi", type:"noun"},
+    {de:"Schwester", tr:"kız kardeş", type:"noun"},
+    {de:"ältere Schwester", tr:"abla", type:"noun"},
+    {de:"Penis (vulgär)", tr:"yarak", type:"noun"},
+    {de:"schön", tr:"güzel", type:"adj"},
+    {de:"gehen", tr:"gitmek", type:"verb"},
+    {de:"zum Haus / nach Hause", tr:"eve", type:"noun"},
+    {de:"aus dem Haus", tr:"evden", type:"noun"},
+    {de:"im Haus", tr:"evde", type:"noun"},
+    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun"},
+    {de:"des Hauses", tr:"evin", type:"noun"},
+    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj"},
+    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj"},
+    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj"},
+    {de:"Er/Sie/Es ist schön.", tr:"Güzel.", type:"adj"},
+    {de:"ich komme", tr:"geliyom", type:"verb"},
+    {de:"du kommst", tr:"geliyon", type:"verb"},
+    {de:"er/sie/es kommt", tr:"geliyo", type:"verb"},
+    {de:"wir kommen", tr:"geliyoz", type:"verb"},
+    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb"}
   ];
 
   let quizMode = "roulette";
@@ -732,6 +791,10 @@
     currentIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
     const item = remaining[currentIndex];
     lastGlobalIndex = item.originalIndex;
+
+    const quizCard = document.getElementById("quizCard");
+    quizCard.classList.remove("noun","verb","adj");
+    if(item.type) quizCard.classList.add(item.type);
 
     let direction;
     if(quizMode === "toTurkish"){
