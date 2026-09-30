@@ -197,6 +197,31 @@
     .view{display:none}
     .view.active{display:block}
 
+    .view.nav-slide-from-right{
+      animation:navSlideFromRight .30s cubic-bezier(.22,.8,.28,1);
+    }
+
+    .view.nav-slide-from-left{
+      animation:navSlideFromLeft .30s cubic-bezier(.22,.8,.28,1);
+    }
+
+    @keyframes navSlideFromRight{
+      from{opacity:.35;transform:translateX(42px) scale(.985)}
+      to{opacity:1;transform:translateX(0) scale(1)}
+    }
+
+    @keyframes navSlideFromLeft{
+      from{opacity:.35;transform:translateX(-42px) scale(.985)}
+      to{opacity:1;transform:translateX(0) scale(1)}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .view.nav-slide-from-right,
+      .view.nav-slide-from-left{
+        animation:none;
+      }
+    }
+
     body.learning-games-view{
       height:100dvh;
       overflow:hidden;
@@ -465,6 +490,7 @@
     }
 
     .bottom-nav{
+      --nav-index:0;
       width:min(calc(100% - 28px),492px);
       margin:auto;
       display:grid;
@@ -477,9 +503,28 @@
       backdrop-filter:blur(18px);
       box-shadow:0 12px 35px rgba(65,51,44,.12);
       pointer-events:auto;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bottom-nav::before{
+      content:"";
+      position:absolute;
+      z-index:0;
+      top:7px;
+      bottom:7px;
+      left:7px;
+      width:calc((100% - 26px) / 3);
+      border-radius:16px;
+      background:var(--lavender);
+      transform:translateX(calc(var(--nav-index) * (100% + 6px)));
+      transition:transform .30s cubic-bezier(.22,.8,.28,1);
+      pointer-events:none;
     }
 
     .nav-btn{
+      position:relative;
+      z-index:1;
       border:0;
       background:transparent;
       min-height:54px;
@@ -498,7 +543,7 @@
     .nav-btn .icon{font-size:1.25rem}
     .nav-btn.active{
       color:var(--text);
-      background:var(--lavender);
+      background:transparent;
     }
 
     /* Legende */
@@ -1498,8 +1543,12 @@
       }
 
       .nav-btn.active{
-        background:var(--lavender);
+        background:transparent;
         color:var(--text);
+      }
+
+      .bottom-nav::before{
+        background:var(--lavender);
       }
 
       .search{
@@ -2402,8 +2451,19 @@
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
-  function showView(id, btn){
+  const mainNavViews = ["dictionary","grammar","flashcards"];
+
+  function showView(id, btn, swipeDirection = null){
     document.body.classList.remove("game-mode-active");
+
+    const currentView = document.querySelector(".view.active");
+    const currentId = currentView?.id || "dictionary";
+    const currentNavIndex = mainNavViews.indexOf(currentId);
+    const targetNavIndex = mainNavViews.indexOf(id);
+
+    if(!swipeDirection && currentNavIndex !== -1 && targetNavIndex !== -1 && currentNavIndex !== targetNavIndex){
+      swipeDirection = targetNavIndex > currentNavIndex ? "left" : "right";
+    }
 
     if(id === "flashcards"){
       window.scrollTo({top:0, behavior:"auto"});
@@ -2411,11 +2471,29 @@
 
     document.body.classList.toggle("learning-games-view", id === "flashcards");
 
-    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+    document.querySelectorAll(".view").forEach(v => {
+      v.classList.remove("active","nav-slide-from-left","nav-slide-from-right");
+    });
 
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    if(btn) btn.classList.add("active");
+    const targetView = document.getElementById(id);
+    targetView.classList.add("active");
+
+    if(swipeDirection === "left"){
+      targetView.classList.add("nav-slide-from-right");
+    }else if(swipeDirection === "right"){
+      targetView.classList.add("nav-slide-from-left");
+    }
+
+    const navButtons = [...document.querySelectorAll(".nav-btn")];
+    navButtons.forEach(b => b.classList.remove("active"));
+
+    const resolvedButton = btn || navButtons[targetNavIndex];
+    if(resolvedButton) resolvedButton.classList.add("active");
+
+    const nav = document.querySelector(".bottom-nav");
+    if(nav && targetNavIndex >= 0){
+      nav.style.setProperty("--nav-index", targetNavIndex);
+    }
 
     if(id === "flashcards"){
       document.getElementById("learnHome").style.display = "block";
@@ -3079,23 +3157,37 @@
 
   let horizontalSwipeStartX = null;
   let horizontalSwipeStartY = null;
+  let horizontalSwipeLastX = null;
+  let horizontalSwipeLastY = null;
+  let horizontalSwipeBlocked = false;
 
   document.addEventListener("touchstart", event => {
-    if(event.touches.length !== 1){
+    if(event.touches.length !== 1 || document.body.classList.contains("game-mode-active")){
       horizontalSwipeStartX = null;
       horizontalSwipeStartY = null;
+      horizontalSwipeLastX = null;
+      horizontalSwipeLastY = null;
+      horizontalSwipeBlocked = true;
       return;
     }
 
+    const interactive = event.target.closest("input, textarea, select, .custom-keyboard");
+    horizontalSwipeBlocked = !!interactive;
+
     horizontalSwipeStartX = event.touches[0].clientX;
     horizontalSwipeStartY = event.touches[0].clientY;
+    horizontalSwipeLastX = horizontalSwipeStartX;
+    horizontalSwipeLastY = horizontalSwipeStartY;
   }, {passive:true});
 
   document.addEventListener("touchmove", event => {
-    if(horizontalSwipeStartX === null || horizontalSwipeStartY === null || event.touches.length !== 1) return;
+    if(horizontalSwipeBlocked || horizontalSwipeStartX === null || horizontalSwipeStartY === null || event.touches.length !== 1) return;
 
-    const dx = event.touches[0].clientX - horizontalSwipeStartX;
-    const dy = event.touches[0].clientY - horizontalSwipeStartY;
+    horizontalSwipeLastX = event.touches[0].clientX;
+    horizontalSwipeLastY = event.touches[0].clientY;
+
+    const dx = horizontalSwipeLastX - horizontalSwipeStartX;
+    const dy = horizontalSwipeLastY - horizontalSwipeStartY;
 
     if(Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)){
       event.preventDefault();
@@ -3103,13 +3195,43 @@
   }, {passive:false});
 
   document.addEventListener("touchend", () => {
+    if(!horizontalSwipeBlocked && horizontalSwipeStartX !== null && horizontalSwipeLastX !== null){
+      const dx = horizontalSwipeLastX - horizontalSwipeStartX;
+      const dy = (horizontalSwipeLastY ?? horizontalSwipeStartY) - horizontalSwipeStartY;
+
+      if(Math.abs(dx) >= 55 && Math.abs(dx) > Math.abs(dy) * 1.15){
+        const activeId = document.querySelector(".view.active")?.id;
+        const currentIndex = mainNavViews.indexOf(activeId);
+
+        if(currentIndex !== -1){
+          const targetIndex = dx < 0 ? currentIndex + 1 : currentIndex - 1;
+
+          if(targetIndex >= 0 && targetIndex < mainNavViews.length){
+            const targetId = mainNavViews[targetIndex];
+            const targetButton = document.querySelectorAll(".nav-btn")[targetIndex];
+            showView(targetId, targetButton, dx < 0 ? "left" : "right");
+
+            if(typeof navigator.vibrate === "function"){
+              navigator.vibrate(14);
+            }
+          }
+        }
+      }
+    }
+
     horizontalSwipeStartX = null;
     horizontalSwipeStartY = null;
+    horizontalSwipeLastX = null;
+    horizontalSwipeLastY = null;
+    horizontalSwipeBlocked = false;
   }, {passive:true});
 
   document.addEventListener("touchcancel", () => {
     horizontalSwipeStartX = null;
     horizontalSwipeStartY = null;
+    horizontalSwipeLastX = null;
+    horizontalSwipeLastY = null;
+    horizontalSwipeBlocked = false;
   }, {passive:true});
 
   function vibrateButtonPress(event){
