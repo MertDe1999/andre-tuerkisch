@@ -289,15 +289,6 @@
       min-height:0;
     }
 
-    body.learning-games-view #sentenceGameActive{
-      overflow-y:auto;
-      scrollbar-width:none;
-    }
-
-    body.learning-games-view #sentenceGameActive::-webkit-scrollbar{
-      display:none;
-    }
-
     body.learning-games-view #activeQuiz{
       display:flex;
       flex-direction:column;
@@ -966,50 +957,28 @@
       transform:scale(1.04);
     }
 
-    .sentence-case-bank{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:7px;
-      padding:8px;
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:var(--surface-soft);
-    }
-
-    .sentence-case-group{
-      min-width:0;
-      padding:8px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:var(--surface);
-    }
-
-    .sentence-case-group:last-child{
-      grid-column:1 / -1;
-    }
-
-    .sentence-case-title{
-      color:var(--muted);
-      font-size:.7rem;
-      font-weight:900;
-      margin-bottom:6px;
-    }
-
-    .sentence-case-suffixes{
+    .sentence-token.case-card{
       display:flex;
-      flex-wrap:wrap;
-      gap:5px;
-    }
-
-    .sentence-token.case-suffix{
-      min-width:0;
-      padding:7px 9px;
-      border-radius:10px;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:1px;
+      min-width:92px;
       background:var(--lavender);
       color:var(--lavender-dark);
-      font-size:.78rem;
-      line-height:1;
-      box-shadow:none;
+      text-align:left;
+    }
+
+    .sentence-token.case-card .case-name{
+      font-size:.82rem;
+      font-weight:900;
+      line-height:1.05;
+    }
+
+    .sentence-token.case-card .case-form{
+      font-size:.66rem;
+      font-weight:760;
+      opacity:.8;
+      line-height:1.1;
     }
 
     .sentence-case-hint{
@@ -1706,17 +1675,7 @@
         color:var(--noun-dark);
       }
 
-      .sentence-case-bank{
-        background:var(--surface-soft);
-        border-color:var(--line);
-      }
-
-      .sentence-case-group{
-        background:var(--surface);
-        border-color:var(--line);
-      }
-
-      .sentence-token.case-suffix{
+      .sentence-token.case-card{
         background:var(--lavender);
         color:var(--lavender-dark);
       }
@@ -2098,11 +2057,8 @@
           <div class="sentence-zone-label">Dein Satz</div>
           <div id="answerZone" class="drop-zone answer-zone"></div>
 
-          <div class="sentence-zone-label">Kasus</div>
-          <div class="sentence-case-hint">Zieh das passende Suffix direkt auf ein Nomen.</div>
-          <div id="caseBank" class="sentence-case-bank"></div>
-
-          <div class="sentence-zone-label">Wörter</div>
+          <div class="sentence-zone-label">Wörter & Kasus</div>
+          <div class="sentence-case-hint">Zieh eine Kasus-Karte direkt auf ein Nomen, um es zu verändern.</div>
           <div id="wordBank" class="drop-zone word-bank"></div>
 
           <div id="sentenceFeedback" class="sentence-feedback"></div>
@@ -2314,11 +2270,11 @@
   ];
 
   const sentenceCases = {
-    dative:{label:"Dativ", suffixes:["-e","-a","-ye","-ya"]},
-    ablative:{label:"Ablativ", suffixes:["-den","-dan","-ten","-tan"]},
-    locative:{label:"Lokativ", suffixes:["-de","-da","-te","-ta"]},
-    accusative:{label:"Akkusativ", suffixes:["-i","-ı","-u","-ü","-yi","-yı","-yu","-yü"]},
-    genitive:{label:"Genitiv", suffixes:["-in","-ın","-un","-ün","-nin","-nın","-nun","-nün"]}
+    dative:{label:"Dativ", forms:"-e / -a"},
+    ablative:{label:"Ablativ", forms:"-den / -dan"},
+    locative:{label:"Lokativ", forms:"-de / -da"},
+    accusative:{label:"Akkusativ", forms:"-i / -ı / -u / -ü"},
+    genitive:{label:"Genitiv", forms:"-in / -ın / -un / -ün"}
   };
 
   const typeNames = {
@@ -3039,43 +2995,23 @@
       caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
     );
 
-    return shuffleArray(
-      [...challenge.answer, ...challenge.distractors].map(word => {
-        const normalized = normalizeSentencePiece(word);
-        const base = replacements.get(normalized);
-        return {kind:"word", word:base || word};
-      })
-    );
-  }
+    const wordDescriptors = [...challenge.answer, ...challenge.distractors].map(word => {
+      const normalized = normalizeSentencePiece(word);
+      const base = replacements.get(normalized);
 
-  function renderSentenceCaseBank(){
-    const caseBank = document.getElementById("caseBank");
-    if(!caseBank) return;
-
-    caseBank.innerHTML = "";
-
-    Object.entries(sentenceCases).forEach(([caseKey, info]) => {
-      const group = document.createElement("div");
-      group.className = "sentence-case-group";
-
-      const title = document.createElement("div");
-      title.className = "sentence-case-title";
-      title.textContent = info.label;
-
-      const suffixes = document.createElement("div");
-      suffixes.className = "sentence-case-suffixes";
-
-      info.suffixes.forEach((suffix, index) => {
-        suffixes.appendChild(createSentenceToken({
-          kind:"suffix",
-          caseKey,
-          suffix
-        }, index));
-      });
-
-      group.append(title, suffixes);
-      caseBank.appendChild(group);
+      return {
+        kind:"word",
+        word:base || word
+      };
     });
+
+    if(caseBuilds.length){
+      Object.keys(sentenceCases).forEach(caseKey => {
+        wordDescriptors.push({kind:"case", caseKey});
+      });
+    }
+
+    return shuffleArray(wordDescriptors);
   }
 
   function renderSentenceChallenge(){
@@ -3094,7 +3030,6 @@
     const wordBank = document.getElementById("wordBank");
     answerZone.innerHTML = "";
     wordBank.innerHTML = "";
-    renderSentenceCaseBank();
 
     const tokens = getSentenceTokenDescriptors(challenge);
     tokens.forEach((descriptor, index) => {
@@ -3114,13 +3049,21 @@
     token.className = "sentence-token";
     token.dataset.tokenId = "sentence-" + sentenceRoundIndex + "-" + index + "-" + Math.random().toString(36).slice(2);
 
-    if(typeof descriptor === "object" && descriptor.kind === "suffix"){
-      token.classList.add("case-suffix");
-      token.dataset.tokenKind = "suffix";
+    if(typeof descriptor === "object" && descriptor.kind === "case"){
+      const info = sentenceCases[descriptor.caseKey];
+      token.classList.add("case-card");
+      token.dataset.tokenKind = "case";
       token.dataset.caseKey = descriptor.caseKey;
-      token.dataset.suffix = descriptor.suffix;
-      token.textContent = descriptor.suffix;
-      token.title = sentenceCases[descriptor.caseKey]?.label || "Kasus";
+
+      const name = document.createElement("span");
+      name.className = "case-name";
+      name.textContent = info.label;
+
+      const form = document.createElement("span");
+      form.className = "case-form";
+      form.textContent = info.forms;
+
+      token.append(name, form);
     }else{
       const word = typeof descriptor === "object" ? descriptor.word : descriptor;
       token.dataset.tokenKind = "word";
@@ -3193,7 +3136,7 @@
 
       const under = document.elementFromPoint(event.clientX, event.clientY);
 
-      if(pointerDrag.token.dataset.tokenKind === "suffix"){
+      if(pointerDrag.token.dataset.tokenKind === "case"){
         const target = under?.closest(".sentence-token");
         if(target !== pointerDrag.token && canReceiveSentenceCase(target)){
           target.classList.add("case-drop-over");
@@ -3205,24 +3148,36 @@
     }
   }
 
-  function applySentenceSuffix(target, suffixToken){
-    const caseKey = suffixToken.dataset.caseKey;
-    const suffix = suffixToken.dataset.suffix;
-    if(!caseKey || !suffix || !canReceiveSentenceCase(target)) return false;
+  function returnCaseCard(caseKey){
+    const wordBank = document.getElementById("wordBank");
+    if(!caseKey || !wordBank) return;
+
+    const index = wordBank.children.length + Math.floor(Math.random() * 1000);
+    wordBank.appendChild(createSentenceToken({kind:"case", caseKey}, index));
+  }
+
+  function applySentenceCase(target, caseToken){
+    const caseKey = caseToken.dataset.caseKey;
+    if(!caseKey || !canReceiveSentenceCase(target)) return false;
+
+    const previousCase = target.dataset.appliedCase;
+    if(previousCase){
+      returnCaseCard(previousCase);
+    }
 
     const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
-    const cleanSuffix = suffix.replace(/^-/, "");
-    const inflected = base + cleanSuffix;
+    const inflected = applyTurkishCase(base, caseKey);
 
     target.dataset.baseWord = base;
     target.dataset.appliedCase = caseKey;
-    target.dataset.appliedSuffix = suffix;
     target.dataset.word = inflected;
     target.textContent = inflected;
     target.classList.add("case-applied");
 
+    caseToken.remove();
+
     const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = sentenceCases[caseKey].label + ": " + base + " + " + suffix + " → " + inflected;
+    feedback.textContent = sentenceCases[caseKey].label + ": " + base + " → " + inflected;
     feedback.className = "sentence-feedback";
 
     if(typeof navigator.vibrate === "function"){
@@ -3247,15 +3202,16 @@
     if(state.dragging){
       const under = document.elementFromPoint(event.clientX, event.clientY);
 
-      if(token.dataset.tokenKind === "suffix"){
+      if(token.dataset.tokenKind === "case"){
         const target = under?.closest(".sentence-token");
 
-        if(target !== token && applySentenceSuffix(target, token)){
-          token.classList.remove("dragging");
+        if(target !== token && applySentenceCase(target, token)){
           state.ghost?.remove();
           pointerDrag = null;
           return;
         }
+
+        document.getElementById("wordBank").appendChild(token);
       }else{
         const zone = under?.closest(".drop-zone");
 
@@ -3274,9 +3230,9 @@
       token.classList.remove("dragging");
       state.ghost?.remove();
     }else{
-      if(token.dataset.tokenKind === "suffix"){
+      if(token.dataset.tokenKind === "case"){
         const feedback = document.getElementById("sentenceFeedback");
-        feedback.textContent = "Zieh das Suffix direkt auf ein Nomen.";
+        feedback.textContent = "Zieh die Kasus-Karte direkt auf ein Nomen.";
         feedback.className = "sentence-feedback";
       }else{
         const answerZone = document.getElementById("answerZone");
@@ -3295,14 +3251,16 @@
   function checkSentence(){
     const challenge = sentenceOrder[sentenceRoundIndex];
     const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
+    const hasUnusedCaseCard = answerTokens.some(el => el.dataset.tokenKind === "case");
 
     const built = answerTokens
-      .filter(el => el.dataset.tokenKind === "word")
+      .filter(el => el.dataset.tokenKind !== "case")
       .map(el => normalizeSentencePiece(el.dataset.word));
 
     const expected = challenge.answer.map(normalizeSentencePiece);
 
     const correct =
+      !hasUnusedCaseCard &&
       built.length === expected.length &&
       built.every((word, i) => word === expected[i]);
 
