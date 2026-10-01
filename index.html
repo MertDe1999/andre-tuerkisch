@@ -3374,14 +3374,52 @@
       correctWords.map(word => normalizeSentencePiece(word))
     );
 
+    const unlockedVerbWords = getDictionaryRows()
+      .filter(row =>
+        row.classList.contains("verb") &&
+        !row.classList.contains("locked")
+      )
+      .map(row => row.querySelector(".word-tr")?.textContent?.trim() || "")
+      .filter(Boolean);
+
+    const dedicatedVerbDistractors = [];
+
+    verbBuilds.forEach(build => {
+      const correctVerb = normalizeSentencePiece(build.base);
+      const candidates = shuffleArray(
+        unlockedVerbWords.filter(word =>
+          normalizeSentencePiece(word) !== correctVerb &&
+          !dedicatedVerbDistractors.some(existing =>
+            normalizeSentencePiece(existing) === normalizeSentencePiece(word)
+          )
+        )
+      );
+
+      dedicatedVerbDistractors.push(...candidates.slice(0, 2));
+    });
+
+    const dedicatedVerbKeys = new Set(
+      dedicatedVerbDistractors.map(word => normalizeSentencePiece(word))
+    );
+
     const unlockedDictionaryWords = getDictionaryRows()
       .filter(row => !row.classList.contains("locked"))
+      .filter(row =>
+        verbBuilds.length === 0 || !row.classList.contains("verb")
+      )
       .map(row => row.querySelector(".word-tr")?.textContent?.trim() || "")
       .filter(Boolean)
-      .filter(word => !excluded.has(normalizeSentencePiece(word)));
+      .filter(word =>
+        !excluded.has(normalizeSentencePiece(word)) &&
+        !dedicatedVerbKeys.has(normalizeSentencePiece(word))
+      );
 
     const fallbackWords = (challenge.distractors || [])
-      .filter(word => !excluded.has(normalizeSentencePiece(word)));
+      .filter(word => !excluded.has(normalizeSentencePiece(word)))
+      .filter(word =>
+        !verbBuilds.length ||
+        !isKnownVerbWord(normalizeSentencePiece(word))
+      );
 
     const pool = Array.from(new Set([
       ...unlockedDictionaryWords,
@@ -3402,6 +3440,7 @@
 
     const wordDescriptors = [
       ...correctWords,
+      ...dedicatedVerbDistractors,
       ...randomDistractors
     ].map(word => ({
       kind:"word",
