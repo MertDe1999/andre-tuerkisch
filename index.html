@@ -1068,6 +1068,58 @@
     .sentence-feedback.ok{color:var(--verb-dark)}
     .sentence-feedback.bad{color:var(--rose-dark)}
 
+    .confetti-layer{
+      position:fixed;
+      inset:0;
+      z-index:60000;
+      overflow:hidden;
+      pointer-events:none;
+    }
+
+    .confetti-piece{
+      position:absolute;
+      top:-28px;
+      left:var(--x);
+      width:var(--w);
+      height:var(--h);
+      border-radius:var(--radius);
+      background:var(--confetti-color);
+      opacity:0;
+      transform:
+        translate3d(0,-24px,0)
+        rotate(var(--start-rotation));
+      animation:
+        confettiFall var(--duration) cubic-bezier(.18,.72,.28,1) var(--delay) forwards,
+        confettiSway var(--sway-duration) ease-in-out var(--delay) infinite alternate;
+      will-change:transform,opacity;
+    }
+
+    @keyframes confettiFall{
+      0%{
+        opacity:0;
+        transform:
+          translate3d(0,-28px,0)
+          rotate(var(--start-rotation));
+      }
+      8%{opacity:1}
+      82%{opacity:.95}
+      100%{
+        opacity:0;
+        transform:
+          translate3d(var(--drift),105vh,0)
+          rotate(var(--end-rotation));
+      }
+    }
+
+    @keyframes confettiSway{
+      from{margin-left:calc(var(--sway) * -1)}
+      to{margin-left:var(--sway)}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .confetti-layer{display:none}
+    }
+
     .sentence-actions{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -3849,6 +3901,65 @@
     return a.length === b.length && a.every((word, i) => word === b[i]);
   }
 
+  function celebrateCorrectAnswer(){
+    if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    document.querySelector(".confetti-layer")?.remove();
+
+    const layer = document.createElement("div");
+    layer.className = "confetti-layer";
+    layer.setAttribute("aria-hidden", "true");
+
+    const colors = [
+      "#d9eadb",
+      "#e6dff1",
+      "#dfeaf2",
+      "#f6d7bf",
+      "#f4e6a9",
+      "#f2dddd"
+    ];
+
+    const count = 36;
+
+    for(let i = 0; i < count; i++){
+      const piece = document.createElement("span");
+      piece.className = "confetti-piece";
+
+      const x = 4 + Math.random() * 92;
+      const width = 6 + Math.random() * 5;
+      const height = Math.random() < .28 ? width : 9 + Math.random() * 7;
+      const delay = Math.random() * .22;
+      const duration = 1.45 + Math.random() * .8;
+      const swayDuration = .32 + Math.random() * .32;
+      const drift = -42 + Math.random() * 84;
+      const sway = 8 + Math.random() * 16;
+      const startRotation = Math.floor(Math.random() * 180) + "deg";
+      const endRotation = (540 + Math.floor(Math.random() * 720)) + "deg";
+      const radius = Math.random() < .25 ? "50%" : (1 + Math.random() * 3) + "px";
+
+      piece.style.setProperty("--x", x + "vw");
+      piece.style.setProperty("--w", width + "px");
+      piece.style.setProperty("--h", height + "px");
+      piece.style.setProperty("--delay", delay + "s");
+      piece.style.setProperty("--duration", duration + "s");
+      piece.style.setProperty("--sway-duration", swayDuration + "s");
+      piece.style.setProperty("--drift", drift + "px");
+      piece.style.setProperty("--sway", sway + "px");
+      piece.style.setProperty("--start-rotation", startRotation);
+      piece.style.setProperty("--end-rotation", endRotation);
+      piece.style.setProperty("--radius", radius);
+      piece.style.setProperty(
+        "--confetti-color",
+        colors[Math.floor(Math.random() * colors.length)]
+      );
+
+      layer.appendChild(piece);
+    }
+
+    document.body.appendChild(layer);
+    setTimeout(() => layer.remove(), 2800);
+  }
+
   function checkSentence(){
     const challenge = sentenceOrder[sentenceRoundIndex];
     const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
@@ -3891,6 +4002,7 @@
     if(correct){
       feedback.textContent = "Richtig!";
       feedback.className = "sentence-feedback ok";
+      celebrateCorrectAnswer();
       document.getElementById("checkSentenceButton").style.display = "none";
       document.getElementById("nextSentenceButton").style.display = "block";
     }else{
