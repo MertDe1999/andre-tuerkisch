@@ -359,6 +359,18 @@
       height:100%;
       min-height:0;
     }
+    body.learning-games-view #sentenceGameActive{
+      display:flex;
+      flex-direction:column;
+    }
+    body.learning-games-view #sentenceGameActive > :not(#wordBank){flex:0 0 auto}
+    body.learning-games-view #sentenceGameActive #wordBank{
+      flex:1 1 auto;
+      min-height:76px;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+    }
+    body.learning-games-view .sentence-game-card{overflow:auto}
 
     body.learning-games-view #activeQuiz{
       display:flex;
@@ -948,6 +960,10 @@
       font-size:.78rem;
       margin-bottom:12px;
     }
+    .sentence-progress span{white-space:nowrap}
+    .sentence-progress{flex-wrap:wrap}
+    #sentenceGameActive.sentence-locked .drop-zone{pointer-events:none}
+    #sentenceGameActive.sentence-locked .sentence-actions{pointer-events:none}
 
     .sentence-prompt{
       padding:18px;
@@ -2271,8 +2287,8 @@
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
           <div class="sentence-progress">
-            <span>Satzbau</span>
-            <span id="sentenceProgressText">1 / 1</span>
+            <span id="sentenceLevelText">Level 1 · 0 / 5</span>
+            <span id="sentenceProgressText">Fehler 0 / 3</span>
           </div>
 
           <div class="sentence-prompt">
@@ -2283,11 +2299,11 @@
           <div class="sentence-zone-label">Dein Satz</div>
           <div id="answerZone" class="drop-zone answer-zone"></div>
 
-          <div class="sentence-zone-label">Wörter & Kasus</div>
-          <div class="sentence-case-hint">Zieh ein Suffix direkt auf ein Nomen.</div>
+          <div class="sentence-zone-label">Wörter & Endungen</div>
+          <div class="sentence-case-hint">Suffix → Nomen · Verbendung → Infinitiv</div>
           <div id="wordBank" class="drop-zone word-bank"></div>
 
-          <div id="sentenceFeedback" class="sentence-feedback"></div>
+          <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
 
           <div class="sentence-actions">
             <button class="sentence-btn secondary" onclick="resetSentence()">Zurücksetzen</button>
@@ -2628,6 +2644,21 @@
   let sentenceRoundIndex = 0;
   let draggedSentenceToken = null;
   let pointerDrag = null;
+  const sentenceLearningStorageKey = "andreTurkishSentenceLearningV1";
+  const sentenceLevelSize = 5;
+  const sentencePeople = [
+    {word:"ben", de:"Ich", ending:"iyom", index:0},
+    {word:"sen", de:"Du", ending:"iyon", index:1},
+    {word:"o", de:"Er/Sie/Es", ending:"iyo", index:2},
+    {word:"biz", de:"Wir", ending:"iyoz", index:3}
+  ];
+  let sentenceLearning = null;
+  let sentenceAttempts = 0;
+  let sentenceLocked = false;
+  let sentenceGameRunning = false;
+  let sentenceTransitionTimer = null;
+  let sentenceLastChallengeKey = "";
+  let sentenceChallengeCache = {signature:"", challenges:[]};
 
   let typingDirection = "toTurkish";
   let typingRemaining = [];
@@ -2808,9 +2839,279 @@
   }
 
   function getAvailableSentenceChallenges(){
-    return sentenceChallenges.filter(challenge =>
+    const words = getUnlockedSentenceWords();
+    const signature = JSON.stringify(words.map(word => [word.tr,word.de,word.type,
+      word.row.dataset.sentenceForms,word.row.dataset.sentencePattern,word.row.dataset.caseSoften]));
+    if(signature === sentenceChallengeCache.signature) return sentenceChallengeCache.challenges;
+    const available = [...sentenceChallenges, ...generateSentenceChallenges(words)].filter(challenge =>
       areWordsUnlocked(challenge.requires || [])
     );
+    // Stable content keys also combine equivalent handwritten/generated exercises.
+    const challenges = [...new Map(available.map(challenge => [getSentenceChallengeKey(challenge), challenge])).values()];
+    sentenceChallengeCache = {signature, challenges};
+    return challenges;
+  }
+
+  function emptySentenceLearning(){
+    return {level:1, levelCorrect:0, mistakes:0, sequence:0, sentences:{}, people:{}, verbs:{}};
+  }
+
+  function sentenceCounter(value, maximum = 1000000){
+    return Number.isFinite(value) ? Math.max(0, Math.min(maximum, Math.floor(value))) : 0;
+  }
+
+  function loadSentenceLearning(){
+    const clean = emptySentenceLearning();
+    try{
+      const saved = JSON.parse(localStorage.getItem(sentenceLearningStorageKey) || "{}");
+      clean.level = Math.max(1, sentenceCounter(saved.level, 10000));
+      clean.levelCorrect = sentenceCounter(saved.levelCorrect, sentenceLevelSize - 1);
+      clean.mistakes = sentenceCounter(saved.mistakes, 2);
+      clean.sequence = sentenceCounter(saved.sequence);
+      for(const name of ["people", "verbs"]){
+        if(saved[name] && typeof saved[name] === "object" && !Array.isArray(saved[name])){
+          for(const [key, value] of Object.entries(saved[name])){
+            if(!["__proto__","constructor","prototype"].includes(key)) clean[name][key] = sentenceCounter(value);
+          }
+        }
+      }
+      if(saved.sentences && typeof saved.sentences === "object"){
+        for(const [key, value] of Object.entries(saved.sentences).slice(-2000)){
+          if(!value || typeof value !== "object" || ["__proto__","constructor","prototype"].includes(key)) continue;
+          clean.sentences[key] = Object.fromEntries(
+            ["seen","errors","solved","directStreak","difficulty","lastSeen"].map(field =>
+              [field, sentenceCounter(value[field])]
+            )
+          );
+        }
+      }
+    }catch{}
+    return clean;
+  }
+
+  function saveSentenceLearning(){
+    try{localStorage.setItem(sentenceLearningStorageKey, JSON.stringify(sentenceLearning));}catch{}
+  }
+
+  function getSentenceChallengeKey(challenge){
+    return challenge.answer.map(normalizeSentencePiece).sort().join("|");
+  }
+
+  function getSentenceStats(challenge){
+    const key = getSentenceChallengeKey(challenge);
+    if(!sentenceLearning.sentences[key]){
+      // Keep local storage bounded even as the dictionary grows.
+      const keys = Object.keys(sentenceLearning.sentences);
+      if(keys.length >= 2000){
+        keys.sort((a,b) => sentenceLearning.sentences[a].lastSeen - sentenceLearning.sentences[b].lastSeen);
+        delete sentenceLearning.sentences[keys[0]];
+      }
+      sentenceLearning.sentences[key] = {seen:0, errors:0, solved:0, directStreak:0, difficulty:0, lastSeen:0};
+    }
+    return sentenceLearning.sentences[key];
+  }
+
+  function getSentenceDifficulty(challenge){
+    if(challenge.difficulty) return challenge.difficulty;
+    const cases = challenge.caseBuilds?.length || 0;
+    const verbs = challenge.verbBuilds?.length || 0;
+    return cases >= 2 ? 4 : verbs && cases ? 3 : cases ? 2 : 1;
+  }
+
+  function getSentencePerson(challenge){
+    return sentencePeople.find(person => challenge.answer.some(word =>
+      normalizeSentencePiece(word) === person.word
+    ))?.word || "";
+  }
+
+  function sentenceReviewWeight(challenge){
+    const stats = sentenceLearning.sentences[getSentenceChallengeKey(challenge)];
+    if(!stats) return 1.5;
+    const practice = 1 + Math.min(8, stats.difficulty * 2);
+    const mastery = 1 / (1 + Math.min(8, stats.directStreak) * .45);
+    const spacing = Math.min(1, .25 + (sentenceLearning.sequence - stats.lastSeen) / 6);
+    return practice * mastery * spacing;
+  }
+
+  function chooseWeightedSentence(challenges){
+    const verbChallenges = challenges.filter(item => item.verbBuilds?.length);
+    const minUses = verbChallenges.length ? Math.min(...verbChallenges
+      .map(item => sentenceLearning.verbs[item.verbBuilds[0].base] || 0)) : 0;
+    const weights = challenges.map(challenge => {
+      const verb = challenge.verbBuilds?.[0]?.base;
+      const uses = verb ? sentenceLearning.verbs[verb] || 0 : 0;
+      return sentenceReviewWeight(challenge) / (1 + Math.max(0, uses - minUses) * .65);
+    });
+    let roll = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
+    for(let i = 0; i < challenges.length; i++){
+      roll -= weights[i];
+      if(roll <= 0) return challenges[i];
+    }
+    return challenges.at(-1);
+  }
+
+  function selectSentenceChallenge(){
+    const available = getAvailableSentenceChallenges();
+    if(!available.length) return null;
+    const ceiling = Math.min(5, sentenceLearning.level);
+    let pool = available.filter(challenge => getSentenceDifficulty(challenge) <= ceiling);
+    // If only more advanced unlocked content exists, keep the game playable.
+    if(!pool.length){
+      const easiest = Math.min(...available.map(getSentenceDifficulty));
+      pool = available.filter(challenge => getSentenceDifficulty(challenge) === easiest);
+    }
+    const hardest = Math.max(...pool.map(getSentenceDifficulty));
+    const easy = pool.filter(challenge => getSentenceDifficulty(challenge) < hardest);
+    pool = easy.length && Math.random() < .25
+      ? easy
+      : pool.filter(challenge => getSentenceDifficulty(challenge) === hardest);
+    const finite = pool.filter(challenge => challenge.verbBuilds?.length);
+    if(finite.length && Math.random() < .8){
+      // Balance actual endings rather than nominal sentences with a pronoun.
+      const people = [...new Set(finite.map(getSentencePerson).filter(Boolean))];
+      const leastSeen = Math.min(...people.map(person => sentenceLearning.people[person] || 0));
+      pool = finite.filter(challenge =>
+        (sentenceLearning.people[getSentencePerson(challenge)] || 0) === leastSeen
+      );
+    }
+    const fresh = pool.filter(challenge => getSentenceChallengeKey(challenge) !== sentenceLastChallengeKey);
+    const chosen = chooseWeightedSentence(fresh.length ? fresh : pool);
+    sentenceLastChallengeKey = getSentenceChallengeKey(chosen);
+    sentenceLearning.sequence++;
+    const stats = getSentenceStats(chosen);
+    stats.seen++;
+    stats.lastSeen = sentenceLearning.sequence;
+    if(chosen.verbBuilds?.length){
+      const person = getSentencePerson(chosen);
+      if(person) sentenceLearning.people[person] = (sentenceLearning.people[person] || 0) + 1;
+      for(const build of chosen.verbBuilds){
+        sentenceLearning.verbs[build.base] = (sentenceLearning.verbs[build.base] || 0) + 1;
+      }
+    }
+    saveSentenceLearning();
+    return chosen;
+  }
+
+  function getUnlockedSentenceWords(){
+    const progress = getUnlockProgress();
+    return getDictionaryRows().map(row => ({
+      tr:normalizeSentencePiece(row.querySelector(".word-tr")?.textContent || ""),
+      de:row.querySelector(".word-de")?.textContent?.trim() || "",
+      type:sentenceWordTypeClasses.find(type => row.classList.contains(type)) || "other",
+      row
+    })).filter(word => word.tr && isWordUnlocked(word.tr, progress));
+  }
+
+  const sentenceNounLabels = {
+    ev:{subject:"Das Haus", object:"das Haus", adjectiveObject:"das schöne Haus", to:"nach Hause", from:"aus dem Haus", at:"im Haus"},
+    araba:{subject:"Das Auto", object:"das Auto", adjectiveObject:"das schöne Auto", to:"zum Auto", from:"vom Auto", at:"im Auto"},
+    yol:{subject:"Der Weg", object:"den Weg", adjectiveObject:"den schönen Weg", to:"zum Weg", from:"vom Weg", at:"auf dem Weg"},
+    "ağaç":{subject:"Der Baum", object:"den Baum", adjectiveObject:"den schönen Baum", to:"zum Baum", from:"vom Baum", at:"am Baum"},
+    anne:{subject:"Mama", object:"Mama", adjectiveObject:"die schöne Mama", to:"zu Mama", from:"von Mama", at:"bei Mama"},
+    baba:{subject:"Papa", object:"Papa", adjectiveObject:"den schönen Papa", to:"zu Papa", from:"von Papa", at:"bei Papa"},
+    abi:{subject:"Der ältere Bruder", object:"den älteren Bruder", to:"zum älteren Bruder", from:"vom älteren Bruder", at:"beim älteren Bruder"},
+    abla:{subject:"Die ältere Schwester", object:"die ältere Schwester", to:"zur älteren Schwester", from:"von der älteren Schwester", at:"bei der älteren Schwester"},
+    yarak:{subject:"Der Penis", object:"den Penis", adjectiveObject:"den schönen Penis", to:"zum Penis", from:"vom Penis", at:"am Penis"}
+  };
+
+  const sentenceVerbProfiles = {
+    gelmek:{forms:["komme","kommst","kommt","kommen"], pattern:"motion"},
+    gitmek:{forms:["gehe","gehst","geht","gehen"], pattern:"motion"},
+    "görmek":{forms:["sehe","siehst","sieht","sehen"], pattern:"object"},
+    sevmek:{forms:["mag","magst","mag","mögen"], standaloneForms:["liebe","liebst","liebt","lieben"], pattern:"object"}
+  };
+
+  function sentenceNounSoftens(base){
+    const key = normalizeSentencePiece(base);
+    const row = getDictionaryRows().find(item =>
+      normalizeSentencePiece(item.querySelector(".word-tr")?.textContent) === key
+    );
+    return ["yarak","ağaç"].includes(key) || row?.dataset.caseSoften === "true";
+  }
+
+  function makeSentenceCaseBuild(base, caseKey){
+    const regular = applyTurkishCase(base, caseKey);
+    const suffix = regular.slice(base.length);
+    const soften = sentenceNounSoftens(base) && /^[aeıioöuü]/.test(suffix);
+    return {base, suffix, soften, result:(soften ? softenTurkishStem(base) : base) + suffix};
+  }
+
+  function getSentenceVerbProfile(word){
+    if(sentenceVerbProfiles[word.tr]) return sentenceVerbProfiles[word.tr];
+    // Future dictionary entries can supply four German forms and a semantic pattern.
+    // Without that metadata they still participate as infinitives ("Lernen ist schön.").
+    const forms = word.row.dataset.sentenceForms?.split("|").map(form => form.trim());
+    return forms?.length === 4 && forms.every(Boolean)
+      ? {forms, pattern:word.row.dataset.sentencePattern || "simple"}
+      : null;
+  }
+
+  function generateSentenceChallenges(words = getUnlockedSentenceWords()){
+    const nouns = words.filter(word => word.type === "noun" && sentenceNounLabels[word.tr]);
+    const verbs = words.filter(word => word.type === "verb" && /(?:mek|mak)$/.test(word.tr));
+    const people = sentencePeople.filter(person => words.some(word => word.tr === person.word));
+    const beautiful = words.some(word => word.tr === "güzel");
+    const places = nouns.filter(noun => ["ev","araba","yol"].includes(noun.tr));
+    const generated = [];
+    for(const verb of verbs){
+      if(beautiful){
+        const label = verb.de.split("/")[0].trim();
+        generated.push({de:label.charAt(0).toLocaleUpperCase("de") + label.slice(1) + " ist schön.",
+          answer:[verb.tr,"güzel"], requires:[verb.tr,"güzel"], difficulty:1});
+      }
+      const profile = getSentenceVerbProfile(verb);
+      if(!profile) continue;
+      for(const person of people){
+        const verbResult = buildColloquialPresent(verb.tr, person.ending);
+        const verbBuilds = [{base:verb.tr, ending:person.ending, result:verbResult}];
+        const prefix = person.de + " " + profile.forms[person.index];
+        const standalone = person.de + " " + (profile.standaloneForms || profile.forms)[person.index];
+        generated.push({de:standalone + ".", answer:[person.word,verbResult],
+          requires:[person.word,verb.tr], verbBuilds, difficulty:1});
+        for(const noun of nouns){
+          const label = sentenceNounLabels[noun.tr];
+          const caseKeys = profile.pattern === "motion" ? ["dative","ablative"]
+            : profile.pattern === "object" ? ["accusative"] : [];
+          for(const caseKey of caseKeys){
+            const object = makeSentenceCaseBuild(noun.tr, caseKey);
+            const objectDe = caseKey === "dative" ? label.to : caseKey === "ablative" ? label.from : label.object;
+            generated.push({de:prefix + " " + objectDe + ".",
+              answer:[person.word,object.result,verbResult], requires:[person.word,noun.tr,verb.tr],
+              caseBuilds:[object], verbBuilds, difficulty:3});
+            if(caseKey !== "accusative") continue;
+            for(const place of places){
+              if(place.tr === noun.tr || (place.tr === "araba" && ["ev","ağaç","yol"].includes(noun.tr))) continue;
+              const location = makeSentenceCaseBuild(place.tr, "locative");
+              const at = sentenceNounLabels[place.tr].at;
+              generated.push({de:prefix + " " + label.object + " " + at + ".",
+                answer:[person.word,location.result,object.result,verbResult],
+                requires:[person.word,place.tr,noun.tr,verb.tr],
+                caseBuilds:[location,object], verbBuilds, difficulty:4});
+              if(beautiful && label.adjectiveObject){
+                generated.push({de:prefix + " " + label.adjectiveObject + " " + at + ".",
+                  answer:[person.word,location.result,"güzel",object.result,verbResult],
+                  requires:[person.word,place.tr,noun.tr,verb.tr,"güzel"],
+                  caseBuilds:[location,object], verbBuilds, difficulty:5});
+              }
+            }
+          }
+        }
+      }
+    }
+    // More low-level case practice is possible even before verbs are unlocked.
+    for(const noun of nouns){
+      if(beautiful) generated.push({de:sentenceNounLabels[noun.tr].subject + " ist schön.",
+        answer:[noun.tr,"güzel"], requires:[noun.tr,"güzel"], difficulty:1});
+      for(const place of places){
+        if(noun.tr === place.tr) continue;
+        if(place.tr === "araba" && ["ev","ağaç","yol"].includes(noun.tr)) continue;
+        const location = makeSentenceCaseBuild(place.tr, "locative");
+        generated.push({de:sentenceNounLabels[noun.tr].subject + " ist " + sentenceNounLabels[place.tr].at + ".",
+          answer:[noun.tr,location.result], requires:[noun.tr,place.tr],
+          caseBuilds:[location], difficulty:2});
+      }
+    }
+    return generated;
   }
 
   let quizMode = "toTurkish";
@@ -2835,6 +3136,7 @@
   }
 
   function openLearnMode(mode){
+    stopSentenceGame();
     document.body.classList.add("game-mode-active");
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
@@ -2854,6 +3156,7 @@
   }
 
   function backToLearnHome(){
+    stopSentenceGame();
     document.body.classList.remove("game-mode-active");
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
@@ -2874,6 +3177,7 @@
   const mainNavViews = ["dictionary","grammar","flashcards"];
 
   function showView(id, btn, swipeDirection = null){
+    stopSentenceGame();
     document.body.classList.remove("game-mode-active");
 
     const currentView = document.querySelector(".view.active");
@@ -3235,28 +3539,37 @@
       ((unlockedCount / total) * 100) + "%";
   }
 
+  function stopSentenceGame(){
+    sentenceGameRunning = false;
+    clearTimeout(sentenceTransitionTimer);
+    sentenceTransitionTimer = null;
+    sentenceLocked = false;
+    pointerDrag?.ghost?.remove();
+    pointerDrag = null;
+    document.querySelector(".confetti-layer")?.remove();
+    document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
+  }
+
+  function updateSentenceProgress(){
+    document.getElementById("sentenceLevelText").textContent =
+      "Level " + sentenceLearning.level + " · " + sentenceLearning.levelCorrect + " / " + sentenceLevelSize;
+    document.getElementById("sentenceProgressText").textContent = "Fehler " + sentenceLearning.mistakes + " / 3";
+  }
+
   function startSentenceGame(){
-    sentenceOrder = shuffleArray(getAvailableSentenceChallenges());
+    stopSentenceGame();
+    sentenceLearning = sentenceLearning || loadSentenceLearning();
+    sentenceGameRunning = true;
+    sentenceOrder = [];
     sentenceRoundIndex = 0;
-
-    if(sentenceOrder.length === 0){
-      document.getElementById("sentenceGameActive").style.display = "none";
-      document.getElementById("sentenceComplete").classList.add("show");
-      document.querySelector("#sentenceComplete h2").textContent = "Noch keine passenden Sätze";
-      document.querySelector("#sentenceComplete p").textContent = "Schalte zuerst die Wörter frei, die für einen Satz gebraucht werden.";
-      return;
-    }
-
-    document.getElementById("sentenceGameActive").style.display = "block";
-    document.getElementById("sentenceComplete").classList.remove("show");
-    document.querySelector("#sentenceComplete h2").textContent = "Alle Sätze geschafft";
-    document.querySelector("#sentenceComplete p").textContent = "Du hast alle Satzbau-Aufgaben richtig gelöst.";
-    renderSentenceChallenge();
+    sentenceLastChallengeKey = "";
+    nextSentence();
   }
 
   function normalizeSentencePiece(value){
     return (value || "")
       .toLocaleLowerCase("tr-TR")
+      .trim()
       .replace(/[.!?,;:]+$/g, "")
       .trim();
   }
@@ -3510,121 +3823,73 @@
       ...caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base]),
       ...verbBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
     ]);
-
-    const correctWords = challenge.answer.map(word => {
+    const correctWords = challenge.answer.map(word =>
+      replacements.get(normalizeSentencePiece(word)) || normalizeSentencePiece(word)
+    );
+    const excluded = new Set(correctWords.map(normalizeSentencePiece));
+    const unlocked = getUnlockedSentenceWords();
+    const distractors = [];
+    const add = word => {
       const normalized = normalizeSentencePiece(word);
-      return replacements.get(normalized) || word;
-    });
-
-    const excluded = new Set(
-      correctWords.map(word => normalizeSentencePiece(word))
-    );
-
-    const unlockedVerbWords = getDictionaryRows()
-      .filter(row =>
-        row.classList.contains("verb") &&
-        !row.classList.contains("locked")
-      )
-      .map(row => row.querySelector(".word-tr")?.textContent?.trim() || "")
-      .filter(Boolean);
-
-    const dedicatedVerbDistractors = [];
-
-    verbBuilds.forEach(build => {
-      const correctVerb = normalizeSentencePiece(build.base);
-      const candidates = shuffleArray(
-        unlockedVerbWords.filter(word =>
-          normalizeSentencePiece(word) !== correctVerb &&
-          !dedicatedVerbDistractors.some(existing =>
-            normalizeSentencePiece(existing) === normalizeSentencePiece(word)
-          )
-        )
-      );
-
-      dedicatedVerbDistractors.push(...candidates.slice(0, 2));
-    });
-
-    const dedicatedVerbKeys = new Set(
-      dedicatedVerbDistractors.map(word => normalizeSentencePiece(word))
-    );
-
-    const unlockedDictionaryWords = getDictionaryRows()
-      .filter(row => !row.classList.contains("locked"))
-      .filter(row =>
-        verbBuilds.length === 0 || !row.classList.contains("verb")
-      )
-      .map(row => row.querySelector(".word-tr")?.textContent?.trim() || "")
-      .filter(Boolean)
-      .filter(word =>
-        !excluded.has(normalizeSentencePiece(word)) &&
-        !dedicatedVerbKeys.has(normalizeSentencePiece(word))
-      );
-
-    const fallbackWords = (challenge.distractors || [])
-      .filter(word => !excluded.has(normalizeSentencePiece(word)))
-      .filter(word =>
-        !verbBuilds.length ||
-        !isKnownVerbWord(normalizeSentencePiece(word))
-      );
-
-    const pool = Array.from(new Set([
-      ...unlockedDictionaryWords,
-      ...fallbackWords
-    ]));
-
-    const shuffledPool = shuffleArray(pool);
-    const distractorCount = correctWords.length;
-    const randomDistractors = shuffledPool.slice(0, distractorCount);
-
-    if(randomDistractors.length < distractorCount && shuffledPool.length){
-      while(randomDistractors.length < distractorCount){
-        randomDistractors.push(
-          shuffledPool[randomDistractors.length % shuffledPool.length]
-        );
+      if(excluded.has(normalized)) return false;
+      excluded.add(normalized);
+      distractors.push(normalized);
+      return true;
+    };
+    const types = [...new Set(correctWords.map(getKnownWordType))];
+    for(const type of types){
+      const candidates = shuffleArray(unlocked.filter(word => word.type === type && !excluded.has(word.tr)));
+      const desired = 2;
+      let count = 0;
+      for(const candidate of candidates){
+        if(add(candidate.tr)) count++;
+        if(count >= desired) break;
+      }
+      // Copula forms share an unlocked adjective; no unseen vocabulary is introduced.
+      if(type === "adj" && count < desired){
+        for(const adjective of unlocked.filter(word => word.type === "adj")){
+          const vowel = fourWayHarmony(adjective.tr);
+          const forms = [adjective.tr, adjective.tr + (/[aeıioöuü]$/.test(adjective.tr) ? "y" : "") + vowel + "m",
+            adjective.tr + "s" + vowel + "n"];
+          for(const form of shuffleArray(forms)){
+            if(count < desired && add(form)) count++;
+          }
+        }
+      }
+      // Verbs always use only the correct infinitive and up to two unlocked infinitives.
+      if(type === "verb") continue;
+      // Only related content categories are fallback candidates, never greetings or polite phrases.
+      const related = {noun:["adj"], adj:["noun"], pronoun:["demonstrative"],
+        existential:["response"], response:["existential"], demonstrative:["pronoun"]}[type] || [];
+      if(count < desired){
+        for(const candidate of shuffleArray(unlocked.filter(word => related.includes(word.type)))){
+          if(count < desired && add(candidate.tr)) count++;
+        }
       }
     }
-
-    const wordDescriptors = [
-      ...correctWords,
-      ...dedicatedVerbDistractors,
-      ...randomDistractors
-    ].map(word => ({
-      kind:"word",
-      word
-    }));
-
-    const suffixDescriptors = caseBuilds.flatMap(getSuffixOptionsForBuild);
-    const verbEndingDescriptors = verbBuilds.flatMap(getVerbEndingOptionsForBuild);
-
     return shuffleArray([
-      ...wordDescriptors,
-      ...suffixDescriptors,
-      ...verbEndingDescriptors
+      ...correctWords.map(word => ({kind:"word", word})),
+      ...distractors.map(word => ({kind:"word", word})),
+      ...caseBuilds.flatMap(getSuffixOptionsForBuild),
+      ...verbBuilds.flatMap(getVerbEndingOptionsForBuild)
     ]);
   }
 
   function renderSentenceChallenge(){
-    if(sentenceRoundIndex >= sentenceOrder.length){
-      document.getElementById("sentenceGameActive").style.display = "none";
-      document.getElementById("sentenceComplete").classList.add("show");
-      return;
-    }
-
     const challenge = sentenceOrder[sentenceRoundIndex];
+    if(!challenge) return;
+    sentenceLocked = false;
+    document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
+    document.querySelectorAll("#sentenceGameActive button").forEach(button => button.disabled = false);
     document.getElementById("sentencePrompt").textContent = challenge.de;
-    document.getElementById("sentenceProgressText").textContent =
-      (sentenceRoundIndex + 1) + " / " + sentenceOrder.length;
-
+    updateSentenceProgress();
     const answerZone = document.getElementById("answerZone");
     const wordBank = document.getElementById("wordBank");
     answerZone.innerHTML = "";
     wordBank.innerHTML = "";
-
-    const tokens = getSentenceTokenDescriptors(challenge);
-    tokens.forEach((descriptor, index) => {
+    getSentenceTokenDescriptors(challenge).forEach((descriptor, index) => {
       wordBank.appendChild(createSentenceToken(descriptor, index));
     });
-
     const feedback = document.getElementById("sentenceFeedback");
     feedback.textContent = "";
     feedback.className = "sentence-feedback";
@@ -3678,6 +3943,7 @@
   }
 
   function beginSentencePointerDrag(event){
+    if(sentenceLocked || !sentenceGameRunning) return;
     if(event.button !== undefined && event.button !== 0) return;
 
     const token = event.currentTarget;
@@ -3840,7 +4106,7 @@
 
     const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
     const displayBase = target.dataset.baseDisplay || base;
-    const soften = suffixToken.dataset.soften === "true" && /^[aeıioöuü]/.test(suffix);
+    const soften = sentenceNounSoftens(base) && /^[aeıioöuü]/.test(suffix);
     const inflected = (soften ? softenTurkishStem(displayBase) : displayBase) + suffix;
 
     target.dataset.baseWord = base;
@@ -3918,14 +4184,23 @@
     let stem = (infinitive || "").replace(/(?:mek|mak)$/i, "");
     const lowerStem = stem.toLocaleLowerCase("tr-TR");
 
-    if(lowerStem === "git"){
+    if(["git","et"].includes(lowerStem)){
       stem = stem.slice(0,-1) + "d";
     }
-
-    const progressiveVowel = getProgressiveVowel(stem);
+    // Vowel-final stems use one progressive vowel: oyna → oynu, oku → oku.
+    let progressiveStem = stem;
+    let progressiveVowel;
+    if(/[ae]$/i.test(stem)){
+      progressiveStem = stem.slice(0,-1);
+      progressiveVowel = getProgressiveVowel(progressiveStem);
+    }else if(/[ıioöuü]$/i.test(stem)){
+      progressiveVowel = "";
+    }else{
+      progressiveVowel = getProgressiveVowel(stem);
+    }
     const endingTail = ending.replace(/^i/, "");
 
-    return stem + progressiveVowel + endingTail;
+    return progressiveStem + progressiveVowel + endingTail;
   }
 
   function removeVerbEnding(target){
@@ -4082,6 +4357,8 @@
   }
 
   function resetSentence(){
+    if(sentenceLocked || !sentenceGameRunning) return;
+    // Clearing the construction must not reset attempts or erase learning history.
     renderSentenceChallenge();
   }
 
@@ -4174,62 +4451,177 @@
     return animationMs;
   }
 
-  function checkSentence(){
-    const challenge = sentenceOrder[sentenceRoundIndex];
-    const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
-    const hasUnusedBuilderCard = answerTokens.some(el =>
-      el.dataset.tokenKind === "suffix" || el.dataset.tokenKind === "verb-ending"
-    );
+  function sentenceAllowsOmittedPronoun(challenge){
+    if(challenge.verbBuilds?.length) return true;
+    const words = challenge.answer.map(normalizeSentencePiece);
+    return words.includes("ben") && words.some(word => getKnownWordType(word) === "adj" && /(?:im|ım|um|üm)$/.test(word)) ||
+      words.includes("sen") && words.some(word => getKnownWordType(word) === "adj" && /s(?:in|ın|un|ün)$/.test(word));
+  }
 
-    const built = answerTokens
-      .filter(el =>
-        el.dataset.tokenKind !== "suffix" &&
-        el.dataset.tokenKind !== "verb-ending"
-      )
-      .map(el => normalizeSentencePiece(el.dataset.word));
-
+  function evaluateSentence(challenge, pieces){
+    const words = pieces.filter(piece => piece.tokenKind !== "suffix" && piece.tokenKind !== "verb-ending");
+    const pronouns = new Set(sentencePeople.map(person => person.word));
     const expected = challenge.answer.map(normalizeSentencePiece);
-    const personalPronouns = new Set(["ben","sen","o","biz"]);
+    const expectedPronouns = expected.filter(word => pronouns.has(word));
+    const actualPronouns = words.filter(piece => pronouns.has(normalizeSentencePiece(piece.word)));
+    const badPronoun = actualPronouns.find(piece => !expectedPronouns.includes(normalizeSentencePiece(piece.word)));
+    if(badPronoun) return {correct:false, issue:{area:"pronoun", actual:badPronoun.word, person:getSentencePerson(challenge)}};
+    if(actualPronouns.length > expectedPronouns.length) return {correct:false, issue:{area:"extra"}};
+    if(expectedPronouns.length && !actualPronouns.length && !sentenceAllowsOmittedPronoun(challenge)){
+      return {correct:false, issue:{area:"pronoun", missing:true, person:getSentencePerson(challenge)}};
+    }
+    const content = words.filter(piece => !pronouns.has(normalizeSentencePiece(piece.word)));
+    const expectedContent = expected.filter(word => !pronouns.has(word));
+    const unusedCard = pieces.find(piece => piece.tokenKind === "suffix" || piece.tokenKind === "verb-ending");
+    if(!unusedCard && sameSentencePieces(content.map(piece => normalizeSentencePiece(piece.word)).sort(), [...expectedContent].sort())){
+      return {correct:true};
+    }
+    if(unusedCard) return {correct:false, issue:{area:unusedCard.tokenKind === "suffix" ? "case" : "ending", detached:true}};
+    const remaining = [...content];
+    const unmatched = [];
+    for(const word of expectedContent){
+      const exact = remaining.findIndex(piece => normalizeSentencePiece(piece.word) === word);
+      if(exact >= 0){remaining.splice(exact,1);continue;}
+      const caseBuild = challenge.caseBuilds?.find(build => normalizeSentencePiece(build.result) === word);
+      const verbBuild = challenge.verbBuilds?.find(build => normalizeSentencePiece(build.result) === word);
+      unmatched.push({word, base:normalizeSentencePiece(caseBuild?.base || verbBuild?.base || word),
+        type:caseBuild ? "noun" : verbBuild ? "verb" : getKnownWordType(word), caseBuild, verbBuild});
+    }
+    // Match stems before diagnosing substitutions: a correct noun with a wrong suffix is a case error.
+    const issues = [];
+    for(const slot of unmatched){
+      const matchingBase = remaining.findIndex(piece =>
+        normalizeSentencePiece(piece.baseWord || piece.baseVerb || piece.word) === slot.base
+      );
+      if(matchingBase < 0) continue;
+      const actual = remaining.splice(matchingBase,1)[0];
+      const area = slot.verbBuild || actual.appliedVerbEnding ? "ending"
+        : slot.caseBuild || actual.appliedSuffix ? "case" : slot.type;
+      issues.push({area, base:slot.base, actual:actual.word,
+        caseKey:getSuffixFamilyInfo(getCaseBuildSuffix(slot.caseBuild))?.family.key,
+        person:getSentencePerson(challenge)});
+      slot.matched = true;
+    }
+    for(const slot of unmatched.filter(slot => !slot.matched)){
+      const replacement = remaining.findIndex(piece => (piece.wordType || getKnownWordType(piece.baseWord || piece.baseVerb || piece.word)) === slot.type);
+      if(replacement >= 0){
+        const actual = remaining.splice(replacement,1)[0];
+        issues.push({area:slot.type, actual:actual.word, base:slot.base});
+      }else{
+        issues.push({area:"missing", type:slot.type});
+      }
+    }
+    return {correct:false, issue:issues[0] || {area:remaining.length ? "extra" : "word"}};
+  }
 
-    const builtContent = built
-      .filter(word => !personalPronouns.has(word))
-      .sort((a, b) => a.localeCompare(b, "tr"));
+  function getSentenceErrorHint(issue, attempts){
+    if(attempts === 1) return "Noch nicht richtig";
+    const broad = {verb:"Prüfe das Verb.", noun:"Prüfe das Nomen.", adj:"Prüfe das Adjektiv.",
+      pronoun:"Prüfe das Personalpronomen.", case:"Prüfe den Kasus am Nomen.", ending:"Prüfe die Verbendung.",
+      missing:"Ein Wort fehlt noch.", extra:"Ein Wort ist zu viel.", word:"Prüfe die Wortauswahl."};
+    if(attempts === 2) return broad[issue.area] || broad.word;
+    if(issue.detached) return issue.area === "case" ? "Zieh die Kasusendung auf ein Nomen." : "Zieh die Verbendung auf den Infinitiv.";
+    if(issue.area === "case"){
+      const question = {dative:"Wohin / zu wem?", ablative:"Woher / von wem?", locative:"Wo / bei wem?",
+        accusative:"Wen oder was?", genitive:"Wessen?"}[issue.caseKey];
+      return question ? "Frage beim Nomen: " + question : "Dieses Nomen braucht hier kein Kasussuffix.";
+    }
+    if(issue.area === "ending" || issue.area === "pronoun"){
+      const person = sentencePeople.find(item => item.word === issue.person);
+      const label = person?.de.toLocaleLowerCase("de") || "der Person im deutschen Satz";
+      return issue.area === "ending" ? "Die Verbendung muss zu „" + label + "“ passen."
+        : issue.missing ? "Hier brauchst du das Pronomen für „" + label + "“." : "Das Pronomen muss zu „" + label + "“ passen.";
+    }
+    if(["verb","noun","adj"].includes(issue.area) && issue.actual){
+      return "„" + issue.actual + "“ passt hier nicht zum deutschen Satz.";
+    }
+    if(issue.area === "missing") return "Es fehlt noch ein " + (typeNames[issue.type] || "Wort") + ".";
+    if(issue.area === "extra") return "Entferne das zusätzliche Wort oder doppelte Pronomen.";
+    return broad[issue.area] || broad.word;
+  }
 
-    const expectedContent = expected
-      .filter(word => !personalPronouns.has(word))
-      .sort((a, b) => a.localeCompare(b, "tr"));
+  function lockSentenceConstruction(){
+    sentenceLocked = true;
+    document.getElementById("sentenceGameActive").classList.add("sentence-locked");
+    document.querySelectorAll("#sentenceGameActive .sentence-token, #sentenceGameActive .sentence-actions button")
+      .forEach(button => button.disabled = true);
+  }
 
-    const builtPronouns = built.filter(word => personalPronouns.has(word));
-    const expectedPronouns = expected.filter(word => personalPronouns.has(word));
-
-    const pronounsValid = builtPronouns.every(pronoun =>
-      expectedPronouns.includes(pronoun)
-    );
-
-    const correct =
-      !hasUnusedBuilderCard &&
-      sameSentencePieces(builtContent, expectedContent) &&
-      pronounsValid;
-
+  function checkSentence(){
+    if(sentenceLocked || !sentenceGameRunning) return;
+    const challenge = sentenceOrder[sentenceRoundIndex];
+    if(!challenge) return;
+    const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
+    const result = evaluateSentence(challenge, answerTokens.map(token => ({...token.dataset})));
     const feedback = document.getElementById("sentenceFeedback");
-
-    if(correct){
-      feedback.textContent = "Richtig!";
+    const stats = getSentenceStats(challenge);
+    if(result.correct){
+      stats.solved++;
+      if(sentenceAttempts === 0){
+        stats.directStreak++;
+        stats.difficulty = Math.max(0, stats.difficulty - 1);
+      }
+      sentenceLearning.levelCorrect++;
+      const levelUp = sentenceLearning.levelCorrect >= sentenceLevelSize;
+      if(levelUp){sentenceLearning.level++;sentenceLearning.levelCorrect = 0;}
+      saveSentenceLearning();
+      updateSentenceProgress();
+      feedback.textContent = levelUp ? "Richtig! Level " + sentenceLearning.level : "Richtig!";
       feedback.className = "sentence-feedback ok";
+      // Keep the actual accepted construction visible throughout the entire animation.
+      if(answerTokens.length){
+        const first = answerTokens[0];
+        first.textContent = first.textContent.charAt(0).toLocaleUpperCase("tr") + first.textContent.slice(1);
+        answerTokens.at(-1).textContent += ".";
+      }
+      lockSentenceConstruction();
       document.getElementById("checkSentenceButton").style.display = "none";
-
-      const celebrationDuration = celebrateCorrectAnswer();
-      setTimeout(() => {
-        nextSentence();
+      const celebrationDuration = Math.max(1800, celebrateCorrectAnswer());
+      sentenceTransitionTimer = setTimeout(() => {
+        if(sentenceGameRunning) nextSentence();
       }, celebrationDuration);
     }else{
-      feedback.textContent = "Noch nicht richtig – prüfe Wörter, Suffixe und Verbendungen.";
+      sentenceAttempts++;
+      stats.errors++;
+      stats.difficulty = Math.min(12, stats.difficulty + 1);
+      stats.directStreak = 0;
+      sentenceLearning.mistakes++;
+      const hint = getSentenceErrorHint(result.issue, sentenceAttempts);
       feedback.className = "sentence-feedback bad";
+      if(sentenceLearning.mistakes >= 3){
+        sentenceLearning.level = 1;
+        sentenceLearning.levelCorrect = 0;
+        sentenceLearning.mistakes = 0;
+        feedback.textContent = "Zurück zu Level 1 · " + hint;
+        lockSentenceConstruction();
+        sentenceTransitionTimer = setTimeout(() => {
+          if(sentenceGameRunning) nextSentence();
+        }, 2600);
+      }else{
+        feedback.textContent = hint;
+      }
+      saveSentenceLearning();
+      updateSentenceProgress();
     }
   }
 
   function nextSentence(){
-    sentenceRoundIndex++;
+    if(!sentenceGameRunning) return;
+    clearTimeout(sentenceTransitionTimer);
+    sentenceTransitionTimer = null;
+    const challenge = selectSentenceChallenge();
+    if(!challenge){
+      document.getElementById("sentenceGameActive").style.display = "none";
+      document.getElementById("sentenceComplete").classList.add("show");
+      document.querySelector("#sentenceComplete h2").textContent = "Noch keine passenden Sätze";
+      document.querySelector("#sentenceComplete p").textContent = "Schalte zuerst die Wörter frei, die für einen Satz gebraucht werden.";
+      return;
+    }
+    document.getElementById("sentenceGameActive").style.display = "flex";
+    document.getElementById("sentenceComplete").classList.remove("show");
+    sentenceOrder = [challenge];
+    sentenceRoundIndex = 0;
+    sentenceAttempts = 0;
     renderSentenceChallenge();
   }
 
