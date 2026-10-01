@@ -1145,31 +1145,45 @@
           rotate(var(--r0));
         animation-timing-function:cubic-bezier(.12,.72,.22,1);
       }
-      6%{
+      5%{
         opacity:1;
       }
-      22%{
+      18%{
         opacity:1;
         transform:
-          translate3d(var(--burst-x),calc(var(--rise) * -.78),0)
+          translate3d(var(--spread-1),calc(var(--rise) * -.58),0)
           rotate(var(--r1));
-        animation-timing-function:cubic-bezier(.18,.62,.24,1);
       }
-      38%{
+      34%{
         opacity:1;
         transform:
-          translate3d(var(--apex-x),calc(var(--rise) * -1),0)
+          translate3d(var(--spread-2),calc(var(--rise) * -1),0)
           rotate(var(--r2));
         animation-timing-function:linear;
       }
-      92%{
-        opacity:.96;
+      52%{
+        opacity:1;
+        transform:
+          translate3d(var(--spread-3),calc(var(--rise) * -.73),0)
+          rotate(var(--r3));
+      }
+      72%{
+        opacity:.98;
+        transform:
+          translate3d(var(--spread-4),calc(var(--rise) * -.40),0)
+          rotate(var(--r4));
+      }
+      88%{
+        opacity:.94;
+        transform:
+          translate3d(var(--spread-5),calc(var(--rise) * -.13),0)
+          rotate(var(--r5));
       }
       100%{
         opacity:0;
         transform:
-          translate3d(var(--fall-x),12vh,0)
-          rotate(var(--r3));
+          translate3d(var(--spread-6),12vh,0)
+          rotate(var(--r6));
       }
     }
 
@@ -4106,13 +4120,17 @@
       const originX = 47 + Math.random() * 6;
       const width = 5 + Math.random() * 6;
       const height = Math.random() < .24 ? width : 9 + Math.random() * 8;
-      const delay = Math.random() * .14;
-      const duration = 3.7 + Math.random() * .42;
-      const rise = 48 + Math.random() * 24;
-      const burstX = side * (18 + Math.random() * 52);
-      const apexX = burstX + side * (10 + Math.random() * 34);
-      const fallDrift = -58 + Math.random() * 116;
-      const fallX = apexX + fallDrift;
+      const delay = Math.random() * .12;
+      const duration = 4.0 + Math.random() * .28;
+      const rise = 50 + Math.random() * 22;
+
+      const spread1 = side * (12 + Math.random() * 18);
+      const spread2 = spread1 + side * (24 + Math.random() * 32);
+      const spread3 = spread2 + side * (10 + Math.random() * 18);
+      const spread4 = spread3 + side * (12 + Math.random() * 20);
+      const spread5 = spread4 + side * (10 + Math.random() * 18);
+      const spread6 = spread5 + side * (8 + Math.random() * 16);
+
       const spinDirection = Math.random() < .5 ? -1 : 1;
       const r0 = Math.floor(Math.random() * 180);
       const spin = spinDirection * (520 + Math.random() * 620);
@@ -4126,13 +4144,19 @@
       piece.style.setProperty("--delay", delay + "s");
       piece.style.setProperty("--duration", duration + "s");
       piece.style.setProperty("--rise", rise + "vh");
-      piece.style.setProperty("--burst-x", burstX + "px");
-      piece.style.setProperty("--apex-x", apexX + "px");
-      piece.style.setProperty("--fall-x", fallX + "px");
+      piece.style.setProperty("--spread-1", spread1 + "px");
+      piece.style.setProperty("--spread-2", spread2 + "px");
+      piece.style.setProperty("--spread-3", spread3 + "px");
+      piece.style.setProperty("--spread-4", spread4 + "px");
+      piece.style.setProperty("--spread-5", spread5 + "px");
+      piece.style.setProperty("--spread-6", spread6 + "px");
       piece.style.setProperty("--r0", r0 + "deg");
-      piece.style.setProperty("--r1", (r0 + spin * .34) + "deg");
-      piece.style.setProperty("--r2", (r0 + spin * .52) + "deg");
-      piece.style.setProperty("--r3", (r0 + spin) + "deg");
+      piece.style.setProperty("--r1", (r0 + spin * .22) + "deg");
+      piece.style.setProperty("--r2", (r0 + spin * .40) + "deg");
+      piece.style.setProperty("--r3", (r0 + spin * .56) + "deg");
+      piece.style.setProperty("--r4", (r0 + spin * .72) + "deg");
+      piece.style.setProperty("--r5", (r0 + spin * .87) + "deg");
+      piece.style.setProperty("--r6", (r0 + spin) + "deg");
       piece.style.setProperty("--radius", radius);
       piece.style.setProperty(
         "--confetti-color",
