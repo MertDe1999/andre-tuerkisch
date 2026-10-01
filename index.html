@@ -39,10 +39,42 @@
       --rose:#f2dddd;
       --rose-dark:#986060;
 
-      /* Sonstige Wortarten / Umgangssprache */
-      --other:#d8d3cf;
-      --other-soft:#ebe7e4;
-      --other-dark:#625d5a;
+      /* Weitere Wortarten – jede Kategorie hat eine eigene Farbe */
+      --colloquial:#f2c1b8;
+      --colloquial-soft:#fceae6;
+      --colloquial-dark:#98584f;
+
+      --response:#bfe3de;
+      --response-soft:#e9f7f5;
+      --response-dark:#4f7f79;
+
+      --conjunction:#dde6b8;
+      --conjunction-soft:#f3f7e4;
+      --conjunction-dark:#71803d;
+
+      --demonstrative:#d4d8f2;
+      --demonstrative-soft:#eef0fb;
+      --demonstrative-dark:#626c9d;
+
+      --questionword:#f1cde0;
+      --questionword-soft:#faedf4;
+      --questionword-dark:#956079;
+
+      --greeting:#f5d0b5;
+      --greeting-soft:#fff0e5;
+      --greeting-dark:#9a6948;
+
+      --polite:#decbe5;
+      --polite-soft:#f4ebf7;
+      --polite-dark:#7f628a;
+
+      --phrase:#e7c5cb;
+      --phrase-soft:#f8e9ec;
+      --phrase-dark:#8f5d66;
+
+      --other:#d8d0c8;
+      --other-soft:#eee9e4;
+      --other-dark:#69615a;
 
       --shadow:0 10px 28px rgba(70,54,46,.07);
       --radius:24px;
@@ -685,15 +717,15 @@
     .word-row.pronoun{background:var(--blue);border-color:#d3e3ee}
     .word-row.neutral{background:#f2eef7;border-color:#e8e0ef}
     .word-row.existential{background:#f2eef7;border-color:#e8e0ef}
-    .word-row.colloquial,
-    .word-row.other,
-    .word-row.response,
-    .word-row.conjunction,
-    .word-row.demonstrative,
-    .word-row.questionword,
-    .word-row.greeting,
-    .word-row.polite,
-    .word-row.phrase{background:var(--other-soft);border-color:#d4ceca}
+    .word-row.colloquial{background:var(--colloquial-soft);border-color:var(--colloquial)}
+    .word-row.response{background:var(--response-soft);border-color:var(--response)}
+    .word-row.conjunction{background:var(--conjunction-soft);border-color:var(--conjunction)}
+    .word-row.demonstrative{background:var(--demonstrative-soft);border-color:var(--demonstrative)}
+    .word-row.questionword{background:var(--questionword-soft);border-color:var(--questionword)}
+    .word-row.greeting{background:var(--greeting-soft);border-color:var(--greeting)}
+    .word-row.polite{background:var(--polite-soft);border-color:var(--polite)}
+    .word-row.phrase{background:var(--phrase-soft);border-color:var(--phrase)}
+    .word-row.other{background:var(--other-soft);border-color:var(--other)}
 
     .word-de{
       font-size:.84rem;
@@ -724,15 +756,15 @@
     .type-badge.pronoun{background:var(--blue);color:var(--blue-dark)}
     .type-badge.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .type-badge.existential{background:var(--lavender);color:var(--lavender-dark)}
-    .type-badge.colloquial,
-    .type-badge.other,
-    .type-badge.response,
-    .type-badge.conjunction,
-    .type-badge.demonstrative,
-    .type-badge.questionword,
-    .type-badge.greeting,
-    .type-badge.polite,
-    .type-badge.phrase{background:var(--other);color:var(--other-dark)}
+    .type-badge.colloquial{background:var(--colloquial);color:var(--colloquial-dark)}
+    .type-badge.response{background:var(--response);color:var(--response-dark)}
+    .type-badge.conjunction{background:var(--conjunction);color:var(--conjunction-dark)}
+    .type-badge.demonstrative{background:var(--demonstrative);color:var(--demonstrative-dark)}
+    .type-badge.questionword{background:var(--questionword);color:var(--questionword-dark)}
+    .type-badge.greeting{background:var(--greeting);color:var(--greeting-dark)}
+    .type-badge.polite{background:var(--polite);color:var(--polite-dark)}
+    .type-badge.phrase{background:var(--phrase);color:var(--phrase-dark)}
+    .type-badge.other{background:var(--other);color:var(--other-dark)}
 
     /* Grammatik */
     .grammar-card{
@@ -977,8 +1009,8 @@
       border:0;
       border-radius:12px;
       padding:10px 13px;
-      background:var(--verb);
-      color:var(--verb-dark);
+      background:var(--surface-soft);
+      color:var(--text);
       font-weight:850;
       cursor:grab;
       user-select:none;
@@ -986,6 +1018,21 @@
       touch-action:none;
       box-shadow:0 3px 9px rgba(70,54,46,.06);
     }
+
+    .sentence-token.word-type-noun{background:var(--noun-soft);color:var(--noun-dark)}
+    .sentence-token.word-type-verb{background:var(--verb-soft);color:var(--verb-dark)}
+    .sentence-token.word-type-adj{background:var(--adj-soft);color:var(--adj-dark)}
+    .sentence-token.word-type-pronoun{background:var(--blue);color:var(--blue-dark)}
+    .sentence-token.word-type-existential{background:var(--lavender);color:var(--lavender-dark)}
+    .sentence-token.word-type-colloquial{background:var(--colloquial);color:var(--colloquial-dark)}
+    .sentence-token.word-type-response{background:var(--response);color:var(--response-dark)}
+    .sentence-token.word-type-conjunction{background:var(--conjunction);color:var(--conjunction-dark)}
+    .sentence-token.word-type-demonstrative{background:var(--demonstrative);color:var(--demonstrative-dark)}
+    .sentence-token.word-type-questionword{background:var(--questionword);color:var(--questionword-dark)}
+    .sentence-token.word-type-greeting{background:var(--greeting);color:var(--greeting-dark)}
+    .sentence-token.word-type-polite{background:var(--polite);color:var(--polite-dark)}
+    .sentence-token.word-type-phrase{background:var(--phrase);color:var(--phrase-dark)}
+    .sentence-token.word-type-other{background:var(--other);color:var(--other-dark)}
 
     .sentence-token.case-target{
       background:var(--noun-soft);
@@ -1457,15 +1504,15 @@
     .quiz-card.pronoun{background:#edf5fa;border-color:#d3e3ee}
     .quiz-card.neutral{background:#f2eef7;border-color:#e8e0ef}
     .quiz-card.existential{background:#f2eef7;border-color:#e8e0ef}
-    .quiz-card.colloquial,
-    .quiz-card.other,
-    .quiz-card.response,
-    .quiz-card.conjunction,
-    .quiz-card.demonstrative,
-    .quiz-card.questionword,
-    .quiz-card.greeting,
-    .quiz-card.polite,
-    .quiz-card.phrase{background:var(--other-soft);border-color:#d4ceca}
+    .quiz-card.colloquial{background:var(--colloquial-soft);border-color:var(--colloquial)}
+    .quiz-card.response{background:var(--response-soft);border-color:var(--response)}
+    .quiz-card.conjunction{background:var(--conjunction-soft);border-color:var(--conjunction)}
+    .quiz-card.demonstrative{background:var(--demonstrative-soft);border-color:var(--demonstrative)}
+    .quiz-card.questionword{background:var(--questionword-soft);border-color:var(--questionword)}
+    .quiz-card.greeting{background:var(--greeting-soft);border-color:var(--greeting)}
+    .quiz-card.polite{background:var(--polite-soft);border-color:var(--polite)}
+    .quiz-card.phrase{background:var(--phrase-soft);border-color:var(--phrase)}
+    .quiz-card.other{background:var(--other-soft);border-color:var(--other)}
 
     .quiz-direction{
       font-size:.79rem;
@@ -1488,15 +1535,15 @@
     .quiz-type.pronoun{background:var(--blue);color:var(--blue-dark)}
     .quiz-type.neutral{background:var(--lavender);color:var(--lavender-dark)}
     .quiz-type.existential{background:var(--lavender);color:var(--lavender-dark)}
-    .quiz-type.colloquial,
-    .quiz-type.other,
-    .quiz-type.response,
-    .quiz-type.conjunction,
-    .quiz-type.demonstrative,
-    .quiz-type.questionword,
-    .quiz-type.greeting,
-    .quiz-type.polite,
-    .quiz-type.phrase{background:var(--other);color:var(--other-dark)}
+    .quiz-type.colloquial{background:var(--colloquial);color:var(--colloquial-dark)}
+    .quiz-type.response{background:var(--response);color:var(--response-dark)}
+    .quiz-type.conjunction{background:var(--conjunction);color:var(--conjunction-dark)}
+    .quiz-type.demonstrative{background:var(--demonstrative);color:var(--demonstrative-dark)}
+    .quiz-type.questionword{background:var(--questionword);color:var(--questionword-dark)}
+    .quiz-type.greeting{background:var(--greeting);color:var(--greeting-dark)}
+    .quiz-type.polite{background:var(--polite);color:var(--polite-dark)}
+    .quiz-type.phrase{background:var(--phrase);color:var(--phrase-dark)}
+    .quiz-type.other{background:var(--other);color:var(--other-dark)}
 
     .quiz-front{
       font-size:clamp(2.1rem,11vw,3.4rem);
@@ -1570,15 +1617,15 @@
     .quiz-card.pronoun .answer-text{color:var(--blue-dark)}
     .quiz-card.neutral .answer-text{color:var(--lavender-dark)}
     .quiz-card.existential .answer-text{color:var(--lavender-dark)}
-    .quiz-card.colloquial .answer-text,
-    .quiz-card.other .answer-text,
-    .quiz-card.response .answer-text,
-    .quiz-card.conjunction .answer-text,
-    .quiz-card.demonstrative .answer-text,
-    .quiz-card.questionword .answer-text,
-    .quiz-card.greeting .answer-text,
-    .quiz-card.polite .answer-text,
-    .quiz-card.phrase .answer-text{color:var(--other-dark)}
+    .quiz-card.colloquial .answer-text{color:var(--colloquial-dark)}
+    .quiz-card.response .answer-text{color:var(--response-dark)}
+    .quiz-card.conjunction .answer-text{color:var(--conjunction-dark)}
+    .quiz-card.demonstrative .answer-text{color:var(--demonstrative-dark)}
+    .quiz-card.questionword .answer-text{color:var(--questionword-dark)}
+    .quiz-card.greeting .answer-text{color:var(--greeting-dark)}
+    .quiz-card.polite .answer-text{color:var(--polite-dark)}
+    .quiz-card.phrase .answer-text{color:var(--phrase-dark)}
+    .quiz-card.other .answer-text{color:var(--other-dark)}
 
     .reveal-btn{
       width:100%;
@@ -1654,6 +1701,38 @@
         --blue-dark:#c0d4e0;
         --rose:#5b3b3b;
         --rose-dark:#e6b5b5;
+
+        --colloquial:#6f4039;
+        --colloquial-soft:#34211e;
+        --colloquial-dark:#f0b2a7;
+
+        --response:#3d6863;
+        --response-soft:#1e302e;
+        --response-dark:#a9d9d3;
+
+        --conjunction:#596331;
+        --conjunction-soft:#292d1b;
+        --conjunction-dark:#d3df9a;
+
+        --demonstrative:#474f78;
+        --demonstrative-soft:#24283c;
+        --demonstrative-dark:#c3c9ef;
+
+        --questionword:#6a4158;
+        --questionword-soft:#34222c;
+        --questionword-dark:#e9b8d2;
+
+        --greeting:#744c31;
+        --greeting-soft:#34261c;
+        --greeting-dark:#efbd96;
+
+        --polite:#5c4865;
+        --polite-soft:#2e2432;
+        --polite-dark:#d8bde2;
+
+        --phrase:#634148;
+        --phrase-soft:#312126;
+        --phrase-dark:#dfb0b9;
 
         --other:#49433f;
         --other-soft:#2c2825;
@@ -1750,6 +1829,25 @@
       .word-row.pronoun{background:#26343d}
       .word-row.neutral,
       .word-row.existential{background:#2d2734}
+      .word-row.colloquial{background:var(--colloquial-soft)}
+      .word-row.response{background:var(--response-soft)}
+      .word-row.conjunction{background:var(--conjunction-soft)}
+      .word-row.demonstrative{background:var(--demonstrative-soft)}
+      .word-row.questionword{background:var(--questionword-soft)}
+      .word-row.greeting{background:var(--greeting-soft)}
+      .word-row.polite{background:var(--polite-soft)}
+      .word-row.phrase{background:var(--phrase-soft)}
+      .word-row.other{background:var(--other-soft)}
+
+      .quiz-card.colloquial{background:var(--colloquial-soft)}
+      .quiz-card.response{background:var(--response-soft)}
+      .quiz-card.conjunction{background:var(--conjunction-soft)}
+      .quiz-card.demonstrative{background:var(--demonstrative-soft)}
+      .quiz-card.questionword{background:var(--questionword-soft)}
+      .quiz-card.greeting{background:var(--greeting-soft)}
+      .quiz-card.polite{background:var(--polite-soft)}
+      .quiz-card.phrase{background:var(--phrase-soft)}
+      .quiz-card.other{background:var(--other-soft)}
 
       .grammar-card.noun{background:var(--noun-soft);border-color:var(--line)}
       .grammar-card.verb{background:var(--verb-soft);border-color:var(--line)}
@@ -3359,6 +3457,38 @@
     );
   }
 
+  const sentenceWordTypeClasses = [
+    "noun","verb","adj","pronoun","existential","colloquial","response",
+    "conjunction","demonstrative","questionword","greeting","polite","phrase","other"
+  ];
+
+  function getKnownWordType(word){
+    const normalized = unlockWordKey(normalizeSentencePiece(word));
+    if(!normalized) return "other";
+
+    const rows = getDictionaryRows();
+    const exactRow = rows.find(row =>
+      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === normalized
+    );
+
+    if(exactRow){
+      return sentenceWordTypeClasses.find(type => exactRow.classList.contains(type)) || "other";
+    }
+
+    const adjectiveRows = rows.filter(row => row.classList.contains("adj"));
+    for(const row of adjectiveRows){
+      const base = unlockWordKey(row.querySelector(".word-tr")?.textContent || "");
+      if(!base || !normalized.startsWith(base)) continue;
+
+      const ending = normalized.slice(base.length);
+      if(["im","ım","um","üm","sin","sın","sun","sün"].includes(ending)){
+        return "adj";
+      }
+    }
+
+    return "other";
+  }
+
   function getSentenceTokenDescriptors(challenge){
     const caseBuilds = challenge.caseBuilds || [];
     const verbBuilds = challenge.verbBuilds || [];
@@ -3511,6 +3641,10 @@
       token.dataset.tokenKind = "word";
       token.dataset.word = word;
       token.textContent = word;
+
+      const wordType = getKnownWordType(word);
+      token.dataset.wordType = wordType;
+      token.classList.add("word-type-" + wordType);
 
       if(isKnownNounWord(word)){
         token.classList.add("case-target");
