@@ -3845,6 +3845,10 @@
     renderSentenceChallenge();
   }
 
+  function sameSentencePieces(a, b){
+    return a.length === b.length && a.every((word, i) => word === b[i]);
+  }
+
   function checkSentence(){
     const challenge = sentenceOrder[sentenceRoundIndex];
     const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
@@ -3857,17 +3861,30 @@
         el.dataset.tokenKind !== "suffix" &&
         el.dataset.tokenKind !== "verb-ending"
       )
-      .map(el => normalizeSentencePiece(el.dataset.word))
+      .map(el => normalizeSentencePiece(el.dataset.word));
+
+    const expected = challenge.answer.map(normalizeSentencePiece);
+    const personalPronouns = new Set(["ben","sen","o","biz"]);
+
+    const builtContent = built
+      .filter(word => !personalPronouns.has(word))
       .sort((a, b) => a.localeCompare(b, "tr"));
 
-    const expected = challenge.answer
-      .map(normalizeSentencePiece)
+    const expectedContent = expected
+      .filter(word => !personalPronouns.has(word))
       .sort((a, b) => a.localeCompare(b, "tr"));
+
+    const builtPronouns = built.filter(word => personalPronouns.has(word));
+    const expectedPronouns = expected.filter(word => personalPronouns.has(word));
+
+    const pronounsValid = builtPronouns.every(pronoun =>
+      expectedPronouns.includes(pronoun)
+    );
 
     const correct =
       !hasUnusedBuilderCard &&
-      built.length === expected.length &&
-      built.every((word, i) => word === expected[i]);
+      sameSentencePieces(builtContent, expectedContent) &&
+      pronounsValid;
 
     const feedback = document.getElementById("sentenceFeedback");
 
