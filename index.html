@@ -1096,47 +1096,33 @@
         transform:
           translate3d(0,18px,0)
           rotate(var(--r0));
-        animation-timing-function:cubic-bezier(.16,.78,.24,1);
+        animation-timing-function:cubic-bezier(.12,.72,.22,1);
       }
-      5%{
+      6%{
         opacity:1;
       }
-      25%{
+      22%{
         opacity:1;
         transform:
-          translate3d(var(--burst-x),calc(var(--rise) * -.82),0)
+          translate3d(var(--burst-x),calc(var(--rise) * -.78),0)
           rotate(var(--r1));
+        animation-timing-function:cubic-bezier(.18,.62,.24,1);
       }
-      43%{
+      38%{
         opacity:1;
         transform:
           translate3d(var(--apex-x),calc(var(--rise) * -1),0)
           rotate(var(--r2));
         animation-timing-function:linear;
       }
-      58%{
-        opacity:1;
-        transform:
-          translate3d(var(--apex-x),calc(var(--rise) * -.72),0)
-          rotate(var(--r3));
-      }
-      73%{
-        opacity:.98;
-        transform:
-          translate3d(var(--apex-x),calc(var(--rise) * -.44),0)
-          rotate(var(--r4));
-      }
-      88%{
-        opacity:.9;
-        transform:
-          translate3d(var(--apex-x),calc(var(--rise) * -.16),0)
-          rotate(var(--r5));
+      92%{
+        opacity:.96;
       }
       100%{
         opacity:0;
         transform:
-          translate3d(var(--apex-x),10vh,0)
-          rotate(var(--r6));
+          translate3d(var(--fall-x),12vh,0)
+          rotate(var(--r3));
       }
     }
 
@@ -3986,14 +3972,16 @@
       const originX = 47 + Math.random() * 6;
       const width = 5 + Math.random() * 6;
       const height = Math.random() < .24 ? width : 9 + Math.random() * 8;
-      const delay = Math.random() * .12;
-      const duration = 2.85 + Math.random() * .12;
-      const rise = 50 + Math.random() * 22;
+      const delay = Math.random() * .14;
+      const duration = 3.7 + Math.random() * .42;
+      const rise = 48 + Math.random() * 24;
       const burstX = side * (18 + Math.random() * 52);
-      const apexX = burstX + side * (10 + Math.random() * 38);
+      const apexX = burstX + side * (10 + Math.random() * 34);
+      const fallDrift = -58 + Math.random() * 116;
+      const fallX = apexX + fallDrift;
       const spinDirection = Math.random() < .5 ? -1 : 1;
       const r0 = Math.floor(Math.random() * 180);
-      const spin = spinDirection * (560 + Math.random() * 520);
+      const spin = spinDirection * (520 + Math.random() * 620);
       const radius = Math.random() < .22 ? "50%" : (1 + Math.random() * 3) + "px";
 
       longestAnimation = Math.max(longestAnimation, delay + duration);
@@ -4006,13 +3994,11 @@
       piece.style.setProperty("--rise", rise + "vh");
       piece.style.setProperty("--burst-x", burstX + "px");
       piece.style.setProperty("--apex-x", apexX + "px");
+      piece.style.setProperty("--fall-x", fallX + "px");
       piece.style.setProperty("--r0", r0 + "deg");
-      piece.style.setProperty("--r1", (r0 + spin * .28) + "deg");
-      piece.style.setProperty("--r2", (r0 + spin * .46) + "deg");
-      piece.style.setProperty("--r3", (r0 + spin * .60) + "deg");
-      piece.style.setProperty("--r4", (r0 + spin * .74) + "deg");
-      piece.style.setProperty("--r5", (r0 + spin * .88) + "deg");
-      piece.style.setProperty("--r6", (r0 + spin) + "deg");
+      piece.style.setProperty("--r1", (r0 + spin * .34) + "deg");
+      piece.style.setProperty("--r2", (r0 + spin * .52) + "deg");
+      piece.style.setProperty("--r3", (r0 + spin) + "deg");
       piece.style.setProperty("--radius", radius);
       piece.style.setProperty(
         "--confetti-color",
