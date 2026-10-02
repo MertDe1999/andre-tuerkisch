@@ -29,3 +29,7 @@ node --test tests/sentence-builder.test.cjs tests/learning-controls.test.cjs
 ```
 
 Die Tests führen das echte Inline-JavaScript in einem kleinen DOM-Modell aus. Sie prüfen Satzlogik, Auswahl, Wiederholung, Flexion, Spielverlauf, Übergänge, Konfetti, Freischaltdaten und Bedienungsaktionen. Echte Browser-, Layout-, Touch- und Screenreaderprüfungen ergänzen diese Tests. GitHub Actions führt die Tests bei Pull Requests und Änderungen an `main` oder `codex/**` aus.
+
+## Geplanter Satzbauausbau
+
+Der [geprüfte Satzbauplan](docs/satzbau-plan.md) beschreibt 160 Spiellevel mit A1–B2-Orientierung, Lernvoraussetzungen, Wiederholung und konkrete Umsetzungspakete P01–P12. Er ist ein Ausbauvorschlag; die aktuelle App enthält diese Inhalte und die neue Levelwertung noch nicht. Die [eingereichte frühere Vorlage](docs/eingereichter-satzbauplan-2026-10-02.txt) bleibt zum Vergleich erhalten.
