@@ -3,7 +3,7 @@
   'use strict';
   const W=AndreWords,T=Turkish,C=AndreCurriculum,L=AndreLearning;
   const engine=new L.Engine();
-  let running=false,activeGroup=null,selected=null,drag=null,advanceTimer=null,suppressUntil=0,formField=null,formPage=0,bankPage=0;
+  let running=false,activeGroup=null,selected=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
   const task=()=>C.tasks.find(t=>t.id===engine.state.current?.taskId);
@@ -54,21 +54,21 @@
     return ['noun','pronoun'].includes(type)||(type==='verb'&&['ma','dik','acak'].includes(token.features.tense));
   }
   function selectTarget(card){
-    const cur=current();
-    return cur.tokens.find(t=>t.id===selected&&t.group&&fits(t,card))||cur.tokens.filter(t=>t.group===activeGroup&&fits(t,card)).at(-1);
+    const cur=current(),visible=new Set(Array.from(el('wordBank').children).map(b=>b.dataset.modernToken));
+    return cur.tokens.find(t=>t.id===selected&&fits(t,card))||cur.tokens.filter(t=>t.group===activeGroup&&fits(t,card)).at(-1)||cur.tokens.find(t=>!t.group&&visible.has(t.id)&&fits(t,card))||cur.tokens.find(t=>!t.group&&fits(t,card));
   }
   function saveAndRender(focusId){engine.save();render();if(focusId)el('sentenceToken-'+focusId)?.focus({preventScroll:true});}
   function apply(card,tokenId){
     if(!running||current()?.finished)return;
     const token=tokenId?current().tokens.find(t=>t.id===tokenId):selectTarget(card);
-    if(!token||!fits(token,card)){message('Setze zuerst ein passendes Wort in den gewählten Satzteil.');return;}
+    if(!token||!fits(token,card)){message('Ziehe die Endung auf ein passendes Wort.');return;}
     if(card.value===null||card.value===false||card.value==='active'||card.value==='bare'||card.value==='infinitive')delete token.features[card.field];else {delete token.features[card.field];token.features[card.field]=card.value;}
-    selected=token.id;activeGroup=token.group;saveAndRender(token.id);
+    selected=token.id;if(token.group)activeGroup=token.group;saveAndRender(token.id);
   }
   function moveToken(id,groupId,beforeId=null){
     if(!running||current()?.finished)return;
     const token=current().tokens.find(t=>t.id===id);if(!token)return;
-    token.group=groupId;selected=groupId?id:null;if(groupId)activeGroup=groupId;
+    token.group=groupId;selected=id;if(groupId)activeGroup=groupId;
     const items=current().tokens;items.splice(items.indexOf(token),1);
     const index=beforeId?items.findIndex(t=>t.id===beforeId):-1;
     items.splice(index<0?items.length:index,0,token);bankPage=0;
@@ -86,21 +86,37 @@
   function wordButton(token){
     const text=surface(token);
     const button=make('button','sentence-token word-type-'+W.byId[token.lemma].type,text);button.type='button';button.id='sentenceToken-'+token.id;
-    button.dataset.modernToken=token.id;button.setAttribute('aria-pressed',String(selected===token.id&&!!token.group));
-    button.classList.toggle('is-selected',selected===token.id&&!!token.group);button.disabled=current().finished;
+    button.dataset.modernToken=token.id;button.setAttribute('aria-pressed',String(selected===token.id));
+    button.classList.toggle('is-selected',selected===token.id);button.disabled=current().finished;
     button.setAttribute('aria-label',text+(token.group?(Object.keys(token.features).length?': letzte Endung entfernen':': zurück in die Wortbank'):': in '+task().groups.find(g=>g.id===activeGroup)?.label+' einsetzen'));
     button.addEventListener('click',event=>{if(event.detail&&Date.now()<suppressUntil)return;activate(token);});
     attachDrag(button,{token:token.id});return button;
   }
+  function grammarButton(card){
+    const text=shortLabels[card.field]?.[card.value]||(card.field==='predicatePerson'?shortLabels.person[card.value]:card.value===null||card.value===false?'∅':{plural:'-lar',negative:'-ma',question:'-mı',ability:'-abil',past:'-di'}[card.field]||card.label);
+    const button=make('button','sentence-grammar-card','');button.type='button';button.setAttribute('aria-label',card.label);button.title=card.label;
+    button.dataset.grammarField=card.field;button.dataset.grammarValue=JSON.stringify(card.value);
+    button.append(make('span','sentence-form-value',text),make('span','sentence-form-label',fieldNames[card.field]));
+    const token=current().tokens.find(t=>t.id===selected);
+    button.setAttribute('aria-pressed',String(!!token&&token.features[card.field]===card.value));
+    button.addEventListener('click',event=>{if(event.detail&&Date.now()<suppressUntil)return;apply(card);});attachDrag(button,{card});return button;
+  }
+  function clearDropTargets(){
+    for(const zone of [el('answerZone'),el('wordBank')]){
+      zone.querySelectorAll('.drag-over').forEach(e=>e.classList.remove('drag-over'));
+      zone.querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));zone.classList.remove('drag-over');
+    }
+  }
   function clearDrag(){
     const old=drag;drag=null;
     if(old){old.button.classList.remove('dragging');old.ghost?.remove();try{old.button.releasePointerCapture?.(old.pointer);}catch{}}
-    el('answerZone').querySelectorAll('.drag-over').forEach(e=>e.classList.remove('drag-over'));
-    el('answerZone').querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));el('wordBank').classList.remove('drag-over');
+    clearDropTargets();
   }
   function dragDestination(event,payload){
     const under=document.elementFromPoint(event.clientX,event.clientY),word=under?.closest('[data-modern-token]'),group=under?.closest('[data-sentence-group]');
-    if(payload.card){const token=current().tokens.find(t=>t.id===word?.dataset.modernToken);return token?.group&&fits(token,payload.card)?{word,token}:null;}
+    if(payload.card){const token=current().tokens.find(t=>t.id===word?.dataset.modernToken);return token&&fits(token,payload.card)?{word,token,card:payload.card}:null;}
+    const form=under?.closest('[data-grammar-field]');
+    if(form){const card={field:form.dataset.grammarField,value:JSON.parse(form.dataset.grammarValue)},token=current().tokens.find(t=>t.id===payload.token);return token&&fits(token,card)?{word:form,token,card}:null;}
     if(group){
       const id=word?.dataset.modernToken,items=current().tokens.filter(t=>t.group===group.dataset.sentenceGroup&&t.id!==payload.token);
       let beforeId=id;
@@ -126,8 +142,7 @@
       }
       if(!drag.moved)return;
       event.preventDefault?.();drag.ghost.style.left=event.clientX+'px';drag.ghost.style.top=event.clientY+'px';
-      el('answerZone').querySelectorAll('.drag-over').forEach(e=>e.classList.remove('drag-over'));
-      el('answerZone').querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));el('wordBank').classList.remove('drag-over');
+      clearDropTargets();
       const target=dragDestination(event,payload);
       if(target?.word)target.word.classList.add('case-drop-over');else if(target?.group)target.group.classList.add('drag-over');else if(target?.bank)el('wordBank').classList.add('drag-over');
     });
@@ -136,7 +151,7 @@
       const old=drag,target=event.type==='pointercancel'?null:dragDestination(event,payload);clearDrag();
       if(!old.moved)return;
       suppressUntil=Date.now()+350;
-      if(target?.token)apply(payload.card,target.token.id);
+      if(target?.token)apply(target.card,target.token.id);
       else if(target?.group)moveToken(payload.token,target.group.dataset.sentenceGroup,target.beforeId);
       else if(target?.bank)moveToken(payload.token,null);
     };
@@ -173,38 +188,25 @@
       const content=make('div','sentence-group-words','');content.dataset.sentenceGroup=g.id;content.hidden=g.id!==activeGroup;content.setAttribute('aria-label',g.label);
       for(const token of cur.tokens.filter(t=>t.group===g.id))content.append(wordButton(token));zone.append(content);
     }
-    const bank=el('wordBank'),words=cur.tokens.filter(t=>!t.group),size=root.matchMedia('(max-height:620px)').matches?3:6,pages=Math.max(1,Math.ceil(words.length/size));bankPage=Math.min(bankPage,pages-1);
-    bank.replaceChildren();for(const token of words.slice(bankPage*size,(bankPage+1)*size))bank.append(wordButton(token));
+    const bank=el('wordBank'),all=allowedCards(),cards=all.filter(c=>all.filter(other=>other.field===c.field).length>1),words=cur.tokens.filter(t=>!t.group);
+    // Keep the word being inflected visible while paging through further endings.
+    const anchor=words.find(t=>t.id===selected),remaining=words.filter(t=>t!==anchor),items=[];
+    for(let i=0;i<Math.max(remaining.length,cards.length);i++){if(remaining[i])items.push({token:remaining[i]});if(cards[i])items.push({card:cards[i]});}
+    bank.parentElement.hidden=cur.finished;
+    const short=root.matchMedia('(max-height:700px)').matches,height=bank.getBoundingClientRect().height;
+    const size=Math.max(3,Math.min(18,Math.floor((height-(short?14:20)+(short?6:8))/((short?44:52)+(short?6:8)))*3)),slots=size-(anchor?1:0),pages=Math.max(1,Math.ceil(items.length/slots));bankPage=Math.min(bankPage,pages-1);
+    bank.replaceChildren();if(anchor)bank.append(wordButton(anchor));
+    for(const item of items.slice(bankPage*slots,(bankPage+1)*slots))bank.append(item.token?wordButton(item.token):grammarButton(item.card));
     const pager=el('sentenceBankPages');pager.replaceChildren();pager.hidden=pages===1||cur.finished;
     for(const [label,step] of [['‹',-1],['›',1]]){
       const button=make('button','sentence-icon',label);button.type='button';button.setAttribute('aria-label',step<0?'Vorherige Wörter':'Weitere Wörter');button.disabled=step<0?bankPage===0:bankPage===pages-1;
-      button.addEventListener('click',()=>{bankPage+=step;render();});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
+      button.addEventListener('click',()=>{bankPage+=step;render();el('sentenceBankPages').children[step<0?0:2]?.focus({preventScroll:true});});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
     }
-    el('wordBank').parentElement.hidden=cur.finished;
-    renderForms();
     for(const id of ['checkSentenceButton','sentenceHintButton','sentenceUnknownButton','sentenceResetButton'])el(id).disabled=cur.finished;
     el('checkSentenceButton').hidden=cur.finished;el('sentenceUnknownButton').hidden=cur.finished;
     el('sentenceNextButton').hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!engine.storageError;
-  }
-  function renderForms(){
-    const cur=current(),all=allowedCards(),cards=all.filter(c=>all.filter(other=>other.field===c.field).length>1),targets=cur.tokens.filter(t=>t.group===activeGroup&&cards.some(c=>fits(t,c))),grammar=el('grammarBank');grammar.replaceChildren();
-    el('sentenceForms').hidden=cur.finished||!targets.length;grammar.hidden=cur.finished;
-    if(!targets.length)return;
-    let token=targets.find(t=>t.id===selected)||targets.filter(t=>t.group===activeGroup).at(-1)||targets.at(-1);selected=token.id;
-    const target=el('sentenceFormTarget');target.replaceChildren();
-    for(const t of targets){const option=make('option','',surface(t));option.value=t.id;target.append(option);}target.value=token.id;
-    const fields=[...new Set(cards.filter(c=>fits(token,c)).map(c=>c.field))];if(!fields.includes(formField)){formField=fields[0];formPage=0;}
-    const field=el('sentenceFormField');field.replaceChildren();for(const f of fields){const option=make('option','',fieldNames[f]);option.value=f;field.append(option);}field.value=formField;
-    const options=cards.filter(c=>c.field===formField&&fits(token,c)),pageSize=options.length>4?3:4,pages=Math.ceil(options.length/pageSize);formPage=Math.min(formPage,pages-1);
-    for(const card of options.slice(formPage*pageSize,(formPage+1)*pageSize)){
-      const text=shortLabels[card.field]?.[card.value]||(card.field==='predicatePerson'?shortLabels.person[card.value]:card.value===null?'∅':card.value===false?'Nein':card.value===true?'Ja':card.label);
-      const button=make('button','sentence-grammar-card',text);button.type='button';button.setAttribute('aria-label',card.label);button.title=card.label;
-      button.setAttribute('aria-pressed',String(token.features[card.field]===card.value));
-      button.addEventListener('click',event=>{if(event.detail&&Date.now()<suppressUntil)return;apply(card);});attachDrag(button,{card});grammar.append(button);
-    }
-    if(pages>1){const more=make('button','sentence-grammar-card sentence-form-next',formPage===pages-1?'‹':'›');more.type='button';more.setAttribute('aria-label','Weitere Endungen, Seite '+(formPage+1)+' von '+pages);more.addEventListener('click',()=>{formPage=(formPage+1)%pages;renderForms();el('grammarBank').querySelector('.sentence-form-next')?.focus({preventScroll:true});});grammar.append(more);}
   }
   function help(open){
     el('sentenceHelp').hidden=!open;el('sentenceHelpButton').setAttribute('aria-expanded',String(open));
@@ -220,7 +222,7 @@
   }
   function next(){
     if(!running)return;
-    clearTimeout(advanceTimer);advanceTimer=null;selected=null;activeGroup=null;formField=null;formPage=0;bankPage=0;help(false);el('sentenceHintText').textContent='';
+    clearTimeout(advanceTimer);advanceTimer=null;selected=null;activeGroup=null;bankPage=0;help(false);el('sentenceHintText').textContent='';
     const cur=engine.next();
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
@@ -330,9 +332,10 @@
     if(event.key==='Escape'){event.preventDefault();help(false);}
     else if(event.key==='Tab'){const buttons=[el('sentenceHelpClose'),el('sentenceHintButton'),el('sentenceResetButton')].filter(b=>!b.disabled);const index=buttons.indexOf(document.activeElement);event.preventDefault();buttons[(index+(event.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}
   });
-  el('sentenceFormTarget').addEventListener('change',event=>{selected=event.currentTarget.value;activeGroup=current().tokens.find(t=>t.id===selected)?.group;formPage=0;render();el('sentenceFormTarget').focus({preventScroll:true});});
-  el('sentenceFormField').addEventListener('change',event=>{formField=event.currentTarget.value;formPage=0;renderForms();el('sentenceFormField').focus({preventScroll:true});});
   root.addEventListener('resize',()=>{if(running){clearDrag();render();}});
+  // Opening the game and switching sentence parts can change the available
+  // bank height after render; fit its pages to the settled layout as well.
+  if(root.ResizeObserver)new root.ResizeObserver(()=>{if(running&&!drag)render();}).observe(el('wordBank'));
   backupPanel();grammarIndex();
   root.addEventListener('pagehide',()=>{stop();engine.save();});
 })(window);

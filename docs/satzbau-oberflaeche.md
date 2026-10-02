@@ -2,6 +2,9 @@
 
 Stand: 02.10.2026. Korrektur nach Nutzerfeedback zum Ausbau bis Level 160.
 
+Historischer Bericht zu PR #2. Die hier beschriebene separate Form-Steuerung
+wurde durch die [gemeinsame Wortbank](satzbau-gemeinsame-wortbank.md) ersetzt.
+
 ## Vergleich mit dem früheren Build
 
 Referenz: `74e0d791791b7aa0e3056ebb7aeef5944c3781a8`, vor dem Curriculum-Ausbau.
