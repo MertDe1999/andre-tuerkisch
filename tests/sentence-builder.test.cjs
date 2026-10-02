@@ -229,16 +229,29 @@ test('reset retains attempts; three cumulative mistakes reset the level and star
   a.run('sentenceLearning.level = 5; sentenceLearning.levelCorrect = 4; checkSentence();');
   assert.equal(a.run('sentenceAttempts'),1);
   assert.equal(a.el('sentenceFeedback').textContent,'Noch nicht richtig');
+  assert.equal(a.el('sentenceLevelText').textContent,'5');
+  assert.equal(a.el('sentenceProgressText').textContent,'2 Leben');
+  assert.equal(a.el('sentenceHeart2').classList.contains('is-lost'),true);
+  assert.equal(a.el('sentenceHeart2').classList.contains('life-lost'),true);
+  assert.equal(a.el('sentenceHeart1').classList.contains('is-lost'),false);
   a.run('resetSentence();checkSentence();');
   assert.equal(a.run('sentenceAttempts'),2);
   assert.ok(a.el('sentenceFeedback').textContent.includes('fehlt'));
+  assert.equal(a.el('sentenceProgressText').textContent,'1 Leben');
+  assert.equal(a.el('sentenceHeart1').classList.contains('life-lost'),true);
+  assert.equal(a.el('sentenceHeart2').classList.contains('life-lost'),false);
   a.run('checkSentence();checkSentence();');
   assert.equal(a.run('sentenceLearning.level'),1);
   assert.equal(a.run('sentenceLearning.levelCorrect'),0);
   assert.equal(a.run('sentenceLearning.mistakes'),0);
   assert.equal(a.run('sentenceAttempts'),3);
+  assert.equal(a.el('sentenceProgressText').textContent,'0 Leben');
+  assert.ok([0,1,2].every(i => a.el('sentenceHeart' + i).classList.contains('is-lost')));
   a.advance(2600);
   assert.equal(a.run('sentenceAttempts'),0);
+  assert.equal(a.el('sentenceProgressText').textContent,'3 Leben');
+  assert.ok([0,1,2].every(i => !a.el('sentenceHeart' + i).classList.contains('is-lost')));
+  assert.ok([0,1,2].every(i => !a.el('sentenceHeart' + i).classList.contains('life-lost')));
   assert.equal(a.run('getSentenceDifficulty(sentenceOrder[0])'),1);
   assert.ok(a.run('Object.values(sentenceLearning.sentences).some(stats => stats.errors === 3)'));
 });
@@ -249,6 +262,7 @@ test('five correct sentences advance a level; success stays visible for the whol
   const built = a.el('answerZone').children.map(token => token.textContent).join(' ');
   assert.equal(built,'Sen arabada yarağı görüyon.');
   assert.equal(a.run('sentenceLearning.level'),2);
+  assert.equal(a.el('sentenceLevelBadge').classList.contains('level-up'),true);
   assert.equal(a.run('sentenceLocked'),true);
   a.run('resetSentence();checkSentence();');
   a.advance(4000);
@@ -285,6 +299,11 @@ test('difficult sentences get more weight, mastery reduces weight, and learning 
   assert.equal(b.run('loadSentenceLearning().level'),4);
   assert.equal(b.run('loadSentenceLearning().mistakes'),2);
   assert.equal(b.run('Object.values(loadSentenceLearning().sentences)[0].errors'),4);
+  b.unlock();b.run('startSentenceGame()');
+  assert.equal(b.el('sentenceLevelText').textContent,'4');
+  assert.equal(b.el('sentenceProgressText').textContent,'1 Leben');
+  assert.ok([1,2].every(i => b.el('sentenceHeart' + i).classList.contains('is-lost')));
+  assert.ok([0,1,2].every(i => !b.el('sentenceHeart' + i).classList.contains('life-lost')));
 });
 
 test('difficulty varies and people remain balanced across a longer session', () => {

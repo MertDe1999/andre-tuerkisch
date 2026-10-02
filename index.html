@@ -952,16 +952,85 @@
       box-shadow:var(--shadow);
     }
 
-    .sentence-progress{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      color:var(--muted);
-      font-size:.78rem;
+    .sentence-game-hud{
+      display:grid;
+      grid-template-columns:84px minmax(0,1fr);
+      align-items:center;
+      gap:14px;
+      padding:12px;
       margin-bottom:12px;
+      border:1px solid var(--lavender);
+      border-radius:20px;
+      background:linear-gradient(115deg,var(--lavender),var(--surface) 82%);
     }
-    .sentence-progress span{white-space:nowrap}
-    .sentence-progress{flex-wrap:wrap}
+    .sentence-level-badge{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:86px;
+      padding:8px 5px;
+      border:2px solid var(--surface);
+      border-radius:18px;
+      background:var(--surface);
+      color:var(--lavender-dark);
+      box-shadow:0 5px 14px rgba(70,54,46,.07);
+    }
+    .sentence-level-badge::after{
+      content:"✦";
+      position:absolute;
+      top:5px;
+      right:7px;
+      font-size:.8rem;
+      opacity:.5;
+    }
+    .sentence-level-label{
+      font-size:.64rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .sentence-level-number{
+      font-size:3rem;
+      font-weight:950;
+      line-height:1.08;
+      letter-spacing:-.04em;
+      font-variant-numeric:tabular-nums;
+    }
+    .sentence-level-number.long-level{font-size:1.8rem}
+    .sentence-level-number.extra-long-level{font-size:1.35rem}
+    .sentence-game-meters{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0}
+    .sentence-lives{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;max-width:100%}
+    .sentence-lives-copy{font-size:.7rem;color:var(--muted);font-weight:850;white-space:nowrap}
+    .sentence-hearts{display:flex;align-items:center;gap:5px}
+    .sentence-heart{display:block;width:27px;height:27px;color:var(--rose-dark);transition:color .25s,transform .25s}
+    .sentence-heart svg{display:block;width:100%;height:100%;overflow:visible}
+    .sentence-heart path{fill:var(--rose);stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;transition:fill .25s}
+    .sentence-heart.is-lost{color:var(--line);transform:scale(.85)}
+    .sentence-heart.life-lost{animation:sentenceLifeLost .42s ease-out}
+    .sentence-heart.is-lost path{fill:var(--surface)}
+    .sentence-level-progress{width:100%}
+    .sentence-progress-track{display:flex;gap:5px;margin-bottom:5px}
+    .sentence-progress-step{height:7px;flex:1;background:var(--surface);border:1px solid var(--line);border-radius:10px;transition:background .3s,border-color .3s}
+    .sentence-progress-step.is-complete{background:var(--verb-dark);border-color:var(--verb-dark)}
+    .sentence-progress-caption{font-size:.7rem;color:var(--muted);font-weight:800;text-align:right}
+    .sentence-level-badge.level-up{animation:sentenceLevelUp .65s ease-out}
+    @keyframes sentenceLifeLost{
+      0%{transform:scale(1)}
+      35%{transform:scale(1.16) rotate(-8deg)}
+      100%{transform:scale(.85)}
+    }
+    @keyframes sentenceLevelUp{
+      0%,100%{transform:scale(1)}
+      45%{transform:scale(1.08) rotate(-3deg)}
+      70%{transform:scale(1.03) rotate(2deg)}
+    }
+    @media (max-width:359px){
+      .sentence-game-hud{grid-template-columns:72px minmax(0,1fr);gap:10px;padding:10px}
+      .sentence-heart{width:24px;height:24px}
+      .sentence-hearts{gap:4px}
+    }
     #sentenceGameActive.sentence-locked .drop-zone{pointer-events:none}
     #sentenceGameActive.sentence-locked .sentence-actions{pointer-events:none}
 
@@ -1205,6 +1274,7 @@
 
     @media (prefers-reduced-motion: reduce){
       .confetti-layer{display:none}
+      .sentence-heart,.sentence-heart path,.sentence-level-badge,.sentence-progress-step{animation:none!important;transition:none!important}
     }
 
     .sentence-actions{
@@ -2286,9 +2356,31 @@
       <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
-          <div class="sentence-progress">
-            <span id="sentenceLevelText">Level 1 · 0 / 5</span>
-            <span id="sentenceProgressText">Fehler 0 / 3</span>
+          <div class="sentence-game-hud">
+            <div id="sentenceLevelBadge" class="sentence-level-badge" role="group" aria-label="Level 1">
+              <span class="sentence-level-label" aria-hidden="true">Level</span>
+              <span id="sentenceLevelText" class="sentence-level-number" aria-hidden="true">1</span>
+            </div>
+            <div class="sentence-game-meters">
+              <div id="sentenceLives" class="sentence-lives" role="img" aria-label="3 von 3 Leben">
+                <span id="sentenceProgressText" class="sentence-lives-copy" aria-hidden="true">3 Leben</span>
+                <div class="sentence-hearts" aria-hidden="true">
+                  <span id="sentenceHeart0" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
+                  <span id="sentenceHeart1" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
+                  <span id="sentenceHeart2" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
+                </div>
+              </div>
+              <div class="sentence-level-progress">
+                <div id="sentenceLevelProgress" class="sentence-progress-track" role="progressbar" aria-label="Fortschritt zum nächsten Level" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+                  <span id="sentenceStep0" class="sentence-progress-step" aria-hidden="true"></span>
+                  <span id="sentenceStep1" class="sentence-progress-step" aria-hidden="true"></span>
+                  <span id="sentenceStep2" class="sentence-progress-step" aria-hidden="true"></span>
+                  <span id="sentenceStep3" class="sentence-progress-step" aria-hidden="true"></span>
+                  <span id="sentenceStep4" class="sentence-progress-step" aria-hidden="true"></span>
+                </div>
+                <div id="sentenceLevelProgressText" class="sentence-progress-caption">0 / 5 geschafft</div>
+              </div>
+            </div>
           </div>
 
           <div class="sentence-prompt">
@@ -2658,6 +2750,7 @@
   let sentenceGameRunning = false;
   let sentenceTransitionTimer = null;
   let sentenceLastChallengeKey = "";
+  let sentenceLivesDepleted = false;
   let sentenceChallengeCache = {signature:"", challenges:[]};
 
   let typingDirection = "toTurkish";
@@ -3544,16 +3637,35 @@
     clearTimeout(sentenceTransitionTimer);
     sentenceTransitionTimer = null;
     sentenceLocked = false;
+    sentenceLivesDepleted = false;
     pointerDrag?.ghost?.remove();
     pointerDrag = null;
     document.querySelector(".confetti-layer")?.remove();
     document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
   }
 
-  function updateSentenceProgress(){
-    document.getElementById("sentenceLevelText").textContent =
-      "Level " + sentenceLearning.level + " · " + sentenceLearning.levelCorrect + " / " + sentenceLevelSize;
-    document.getElementById("sentenceProgressText").textContent = "Fehler " + sentenceLearning.mistakes + " / 3";
+  function updateSentenceProgress({levelUp = false, lifeLost = false} = {}){
+    const levelNumber = document.getElementById("sentenceLevelText");
+    levelNumber.textContent = String(sentenceLearning.level);
+    levelNumber.classList.toggle("long-level", sentenceLearning.level >= 100);
+    levelNumber.classList.toggle("extra-long-level", sentenceLearning.level >= 1000);
+    const badge = document.getElementById("sentenceLevelBadge");
+    badge.setAttribute("aria-label", "Level " + sentenceLearning.level);
+    badge.classList.toggle("level-up", levelUp);
+    const lives = sentenceLivesDepleted ? 0 : Math.max(0, 3 - sentenceLearning.mistakes);
+    document.getElementById("sentenceLives").setAttribute("aria-label", lives + " von 3 Leben");
+    document.getElementById("sentenceProgressText").textContent = lives + " Leben";
+    for(let i = 0; i < 3; i++){
+      const heart = document.getElementById("sentenceHeart" + i);
+      heart.classList.toggle("is-lost", i >= lives);
+      heart.classList.toggle("life-lost", lifeLost && i === lives);
+    }
+    document.getElementById("sentenceLevelProgressText").textContent =
+      sentenceLearning.levelCorrect + " / " + sentenceLevelSize + " geschafft";
+    document.getElementById("sentenceLevelProgress").setAttribute("aria-valuenow", sentenceLearning.levelCorrect);
+    for(let i = 0; i < sentenceLevelSize; i++){
+      document.getElementById("sentenceStep" + i).classList.toggle("is-complete", i < sentenceLearning.levelCorrect);
+    }
   }
 
   function startSentenceGame(){
@@ -3878,6 +3990,7 @@
   function renderSentenceChallenge(){
     const challenge = sentenceOrder[sentenceRoundIndex];
     if(!challenge) return;
+    sentenceLivesDepleted = false;
     sentenceLocked = false;
     document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
     document.querySelectorAll("#sentenceGameActive button").forEach(button => button.disabled = false);
@@ -4565,7 +4678,7 @@
       const levelUp = sentenceLearning.levelCorrect >= sentenceLevelSize;
       if(levelUp){sentenceLearning.level++;sentenceLearning.levelCorrect = 0;}
       saveSentenceLearning();
-      updateSentenceProgress();
+      updateSentenceProgress({levelUp});
       feedback.textContent = levelUp ? "Richtig! Level " + sentenceLearning.level : "Richtig!";
       feedback.className = "sentence-feedback ok";
       // Keep the actual accepted construction visible throughout the entire animation.
@@ -4589,10 +4702,11 @@
       const hint = getSentenceErrorHint(result.issue, sentenceAttempts);
       feedback.className = "sentence-feedback bad";
       if(sentenceLearning.mistakes >= 3){
+        sentenceLivesDepleted = true;
         sentenceLearning.level = 1;
         sentenceLearning.levelCorrect = 0;
         sentenceLearning.mistakes = 0;
-        feedback.textContent = "Zurück zu Level 1 · " + hint;
+        feedback.textContent = "Keine Leben mehr · Neustart in Level 1. " + hint;
         lockSentenceConstruction();
         sentenceTransitionTimer = setTimeout(() => {
           if(sentenceGameRunning) nextSentence();
@@ -4601,7 +4715,7 @@
         feedback.textContent = hint;
       }
       saveSentenceLearning();
-      updateSentenceProgress();
+      updateSentenceProgress({lifeLost:true});
     }
   }
 
