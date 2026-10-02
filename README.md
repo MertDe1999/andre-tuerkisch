@@ -18,7 +18,13 @@ Dann `http://127.0.0.1:8000/` öffnen. Der Lernstand wird lokal im jeweiligen Br
 
 Wörter werden nach einer richtigen Antwort in beiden Übersetzungsrichtungen freigeschaltet. Die App-Tastatur und die Hardwaretastatur können im Worttrainer verwendet werden: Buchstaben eingeben, mit Backspace löschen und mit Enter prüfen. Tab navigiert zwischen Bedienelementen; Enter oder Leertaste aktiviert fokussierte Buttons und Karteikarten. Satzbausteine lassen sich tippen, ziehen oder per Tastatur aktivieren.
 
-Im aktuellen Satzspiel führen fünf richtige Sätze zum nächsten Level und drei kumulierte Fehler zum Neustart auf Level 1. Die Wortreihenfolge wird bei der Prüfung ignoriert; bestimmte Pronomen können entfallen. Die Verbübungen verwenden die bestehenden umgangssprachlichen Formen, während die Grammatik auch Standardformen zeigt. Chatten ist bisher ein Platzhalter.
+Der Satzbau umfasst 160 Spiellevel mit A1–B2-Orientierung. Setze Wörter in den gewählten Satzteil, wähle dort ein Wort aus und ergänze seine Endungen. Besitz, Fälle, Zeiten und Personen lassen sich kombinieren. Einfache Satzteile erlauben passende Umstellungen; Relativsätze und andere gebundene Gruppen prüfen auch Reihenfolge und Bezug. Standard- und Alltagsformen werden gekennzeichnet. Chatten ist bisher ein Platzhalter.
+
+Nur der erste Versuch einer aktuellen Levelaufgabe zählt: richtig +1, falsch −1, mindestens Level 1 und höchstens 160. Einführungen, Hinweise, gezielte/ältere Wiederholungen und Fehlerkorrekturen bleiben ohne Leveländerung. Vor dem nächsten Abschnitt müssen seine Regeln an jeweils zwei verschiedenen Aufgaben ohne Hilfe gelöst sein. Bereits eingeführte Regeln bleiben nach einem Abstieg verfügbar.
+
+Aufgaben und Ablenker verwenden ausschließlich Wörter, die im Worttrainer in beiden Richtungen freigeschaltet wurden. Der gemeinsame Katalog enthält die bisherigen 33 Wörter und 18 Ergänzungen für die neuen Konstruktionen, insgesamt 51 Wörter und 65 Karten. Fehlende Wörter werden angezeigt.
+
+Der Aufgabenplan verbindet aktuelle Übungen, fällige Wiederholungen und ältere Aufgaben. Wiederholungen warten beim nächsten Öffnen; die App arbeitet nicht im Hintergrund. Unter **Lernspiele → Lernstand sichern** lassen sich Fortschritt und Freischaltungen als JSON herunterladen, mit Vorschau importieren oder der Satzbau zurücksetzen. Vor Import/Rücksetzen wird eine Rückfallsicherung aufbewahrt. Die alten Wortfreischaltungen bleiben gültig; der frühere Spiellevel wird als Historie erhalten, das neue Curriculum beginnt bei Level 1.
 
 ## Tests
 
@@ -28,8 +34,10 @@ Node.js 22 oder neuer:
 node --test tests/sentence-builder.test.cjs tests/learning-controls.test.cjs
 ```
 
-Die Tests führen das echte Inline-JavaScript in einem kleinen DOM-Modell aus. Sie prüfen Satzlogik, Auswahl, Wiederholung, Flexion, Spielverlauf, Übergänge, Konfetti, Freischaltdaten und Bedienungsaktionen. Echte Browser-, Layout-, Touch- und Screenreaderprüfungen ergänzen diese Tests. GitHub Actions führt die Tests bei Pull Requests und Änderungen an `main` oder `codex/**` aus.
+31 Tests prüfen unabhängige Flexionsbeispiele, falsche Formen/Satzbezüge, den vollständigen Weg bis Level 160, Wiederholungsdaten, Migration, Sicherungen und Bedienung. Das DOM-Modell führt alle tatsächlichen Skripte in Seitenreihenfolge aus und baut jede der 733 Aufgaben über die Baustein-/Endungssteuerung. GitHub Actions führt die Tests bei Pull Requests und Änderungen an `main` oder `codex/**` aus.
 
-## Geplanter Satzbauausbau
+## Aufbau und Prüfstand
 
-Der [geprüfte Satzbauplan](docs/satzbau-plan.md) beschreibt 160 Spiellevel mit A1–B2-Orientierung, Lernvoraussetzungen, Wiederholung und konkrete Umsetzungspakete P01–P12. Er ist ein Ausbauvorschlag; die aktuelle App enthält diese Inhalte und die neue Levelwertung noch nicht. Die [eingereichte frühere Vorlage](docs/eingereichter-satzbauplan-2026-10-02.txt) bleibt zum Vergleich erhalten.
+`data/words.js` versorgt Wörterbuch, Trainer, Karten und Satzbau. `lib/turkish.js` bildet die Flexion für diesen Wortschatz; `lib/curriculum.js` enthält 56 Regeln, Voraussetzungen und Aufgaben. `lib/learning.js` verwaltet Prüfung, Auswahl, Wertung und Speicherung. `sentence-game.js` verbindet diese Funktionen mit der Oberfläche.
+
+Der [Satzbauplan](docs/satzbau-plan.md) und die [frühere Vorlage](docs/eingereichter-satzbauplan-2026-10-02.txt) bleiben erhalten. Der [Umsetzungs- und Prüfbericht](docs/satzbau-umsetzung.md) dokumentiert P01–P12, Browsernachweise und verbleibende Abnahmen. Satzbau mit diesem begrenzten Wortschatz ist kein vollständiger A1–B2-Sprachkurs. Persönliche Erprobung mit André, echte Handy-/Screenreaderprüfung und unabhängige sprachliche Gesamtprüfung stehen noch aus.

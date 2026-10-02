@@ -1,5 +1,7 @@
 # Satzbau für André: geprüfter Ausbauplan
 
+**Umsetzungsstand vom 02.10.2026:** Nach dem weiteren Nutzerauftrag „Setze die Planung um“ sind die technischen Pakete P01–P07 und P09–P12 umgesetzt. P08 wurde technisch geprüft; persönliche Erprobung mit André und externe Abnahmen bleiben offen. Details: [Umsetzungsbericht](satzbau-umsetzung.md). Die folgende Planung bleibt als historischer Entscheidungsstand erhalten; ihre Angaben „noch nicht implementiert“ sind überholt.
+
 Stand: 02.10.2026. Ausgangspunkt: der vom Nutzer eingereichte frühere Vorschlag, archiviert in `eingereichter-satzbauplan-2026-10-02.txt`, und der analysierte Code auf `74e0d79`. Dies ist der empfohlene nächste Ausbau, noch keine implementierte Funktion. Die Fehlerkorrekturen dieses Arbeitsgangs verändern die bisherigen Level- und Lernregeln nicht.
 
 ## Ergebnis des Abgleichs

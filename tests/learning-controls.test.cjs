@@ -113,40 +113,6 @@ test('keyboard shortcuts, composing text and focused controls retain their norma
   assert.equal(a.run('typedAnswer'),'');
 });
 
-test('sentence buttons accept keyboard or assistive clicks without replaying pointer taps', () => {
-  const a = app();a.unlock();a.run('startSentenceGame();');
-  const token = a.el('wordBank').children.find(item=>item.dataset.tokenKind==='word');
-  token.dispatchEvent({type:'click',detail:0});
-  assert.equal(token.parentElement,a.el('answerZone'));
-  assert.equal(a.document.activeElement,token);
-  token.dispatchEvent({type:'click',detail:0});
-  assert.equal(token.parentElement,a.el('wordBank'));
-  const tap = {button:0,currentTarget:token,clientX:10,clientY:10,pointerId:1};
-  a.run('beginSentencePointerDrag')(tap);a.run('endSentencePointerDrag')(tap);
-  token.dispatchEvent({type:'click',detail:1});
-  assert.equal(token.parentElement,a.el('answerZone'));
-  a.run('sentenceLocked=true');token.dispatchEvent({type:'click',detail:0});
-  assert.equal(token.parentElement,a.el('answerZone'));
-});
-
-test('keyboard focus follows an attached suffix card to its noun', () => {
-  const a = app();a.unlock();a.run('startSentenceGame();');
-  a.run('const focusNoun = createSentenceToken({kind:"word",word:"ev"},0); document.getElementById("answerZone").appendChild(focusNoun); const focusSuffix = createSentenceToken({kind:"suffix",suffix:"e",targetBase:"ev"},1); document.getElementById("wordBank").appendChild(focusSuffix);');
-  a.run('focusSuffix').dispatchEvent({type:'click',detail:0});
-  assert.equal(a.document.activeElement,a.run('focusNoun'));
-  assert.equal(a.run('focusNoun.dataset.word'),'eve');
-});
-
-test('pointer cancellation leaves sentence tokens in place and clears drag state', () => {
-  const a = app();a.unlock();a.run('startSentenceGame();');
-  const token = a.el('wordBank').children.find(item=>item.dataset.tokenKind==='word');
-  const event = {button:0,currentTarget:token,clientX:10,clientY:10,pointerId:1};
-  a.run('beginSentencePointerDrag')(event);
-  a.run('endSentencePointerDrag')({...event,type:'pointercancel'});
-  assert.equal(token.parentElement,a.el('wordBank'));
-  assert.equal(a.run('pointerDrag'),null);
-});
-
 test('flashcards reveal and advance by Enter or Space and expose their current state', () => {
   const a = app();a.unlock();a.run('startQuiz()');
   const press = value => a.run('handleQuizCardKeydown')({key:value,preventDefault(){}});
