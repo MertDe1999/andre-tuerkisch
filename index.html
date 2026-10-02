@@ -1210,66 +1210,16 @@
 
     .confetti-piece{
       position:absolute;
-      left:var(--origin-x);
-      bottom:-26px;
+      left:0;
+      top:0;
       width:var(--w);
       height:var(--h);
       border-radius:var(--radius);
       background:var(--confetti-color);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.4);
       opacity:0;
-      transform:translate3d(0,18px,0) rotate(var(--r0));
-      animation:confettiFountain var(--duration) var(--delay) both;
+      transform-origin:center;
       will-change:transform,opacity;
-    }
-
-    @keyframes confettiFountain{
-      0%{
-        opacity:0;
-        transform:
-          translate3d(0,18px,0)
-          rotate(var(--r0));
-        animation-timing-function:cubic-bezier(.12,.72,.22,1);
-      }
-      5%{
-        opacity:1;
-      }
-      18%{
-        opacity:1;
-        transform:
-          translate3d(var(--spread-1),calc(var(--rise) * -.58),0)
-          rotate(var(--r1));
-      }
-      34%{
-        opacity:1;
-        transform:
-          translate3d(var(--spread-2),calc(var(--rise) * -1),0)
-          rotate(var(--r2));
-        animation-timing-function:linear;
-      }
-      52%{
-        opacity:1;
-        transform:
-          translate3d(var(--spread-3),calc(var(--rise) * -.73),0)
-          rotate(var(--r3));
-      }
-      72%{
-        opacity:.98;
-        transform:
-          translate3d(var(--spread-4),calc(var(--rise) * -.40),0)
-          rotate(var(--r4));
-      }
-      88%{
-        opacity:.94;
-        transform:
-          translate3d(var(--spread-5),calc(var(--rise) * -.13),0)
-          rotate(var(--r5));
-      }
-      100%{
-        opacity:0;
-        transform:
-          translate3d(var(--spread-6),12vh,0)
-          rotate(var(--r6));
-      }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -2751,6 +2701,7 @@
   let sentenceTransitionTimer = null;
   let sentenceLastChallengeKey = "";
   let sentenceLivesDepleted = false;
+  let confettiCelebration = null;
   let sentenceChallengeCache = {signature:"", challenges:[]};
 
   let typingDirection = "toTurkish";
@@ -3640,7 +3591,7 @@
     sentenceLivesDepleted = false;
     pointerDrag?.ghost?.remove();
     pointerDrag = null;
-    document.querySelector(".confetti-layer")?.remove();
+    stopConfettiCelebration();
     document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
   }
 
@@ -4479,88 +4430,132 @@
     return a.length === b.length && a.every((word, i) => word === b[i]);
   }
 
+  function confettiSmoothStep(value){
+    const t = Math.max(0, Math.min(1, value));
+    return Math.max(0, Math.min(1, t * t * t * (t * (t * 6 - 15) + 10)));
+  }
+
+  function createConfettiParticle(viewport, index, random = Math.random){
+    const {width, height} = viewport;
+    const fromLeft = index % 2 === 0;
+    const shape = index % 5;
+    const size = .8 + random() * .4;
+    // Cut-paper rectangles, narrow ribbons, squares and a few rounded pieces.
+    const shapes = [
+      {width:7, height:10, radius:"1px"},
+      {width:3.5, height:15, radius:".5px"},
+      {width:7, height:7, radius:".5px"},
+      {width:5, height:11, radius:"1px"},
+      {width:5, height:6, radius:"50%"}
+    ];
+    const cut = shapes[shape];
+    const originX = width * (fromLeft ? .035 + random() * .045 : .92 + random() * .045);
+    const originY = height * (.91 + random() * .045);
+    const targetX = width * (.3 + random() * .4);
+    const horizontalDrag = 1.5 + random() * .7;
+    const verticalDrag = 2.45 + random() * .45;
+    const initialVy = -height * (1.65 + random() * .35);
+    const terminalVy = height * (.1 + random() * .045);
+    const apexTime = Math.log((terminalVy - initialVy) / terminalVy) / verticalDrag;
+    return {
+      fromLeft, originX, originY, targetX, horizontalDrag, verticalDrag,
+      initialVy, terminalVy, apexTime,
+      width:cut.width * size, height:cut.height * size, radius:cut.radius,
+      duration:2150 + random() * 240, delay:random() * 70,
+      flutterX:Math.min(12, width * .025) * (.45 + random() * .55),
+      flutterY:1.2 + random() * 2.2,
+      flutterFrequency:3.2 + random() * 2.8, phase:random() * Math.PI * 2,
+      angleZ:random() * 360, angleX:random() * 120, angleY:random() * 120,
+      spinZ:(random() < .5 ? -1 : 1) * (120 + random() * 340),
+      spinX:(random() < .5 ? -1 : 1) * (120 + random() * 300),
+      spinY:(random() < .5 ? -1 : 1) * (80 + random() * 240)
+    };
+  }
+
+  function getConfettiParticleState(particle, seconds){
+    const t = Math.max(0, seconds);
+    const p = particle;
+    // Closed-form linear air resistance: a single smooth arc, then slow terminal fall.
+    const horizontalTravel = -Math.expm1(-p.horizontalDrag * t);
+    const verticalTravel = -Math.expm1(-p.verticalDrag * t);
+    const falling = confettiSmoothStep((t - p.apexTime) / .55);
+    const wave = p.flutterFrequency * t;
+    const driftX = p.flutterX * falling * (Math.sin(wave + p.phase) - Math.sin(p.phase));
+    const driftY = p.flutterY * falling * (Math.sin(wave * .73 + p.phase) - Math.sin(p.phase));
+    const rotationTime = -Math.expm1(-.45 * t) / .45;
+    const x = p.originX + (p.targetX - p.originX) * horizontalTravel + driftX;
+    const y = p.originY + p.terminalVy * t +
+      (p.initialVy - p.terminalVy) * verticalTravel / p.verticalDrag + driftY;
+    const rotateX = p.angleX + p.spinX * rotationTime;
+    const rotateY = p.angleY + p.spinY * rotationTime;
+    const rotateZ = p.angleZ + p.spinZ * rotationTime;
+    const appear = confettiSmoothStep(t / .055);
+    const fade = 1 - confettiSmoothStep((t - (p.duration / 1000 - .38)) / .38);
+    // Turning sheets briefly show their thin edge; this creates subtle paper-like glints.
+    const face = .82 + .18 * Math.abs(Math.cos(rotateX * Math.PI / 180) * Math.cos(rotateY * Math.PI / 180));
+    return {x, y, rotateX, rotateY, rotateZ, opacity:appear * fade * face};
+  }
+
+  function getConfettiKeyframes(particle){
+    // The browser interpolates only composited transforms and opacity between these samples.
+    return Array.from({length:91}, (_, index) => {
+      const offset = index / 90;
+      const state = getConfettiParticleState(particle, offset * particle.duration / 1000);
+      return {
+        offset,
+        transform:"translate3d(" + state.x.toFixed(2) + "px," + state.y.toFixed(2) + "px,0) " +
+          "rotateZ(" + state.rotateZ.toFixed(2) + "deg) " +
+          "rotateX(" + state.rotateX.toFixed(2) + "deg) " +
+          "rotateY(" + state.rotateY.toFixed(2) + "deg)",
+        opacity:state.opacity
+      };
+    });
+  }
+
+  function stopConfettiCelebration(){
+    if(!confettiCelebration) return;
+    clearTimeout(confettiCelebration.timer);
+    for(const animation of confettiCelebration.animations) animation.cancel();
+    confettiCelebration.layer.remove();
+    confettiCelebration = null;
+  }
+
   function celebrateCorrectAnswer(){
-    if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches){
-      return 420;
-    }
+    stopConfettiCelebration();
+    if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ||
+      typeof document.documentElement.animate !== "function") return 420;
 
-    document.querySelector(".confetti-layer")?.remove();
-
+    const viewport = {
+      width:window.innerWidth || document.documentElement.clientWidth || 390,
+      height:window.innerHeight || document.documentElement.clientHeight || 844
+    };
     const layer = document.createElement("div");
     layer.className = "confetti-layer";
     layer.setAttribute("aria-hidden", "true");
-
-    const colors = [
-      "#d9eadb",
-      "#e6dff1",
-      "#dfeaf2",
-      "#f6d7bf",
-      "#f4e6a9",
-      "#f2dddd"
-    ];
-
-    const count = 42;
+    document.body.appendChild(layer);
+    const colors = ["#d9eadb","#e6dff1","#dfeaf2","#f6d7bf","#f4e6a9","#f2dddd"];
+    const animations = [];
+    const count = viewport.width < 600 ? 56 : 72;
+    const startTime = document.timeline?.currentTime;
     let longestAnimation = 0;
-
     for(let i = 0; i < count; i++){
+      const particle = createConfettiParticle(viewport, i);
       const piece = document.createElement("span");
       piece.className = "confetti-piece";
-
-      const side = Math.random() < .5 ? -1 : 1;
-      const originX = 47 + Math.random() * 6;
-      const width = 5 + Math.random() * 6;
-      const height = Math.random() < .24 ? width : 9 + Math.random() * 8;
-      const delay = Math.random() * .12;
-      const duration = 4.0 + Math.random() * .28;
-      const rise = 50 + Math.random() * 22;
-
-      const spread1 = side * (12 + Math.random() * 18);
-      const spread2 = spread1 + side * (24 + Math.random() * 32);
-      const spread3 = spread2 + side * (10 + Math.random() * 18);
-      const spread4 = spread3 + side * (12 + Math.random() * 20);
-      const spread5 = spread4 + side * (10 + Math.random() * 18);
-      const spread6 = spread5 + side * (8 + Math.random() * 16);
-
-      const spinDirection = Math.random() < .5 ? -1 : 1;
-      const r0 = Math.floor(Math.random() * 180);
-      const spin = spinDirection * (520 + Math.random() * 620);
-      const radius = Math.random() < .22 ? "50%" : (1 + Math.random() * 3) + "px";
-
-      longestAnimation = Math.max(longestAnimation, delay + duration);
-
-      piece.style.setProperty("--origin-x", originX + "vw");
-      piece.style.setProperty("--w", width + "px");
-      piece.style.setProperty("--h", height + "px");
-      piece.style.setProperty("--delay", delay + "s");
-      piece.style.setProperty("--duration", duration + "s");
-      piece.style.setProperty("--rise", rise + "vh");
-      piece.style.setProperty("--spread-1", spread1 + "px");
-      piece.style.setProperty("--spread-2", spread2 + "px");
-      piece.style.setProperty("--spread-3", spread3 + "px");
-      piece.style.setProperty("--spread-4", spread4 + "px");
-      piece.style.setProperty("--spread-5", spread5 + "px");
-      piece.style.setProperty("--spread-6", spread6 + "px");
-      piece.style.setProperty("--r0", r0 + "deg");
-      piece.style.setProperty("--r1", (r0 + spin * .22) + "deg");
-      piece.style.setProperty("--r2", (r0 + spin * .40) + "deg");
-      piece.style.setProperty("--r3", (r0 + spin * .56) + "deg");
-      piece.style.setProperty("--r4", (r0 + spin * .72) + "deg");
-      piece.style.setProperty("--r5", (r0 + spin * .87) + "deg");
-      piece.style.setProperty("--r6", (r0 + spin) + "deg");
-      piece.style.setProperty("--radius", radius);
-      piece.style.setProperty(
-        "--confetti-color",
-        colors[Math.floor(Math.random() * colors.length)]
-      );
-
+      piece.style.setProperty("--w", particle.width + "px");
+      piece.style.setProperty("--h", particle.height + "px");
+      piece.style.setProperty("--radius", particle.radius);
+      piece.style.setProperty("--confetti-color", colors[Math.floor(Math.random() * colors.length)]);
       layer.appendChild(piece);
+      const animation = piece.animate(getConfettiKeyframes(particle), {
+        duration:particle.duration, delay:particle.delay, easing:"linear", fill:"both"
+      });
+      if(Number.isFinite(startTime)) animation.startTime = startTime;
+      animations.push(animation);
+      longestAnimation = Math.max(longestAnimation, particle.delay + particle.duration);
     }
-
-    document.body.appendChild(layer);
-
-    const animationMs = Math.ceil(longestAnimation * 1000) + 100;
-    setTimeout(() => layer.remove(), animationMs);
-
+    const animationMs = Math.ceil(longestAnimation) + 40;
+    confettiCelebration = {layer, animations, timer:setTimeout(stopConfettiCelebration, animationMs)};
     return animationMs;
   }
 

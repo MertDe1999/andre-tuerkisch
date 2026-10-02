@@ -9,6 +9,7 @@ const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 
 // Small DOM harness for the actual inline app; no third-party test dependency.
 function app({reducedMotion = true, storage = new Map()} = {}){
+  const animations = [];
   class Element{
     constructor(text = ''){
       this.textContent = text;
@@ -36,6 +37,11 @@ function app({reducedMotion = true, storage = new Map()} = {}){
     removeEventListener(){}
     setAttribute(){}
     setPointerCapture(){}
+    animate(keyframes, options){
+      const animation = {keyframes, options, cancelled:false, cancel(){this.cancelled = true;}};
+      animations.push(animation);
+      return animation;
+    }
   }
   const rows = html.split('\n').filter(line => line.includes('class="word-row ')).map(line => {
     const row = new Element();
@@ -93,7 +99,7 @@ function app({reducedMotion = true, storage = new Map()} = {}){
     }
     now = until;
   };
-  return {run,json,unlock,advance,el,rows,storage,document};
+  return {run,json,unlock,advance,el,rows,storage,document,animations};
 }
 
 const example = {
@@ -265,12 +271,18 @@ test('five correct sentences advance a level; success stays visible for the whol
   assert.equal(a.el('sentenceLevelBadge').classList.contains('level-up'),true);
   assert.equal(a.run('sentenceLocked'),true);
   a.run('resetSentence();checkSentence();');
-  a.advance(4000);
+  const animationMs = Math.ceil(Math.max(...a.animations.map(animation =>
+    animation.options.duration + animation.options.delay))) + 40;
+  assert.ok(animationMs >= 2190 && animationMs <= 2500);
+  assert.equal(a.animations.length,56);
+  a.advance(animationMs - 1);
   assert.equal(a.el('answerZone').children.map(token => token.textContent).join(' '),built);
-  a.advance(600);
+  a.advance(1);
   assert.equal(a.el('answerZone').children.length,0);
   assert.equal(a.run('sentenceLocked'),false);
   assert.equal(a.el('checkSentenceButton').disabled,false);
+  assert.ok(a.animations.every(animation => animation.cancelled));
+  assert.equal(a.document.querySelector('.confetti-layer'),null);
 });
 
 test('navigation cancels delayed success transitions and reduced motion still leaves reading time', () => {
@@ -393,4 +405,62 @@ test('unlock changes invalidate the task cache and corrupt storage does not prev
   assert.equal(a.run('loadSentenceLearning().level'),1);
   assert.equal(a.run('loadSentenceLearning().mistakes'),2);
   assert.equal(a.run('loadSentenceLearning().levelCorrect'),4);
+});
+
+test('confetti launches from both lower corners and rises into the center before a smooth slow fall', () => {
+  const a = app();
+  const create = a.run('createConfettiParticle');
+  const state = a.run('getConfettiParticleState');
+  const keyframes = a.run('getConfettiKeyframes');
+  let seed = 123456;
+  const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
+  for(const viewport of [{width:390,height:844},{width:1366,height:768}]){
+    for(let i = 0; i < 72; i++){
+      const p = create(viewport,i,random);
+      const start = state(p,0);
+      const apex = state(p,p.apexTime);
+      assert.equal(p.fromLeft,i % 2 === 0);
+      assert.ok(start.y >= viewport.height * .9 && start.y <= viewport.height);
+      assert.ok(p.fromLeft ? start.x < viewport.width * .1 : start.x > viewport.width * .9);
+      assert.ok(apex.x > viewport.width * .18 && apex.x < viewport.width * .82);
+      assert.ok(apex.y > viewport.height * .18 && apex.y < viewport.height * .56);
+      assert.ok(state(p,.1).y < start.y);
+      assert.ok(state(p,2.1).y > apex.y);
+      // The apex has no vertical jump or change of velocity.
+      const before = state(p,p.apexTime - .0001);
+      const after = state(p,p.apexTime + .0001);
+      assert.ok(Math.abs((after.y - before.y) / .0002) < .1);
+      const fallSpeed = (state(p,2.15).y - state(p,2.05).y) / .1;
+      assert.ok(fallSpeed > 0 && fallSpeed < viewport.height * .2);
+      const frames = keyframes(p);
+      assert.equal(frames[0].offset,0);
+      assert.equal(frames.at(-1).offset,1);
+      assert.equal(frames[0].opacity,0);
+      assert.equal(frames.at(-1).opacity,0);
+      assert.ok(frames.every(frame => frame.opacity >= 0 && frame.opacity <= 1 && !/NaN|Infinity/.test(frame.transform)));
+    }
+  }
+});
+
+test('restarting or leaving a celebration cancels native animations and removes its overlay', () => {
+  const a = app({reducedMotion:false});
+  const firstDuration = a.run('celebrateCorrectAnswer()');
+  assert.ok(firstDuration < 2501);
+  assert.equal(a.animations.length,56);
+  const old = [...a.animations];
+  a.run('celebrateCorrectAnswer()');
+  assert.ok(old.every(animation => animation.cancelled));
+  assert.ok(a.animations.slice(56).every(animation => !animation.cancelled));
+  assert.equal(a.document.body.children.length,1);
+  a.run('stopSentenceGame()');
+  assert.ok(a.animations.every(animation => animation.cancelled));
+  assert.equal(a.document.body.children.length,0);
+  a.advance(5000);
+  assert.equal(a.run('confettiCelebration'),null);
+  const reduced = app();
+  assert.equal(reduced.run('celebrateCorrectAnswer()'),420);
+  assert.equal(reduced.animations.length,0);
+  const unsupported = app({reducedMotion:false});
+  unsupported.run('document.documentElement.animate = undefined;');
+  assert.equal(unsupported.run('celebrateCorrectAnswer()'),420);
 });
