@@ -30,9 +30,12 @@ function app({reducedMotion=true,storage=new Map()}={}){
   click(){this.dispatchEvent({type:'click',detail:0});}
   setAttribute(name,value){this.attributes.set(name,String(value));}getAttribute(name){return this.attributes.get(name)??null;}
   setPointerCapture(){}
+  releasePointerCapture(){}
+  getBoundingClientRect(){return {left:0,top:0,width:90,height:40};}
   animate(keyframes,options){const a={keyframes,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(a);return a;}
  }
  const el=id=>{if(!ids.has(id)){const e=new Element();e.id=id;}return ids.get(id);};
+ el('sentenceBankArea').append(el('wordBank'));
  document={body:new Element(),documentElement:new Element(),getElementById:el,createElement:tag=>{const e=new Element();e.tagName=tag.toUpperCase();return e;},
    addEventListener(type,f){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(f);},dispatchEvent(event){for(const f of listeners.get(event.type)||[])f(event);},
    elementFromPoint:()=>document.pointerTarget||null,
@@ -47,7 +50,7 @@ function app({reducedMotion=true,storage=new Map()}={}){
  const sandbox={document,navigator:{},console,Blob,URL,confirm:()=>false,
  localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
  setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),
- matchMedia:()=>({matches:reducedMotion}),addEventListener(){},scrollTo(){}};
+ matchMedia:query=>({matches:query.includes('prefers-reduced-motion')?reducedMotion:false}),addEventListener(){},scrollTo(){}};
  sandbox.window=sandbox;vm.createContext(sandbox);
  for(const [,src,inline] of html.matchAll(/<script(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g))vm.runInContext(src?fs.readFileSync(path.join(root,src),'utf8'):inline,sandbox,{filename:src||'index.html'});
  const run=code=>vm.runInContext(code,sandbox),json=code=>JSON.parse(JSON.stringify(run(code)));

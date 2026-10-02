@@ -123,8 +123,8 @@ test('invalid persisted JSON is archived before replacement; failed archive prev
 test('immediate correction keeps the later error review and corrected scoring feedback is neutral',()=>{
  const {e}=game();e.begin(byId('object-görmek-sen-w004'),'current');e.error({area:'grammar',skill:'accusative'});const deadline=e.stat('skills','accusative').errorSequence;e.success('skills','accusative','example',false);assert.equal(e.stat('skills','accusative').errorSequence,deadline);
  const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.level=16;SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();checkSentence();');
- assert.match(a.el('sentenceModeLabel').textContent,/Bereits gewertet/);a.run('SentenceGame.engine.state.current.tokens=AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004").groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:"test"+i,group:g.id})));checkSentence();');
- assert.equal(a.run('SentenceGame.engine.state.level'),15);assert.match(a.el('sentenceFeedback').textContent,/ohne zusätzliche Leveländerung/);assert.equal(a.el('grammarBank').hidden,true);
+ assert.equal(a.el('sentenceModeLabel').textContent,'Korrektur');a.run('SentenceGame.engine.state.current.tokens=AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004").groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:"test"+i,group:g.id})));checkSentence();');
+ assert.equal(a.run('SentenceGame.engine.state.level'),15);assert.match(a.el('sentenceFeedback').textContent,/ohne Leveländerung/);assert.equal(a.el('grammarBank').hidden,true);
 });
 
 test('reset and restoration require explicit in-app confirmation and retain a fallback',()=>{
@@ -150,7 +150,12 @@ test('browser adapter builds suffix chains and the actual full curriculum throug
    a.run('SentenceGame.moveToken('+JSON.stringify(available.id)+','+JSON.stringify(group.id)+');');
    for(const [field,value] of Object.entries(slot.features)){
     assert.ok(a.json('SentenceGame.allowedCards()').some(card=>card.field===field&&card.value===value),task.id+' missing '+field+':'+value);
-    a.run('SentenceGame.apply('+JSON.stringify({field,value})+','+JSON.stringify(available.id)+');');
+    assert.ok(a.el('sentenceFormField').children.some(option=>option.value===field),task.id+' hidden field '+field);
+    a.el('sentenceFormField').value=field;a.el('sentenceFormField').dispatchEvent({type:'change'});
+    const card=a.json('SentenceGame.allowedCards()').find(c=>c.field===field&&c.value===value);
+    let button=a.el('grammarBank').children.find(b=>b.getAttribute('aria-label')===card.label);
+    for(let page=0;!button&&page<2;page++){a.el('grammarBank').querySelector('.sentence-form-next')?.click();button=a.el('grammarBank').children.find(b=>b.getAttribute('aria-label')===card.label);}
+    assert.ok(button,task.id+' inaccessible card '+field);button.click();
    }
   }
   a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true,task.id);a.advance(1500);
@@ -161,6 +166,37 @@ test('pointer cancellation does not move a modern token and selected-word focus 
  const a=app();a.unlock();a.run('startSentenceGame()');const token=a.el('wordBank').children[0];token.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});token.dispatchEvent({type:'pointermove',clientX:30,clientY:20});token.dispatchEvent({type:'pointercancel'});assert.equal(token.parentElement,a.el('wordBank'));
  a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"older");SentenceGame.render();');
  const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;a.run('SentenceGame.moveToken('+JSON.stringify(id)+',"main");SentenceGame.apply({field:"case",value:"accusative"},'+JSON.stringify(id)+');');assert.equal(a.document.activeElement,a.el('sentenceToken-'+id));assert.equal(a.document.activeElement.textContent,'arabayı');
+});
+
+test('old tap gesture removes the last ending, then returns the word without changing scoring',()=>{
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
+ const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;
+ a.el('sentenceToken-'+id).click();a.run('SentenceGame.apply({field:"plural",value:true},'+JSON.stringify(id)+');SentenceGame.apply({field:"case",value:"accusative"},'+JSON.stringify(id)+');');
+ a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).textContent,'arabalar');
+ a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).textContent,'araba');
+ a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).parentElement,a.el('wordBank'));
+ assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);assert.equal(a.run('SentenceGame.engine.state.current.rated'),false);
+});
+
+test('pointer drags move, reorder and return words, apply endings, and clean up cancelled ghosts',()=>{
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
+ const tokens=a.json('SentenceGame.engine.state.current.tokens'),noun=tokens.find(t=>t.lemma===W.byLemma.araba.id),pronoun=tokens.find(t=>t.lemma===W.byLemma.sen.id);
+ const drag=(button,target,{x=20,cancel=false}={})=>{a.document.pointerTarget=target;button.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});button.dispatchEvent({type:'pointermove',clientX:x,clientY:40,pointerId:1});assert.ok(a.document.body.querySelector('.drag-ghost'));button.dispatchEvent({type:cancel?'pointercancel':'pointerup',clientX:x,clientY:40,pointerId:1});assert.equal(a.document.body.querySelector('.drag-ghost'),null);};
+ const group=()=>a.el('answerZone').children.find(e=>e.dataset.sentenceGroup==='main');
+ drag(a.el('sentenceToken-'+noun.id),group());assert.equal(a.run('SentenceGame.engine.state.current.tokens.find(t=>t.id==='+JSON.stringify(noun.id)+').group'),'main');
+ drag(a.el('sentenceToken-'+pronoun.id),a.el('sentenceToken-'+noun.id));assert.equal(group().children[0].dataset.modernToken,pronoun.id);
+ a.el('sentenceFormTarget').value=noun.id;a.el('sentenceFormTarget').dispatchEvent({type:'change'});a.el('sentenceFormField').value='case';a.el('sentenceFormField').dispatchEvent({type:'change'});
+ const suffix=a.el('grammarBank').children.find(b=>b.getAttribute('aria-label').startsWith('Akkusativ'));
+ drag(suffix,a.el('sentenceToken-'+noun.id));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'arabayı');
+ drag(a.el('sentenceToken-'+noun.id),a.el('wordBank'),{cancel:true});assert.equal(a.el('sentenceToken-'+noun.id).parentElement,group());
+ drag(a.el('sentenceToken-'+noun.id),a.el('wordBank'));assert.equal(a.el('sentenceToken-'+noun.id).parentElement,a.el('wordBank'));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'arabayı');
+ assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);
+});
+
+test('help is optional, hints stay neutral and keyboard focus returns to the help control',()=>{
+ const a=app();a.unlock();a.run('startSentenceGame()');a.el('sentenceHelpButton').click();assert.equal(a.el('sentenceHelp').hidden,false);assert.equal(a.document.activeElement,a.el('sentenceHelpClose'));
+ a.el('sentenceHintButton').click();assert.equal(a.run('SentenceGame.engine.state.current.assisted'),true);assert.ok(a.el('sentenceHintText').textContent);
+ a.el('sentenceHelp').dispatchEvent({type:'keydown',key:'Escape',preventDefault(){}});assert.equal(a.el('sentenceHelp').hidden,true);assert.equal(a.document.activeElement,a.el('sentenceHelpButton'));
 });
 
 test('confetti retains reduced-motion behavior and terminates after the celebration',()=>{

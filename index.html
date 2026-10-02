@@ -368,14 +368,6 @@
       display:flex;
       flex-direction:column;
     }
-    body.learning-games-view #sentenceGameActive > :not(#wordBank){flex:0 0 auto}
-    body.learning-games-view #sentenceGameActive #wordBank{
-      flex:1 1 auto;
-      min-height:76px;
-      overflow-y:auto;
-      overscroll-behavior:contain;
-    }
-    body.learning-games-view .sentence-game-card{overflow:auto}
 
     body.learning-games-view #activeQuiz{
       display:flex;
@@ -462,27 +454,9 @@
       font-size:1.2rem;
     }
 
-    body.learning-games-view .sentence-prompt{
-      padding:14px;
-      margin-bottom:9px;
-    }
-
-    body.learning-games-view .sentence-zone-label{
-      margin:8px 0 5px;
-    }
-
     body.learning-games-view .drop-zone{
       min-height:58px;
       padding:8px;
-    }
-
-    body.learning-games-view .sentence-feedback{
-      min-height:20px;
-      margin-top:8px;
-    }
-
-    body.learning-games-view .sentence-actions{
-      margin-top:8px;
     }
 
     body.learning-games-view .typing-top{
@@ -2280,33 +2254,30 @@
               <span class="sentence-level-label" aria-hidden="true">Level</span>
               <span id="sentenceLevelText" class="sentence-level-number" aria-hidden="true">1</span>
             </div>
-            <div class="sentence-game-meters">
-              <div id="sentenceTaskLabel" class="sentence-task-label">Aufgabe · A1</div>
-              <div id="sentenceModeLabel" class="sentence-mode-label"></div>
-              <div id="sentenceChapterBar" class="sentence-chapter-bar" role="progressbar" aria-label="Fortschritt im Abschnitt" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><span id="sentenceChapterFill"></span></div>
-              <div id="sentenceLevelProgressText" class="sentence-progress-caption"></div>
-            </div>
+            <span id="sentenceTaskLabel" class="sentence-task-label">A1</span>
+            <span id="sentenceModeLabel" class="sentence-mode-label"></span>
+            <button id="sentenceHelpButton" class="sentence-icon" type="button" aria-label="Hilfe zum Satzbau" aria-expanded="false" aria-controls="sentenceHelp">?</button>
           </div>
-          <div id="sentenceStorageWarning" class="sentence-lesson" role="status" hidden></div>
-          <details class="sentence-storage"><summary>Fallmix</summary><p id="sentenceCoverageText"></p></details>
+          <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
           <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
-          <div id="sentenceLesson" class="sentence-lesson" hidden>
-            <strong id="sentenceLessonTitle"></strong><p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
-            <p>Setze das Beispiel selbst zusammen. Diese Einführung wird nicht gewertet.</p>
+          <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
+          <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wortbank"></div></div>
+          <div id="sentenceForms" class="sentence-forms" hidden>
+            <div class="sentence-form-heading"><select id="sentenceFormTarget" aria-label="Wort für eine Endung"></select><select id="sentenceFormField" aria-label="Art der Endung"></select></div>
+            <div id="grammarBank" aria-label="Grammatikbausteine"></div>
           </div>
-          <div class="sentence-zone-label">Dein Satz</div>
-          <div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div>
-          <div class="sentence-edit-actions"><button id="sentenceRemoveButton" type="button">Gewähltes Wort zurücklegen</button><button id="sentenceClearEndings" type="button">Endungen am Wort entfernen</button></div>
-          <div id="sentenceWordLabel" class="sentence-zone-label">Wörter</div><div id="wordBank" class="drop-zone word-bank" aria-label="Wortbank"></div>
-          <div id="sentenceGrammarLabel" class="sentence-zone-label">Endungen und Formen</div><div id="grammarBank" aria-label="Grammatikbausteine"></div>
-          <div id="sentenceEditHint" class="sentence-case-hint">Wort antippen → einsetzen. Wort im Satz auswählen → Endung ergänzen. Ziehen ordnet Wörter und Endungen einem anderen Ziel zu.</div>
           <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
           <div class="sentence-actions">
-            <button id="sentenceResetButton" class="sentence-btn secondary" onclick="resetSentence()">Satz leeren</button>
-            <button id="sentenceHintButton" class="sentence-btn secondary">Hinweis</button>
             <button id="sentenceUnknownButton" class="sentence-btn secondary">Keine Ahnung</button>
             <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
             <button id="sentenceNextButton" class="sentence-btn primary" hidden>Weiter</button>
+          </div>
+          <div id="sentenceHelp" class="sentence-help" role="dialog" aria-modal="true" aria-label="Hilfe zum Satzbau" hidden>
+            <div class="sentence-help-top"><strong id="sentenceLessonTitle">Satzbau</strong><button id="sentenceHelpClose" class="sentence-icon" type="button" aria-label="Hilfe schließen">×</button></div>
+            <p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
+            <p id="sentenceHelpGestures">Wörter antippen oder ziehen. Im Satz: Tippen nimmt die letzte Endung weg, danach das Wort. Endungen antippen oder auf ein Wort ziehen.</p>
+            <div id="sentenceHintText" role="status"></div>
+            <div class="sentence-help-actions"><button id="sentenceHintButton" class="sentence-btn primary" type="button">Tipp zeigen</button><button id="sentenceResetButton" class="sentence-btn secondary" type="button" onclick="resetSentence()">Neu bauen</button></div>
           </div>
         </div>
         <div id="sentenceComplete" class="sentence-complete">

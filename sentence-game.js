@@ -3,11 +3,12 @@
   'use strict';
   const W=AndreWords,T=Turkish,C=AndreCurriculum,L=AndreLearning;
   const engine=new L.Engine();
-  let running=false,activeGroup=null,selected=null,drag=null,advanceTimer=null,dragSuppressed=false;
+  let running=false,activeGroup=null,selected=null,drag=null,advanceTimer=null,suppressUntil=0,formField=null,formPage=0,bankPage=0;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
   const task=()=>C.tasks.find(t=>t.id===engine.state.current?.taskId);
   const current=()=>engine.state.current;
+  const surface=token=>{try{return T.surface(token);}catch{return W.byId[token.lemma].tr+' · ?';}};
   const message=(text,kind='')=>{el('sentenceFeedback').textContent=text;el('sentenceFeedback').className='sentence-feedback '+kind;};
   const labels={case:{bare:'Grundform',accusative:'Akkusativ · -(y)ı/i/u/ü',dative:'Dativ · -(y)a/e',locative:'Lokativ · -da/de/ta/te',ablative:'Ablativ · -dan/den/tan/ten',genitive:'Genitiv · -(n)ın/in/un/ün',instrumental:'Mit · -(y)la/le'},
     tense:{infinitive:'Infinitiv · -mak/mek',present:'Präsens · -iyor',past:'Vergangenheit · -di',reported:'Berichtet · -miş',future:'Zukunft · -acak/ecek',aorist:'Gewohnheit · Aorist',necessity:'Müssen · -malı/meli',conditional:'Bedingung · -sa/se',imperative:'Aufforderung',optative:'Wunsch',ma:'Handlung · -ma/me',dik:'Abhängiger Inhalt · -DIK',acak:'Zukünftiger Inhalt · -AcAK',an:'Handelnder · -an/en',ip:'Und dann · -ip',ince:'Sobald · -ince',arak:'Indem · -erek/arak',madan:'Ohne · -madan/meden',ken:'Während · -ken'},
@@ -16,6 +17,8 @@
     voice:{active:'Aktiv',passive:'Passiv',reflexive:'Auf sich selbst',reciprocal:'Miteinander',causative:'Veranlassen'},
     register:{standard:'Standardform',colloquial:'Alltagsform'}};
   const introduced=()=>new Set([...engine.state.introduced,...(current()?.kind==='intro'?task().skills:[])]);
+  const fieldNames={case:'Fall',tense:'Zeit / Form',person:'Person',poss:'Besitz',predicatePerson:'Person',plural:'Anzahl',negative:'Verneinung',question:'Frage',ability:'Können',past:'Zeit',voice:'Verbrolle',register:'Sprache'};
+  const shortLabels={case:{bare:'∅',accusative:'-(y)ı',dative:'-(y)a',locative:'-da',ablative:'-dan',genitive:'-(n)ın',instrumental:'-(y)la'},person:{ben:'ich',sen:'du',o:'er / sie',biz:'wir',siz:'ihr / Sie',onlar:'sie (Pl.)'},poss:{ben:'mein',sen:'dein',o:'sein / ihr',biz:'unser',siz:'euer',onlar:'ihr (Pl.)'},tense:{infinitive:'-mak',present:'-iyor',past:'-di',reported:'-miş',future:'-acak',aorist:'-r',necessity:'-malı',conditional:'-sa',imperative:'Imperativ',optative:'Wunsch',ma:'-ma',dik:'-DIK',acak:'-AcAK',an:'-an',ip:'-ip',ince:'-ince',arak:'-arak',madan:'-madan',ken:'-ken'},register:{standard:'Standard',colloquial:'Alltag'},voice:{active:'Aktiv',passive:'Passiv',reflexive:'Reflexiv',reciprocal:'Miteinander',causative:'Veranlassen'}};
   function allowedCards(){
     const t=task(), slots=t.groups.flatMap(g=>g.slots), rules=introduced(), cards=[];
     const has=(key)=>slots.some(s=>Object.hasOwn(s.features,key));
@@ -59,125 +62,177 @@
     if(!running||current()?.finished)return;
     const token=tokenId?current().tokens.find(t=>t.id===tokenId):selectTarget(card);
     if(!token||!fits(token,card)){message('Setze zuerst ein passendes Wort in den gewählten Satzteil.');return;}
-    if(card.value===null||card.value==='active')delete token.features[card.field];else token.features[card.field]=card.value;
+    if(card.value===null||card.value===false||card.value==='active'||card.value==='bare'||card.value==='infinitive')delete token.features[card.field];else {delete token.features[card.field];token.features[card.field]=card.value;}
     selected=token.id;activeGroup=token.group;saveAndRender(token.id);
   }
   function moveToken(id,groupId,beforeId=null){
     if(!running||current()?.finished)return;
     const token=current().tokens.find(t=>t.id===id);if(!token)return;
-    token.group=groupId;selected=id;if(groupId)activeGroup=groupId;
-    if(beforeId&&beforeId!==id){
-      const items=current().tokens;items.splice(items.indexOf(token),1);items.splice(items.findIndex(t=>t.id===beforeId),0,token);
-    }
+    token.group=groupId;selected=groupId?id:null;if(groupId)activeGroup=groupId;
+    const items=current().tokens;items.splice(items.indexOf(token),1);
+    const index=beforeId?items.findIndex(t=>t.id===beforeId):-1;
+    items.splice(index<0?items.length:index,0,token);bankPage=0;
     saveAndRender(id);
   }
   function activate(token){
     if(!running||current()?.finished)return;
     if(!token.group)moveToken(token.id,activeGroup||task().groups[0].id);
-    else{selected=token.id;activeGroup=token.group;render();el('sentenceToken-'+token.id)?.focus({preventScroll:true});}
+    else{
+      const fields=Object.keys(token.features);
+      if(fields.length){delete token.features[fields.at(-1)];selected=token.id;saveAndRender(token.id);}
+      else moveToken(token.id,null);
+    }
   }
   function wordButton(token){
-    let surface;
-    try{surface=T.surface(token);}catch{surface=W.byId[token.lemma].tr+' · Form nicht möglich';}
-    const button=make('button','sentence-token '+W.byId[token.lemma].type,surface);button.type='button';button.id='sentenceToken-'+token.id;
+    const text=surface(token);
+    const button=make('button','sentence-token word-type-'+W.byId[token.lemma].type,text);button.type='button';button.id='sentenceToken-'+token.id;
     button.dataset.modernToken=token.id;button.setAttribute('aria-pressed',String(selected===token.id&&!!token.group));
     button.classList.toggle('is-selected',selected===token.id&&!!token.group);button.disabled=current().finished;
-    button.setAttribute('aria-label',surface+(token.group?': auswählen, danach Endung ändern oder zurücklegen':': in '+task().groups.find(g=>g.id===activeGroup)?.label+' einsetzen'));
-    button.addEventListener('click',()=>{if(dragSuppressed){dragSuppressed=false;return;}activate(token);});
+    button.setAttribute('aria-label',text+(token.group?(Object.keys(token.features).length?': letzte Endung entfernen':': zurück in die Wortbank'):': in '+task().groups.find(g=>g.id===activeGroup)?.label+' einsetzen'));
+    button.addEventListener('click',event=>{if(event.detail&&Date.now()<suppressUntil)return;activate(token);});
     attachDrag(button,{token:token.id});return button;
+  }
+  function clearDrag(){
+    const old=drag;drag=null;
+    if(old){old.button.classList.remove('dragging');old.ghost?.remove();try{old.button.releasePointerCapture?.(old.pointer);}catch{}}
+    el('answerZone').querySelectorAll('.drag-over').forEach(e=>e.classList.remove('drag-over'));
+    el('answerZone').querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));el('wordBank').classList.remove('drag-over');
+  }
+  function dragDestination(event,payload){
+    const under=document.elementFromPoint(event.clientX,event.clientY),word=under?.closest('[data-modern-token]'),group=under?.closest('[data-sentence-group]');
+    if(payload.card){const token=current().tokens.find(t=>t.id===word?.dataset.modernToken);return token?.group&&fits(token,payload.card)?{word,token}:null;}
+    if(group){
+      const id=word?.dataset.modernToken,items=current().tokens.filter(t=>t.group===group.dataset.sentenceGroup&&t.id!==payload.token);
+      let beforeId=id;
+      if(word&&id!==payload.token){const r=word.getBoundingClientRect();if(event.clientX>=r.left+r.width/2)beforeId=items[items.findIndex(t=>t.id===id)+1]?.id||null;}
+      return {group,beforeId};
+    }
+    if(under?.closest('#answerZone'))return {group:Array.from(el('answerZone').querySelectorAll('[data-sentence-group]')).find(g=>g.dataset.sentenceGroup===activeGroup)};
+    return under?.closest('#wordBank')?{bank:true}:null;
   }
   function attachDrag(button,payload){
     button.addEventListener('pointerdown',event=>{
-      if(event.button!==0||!running||current()?.finished)return;
+      if((event.button!==undefined&&event.button!==0)||!running||current()?.finished)return;
+      clearDrag();
+      suppressUntil=0;
       drag={payload,button,x:event.clientX,y:event.clientY,moved:false,pointer:event.pointerId};button.setPointerCapture?.(event.pointerId);
     });
     button.addEventListener('pointermove',event=>{
       if(!drag||drag.button!==button)return;
-      if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>10){drag.moved=true;button.style.opacity='.55';}
+      if(!drag.moved&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>8){
+        drag.moved=true;button.classList.add('dragging');
+        const ghost=make('div',button.className.replace('dragging','')+' drag-ghost',button.textContent);
+        ghost.setAttribute('aria-hidden','true');ghost.style.width=button.getBoundingClientRect().width+'px';document.body.append(ghost);drag.ghost=ghost;
+      }
+      if(!drag.moved)return;
+      event.preventDefault?.();drag.ghost.style.left=event.clientX+'px';drag.ghost.style.top=event.clientY+'px';
+      el('answerZone').querySelectorAll('.drag-over').forEach(e=>e.classList.remove('drag-over'));
+      el('answerZone').querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));el('wordBank').classList.remove('drag-over');
+      const target=dragDestination(event,payload);
+      if(target?.word)target.word.classList.add('case-drop-over');else if(target?.group)target.group.classList.add('drag-over');else if(target?.bank)el('wordBank').classList.add('drag-over');
     });
     const end=event=>{
       if(!drag||drag.button!==button)return;
-      const old=drag;drag=null;button.style.opacity='';
-      if(event.type==='pointercancel')return;
+      const old=drag,target=event.type==='pointercancel'?null:dragDestination(event,payload);clearDrag();
       if(!old.moved)return;
-      dragSuppressed=true;
-      const under=document.elementFromPoint(event.clientX,event.clientY);
-      const targetToken=under?.closest('[data-modern-token]')?.dataset.modernToken;
-      const targetGroup=under?.closest('[data-sentence-group]')?.dataset.sentenceGroup;
-      if(payload.card&&targetToken)apply(payload.card,targetToken);
-      else if(payload.token&&targetGroup)moveToken(payload.token,targetGroup,targetToken);
-      else if(payload.token&&under?.closest('#wordBank'))moveToken(payload.token,null);
-      setTimeout(()=>{dragSuppressed=false;},0);
+      suppressUntil=Date.now()+350;
+      if(target?.token)apply(payload.card,target.token.id);
+      else if(target?.group)moveToken(payload.token,target.group.dataset.sentenceGroup,target.beforeId);
+      else if(target?.bank)moveToken(payload.token,null);
     };
-    button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);
+    button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
   function render(){
     const cur=current(),t=task();if(!cur||!t)return;
     if(!t.groups.some(g=>g.id===activeGroup))activeGroup=t.groups[0].id;
-    const band=C.bandAt(engine.state.level);
     el('sentenceLevelText').textContent=engine.state.level;
     el('sentenceLevelText').classList.toggle('long-level',engine.state.level>=100);
     el('sentenceLevelBadge').setAttribute('aria-label','Level '+engine.state.level);
-    el('sentenceTaskLabel').textContent='Aufgabe · '+t.cefr+' · '+(t.register==='colloquial'?'Alltagssprache':'Standard');
-    const modes={intro:'Einführung · ohne Levelwertung',current:'Levelaufgabe · erster Versuch zählt',targeted:'Gezielte Wiederholung · ohne Levelwertung',older:'Ältere Übung · ohne Levelwertung'};
-    el('sentenceModeLabel').textContent=cur.rated&&cur.kind==='current'?'Bereits gewertet · Korrekturen ohne Leveländerung':cur.assisted&&cur.kind==='current'?'Mit Hilfe · ohne weitere Levelwertung':modes[cur.kind];
-    el('sentenceLevelProgressText').textContent=band.title+' · Level '+band.start+'–'+band.end;
-    el('sentenceChapterFill').style.width=((engine.state.level-band.start+1)/(band.end-band.start+1)*100)+'%';
-    el('sentenceChapterBar').setAttribute('aria-valuenow',engine.state.level);el('sentenceChapterBar').setAttribute('aria-valuemin',band.start);el('sentenceChapterBar').setAttribute('aria-valuemax',band.end);
+    el('sentenceTaskLabel').textContent=t.cefr;
+    el('sentenceTaskLabel').setAttribute('aria-label','Aufgabe '+t.cefr+', '+(t.register==='colloquial'?'Alltagssprache':'Standard'));
+    el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated?'Korrektur':cur.kind==='intro'?'Einführung':cur.kind!=='current'?'Wiederholung':'';
+    el('sentenceModeLabel').title=cur.rated?'Bereits gewertet; Korrekturen ohne Leveländerung':cur.kind==='current'&&!cur.assisted?'Erster Versuch zählt':'Ohne Levelwertung';
     el('sentencePrompt').textContent=t.de;
-    const intro=el('sentenceLesson');intro.hidden=cur.kind!=='intro';
     if(cur.kind==='intro'){
       el('sentenceLessonTitle').textContent=C.bySkill[cur.target].title;
       el('sentenceLessonText').textContent=C.bySkill[cur.target].help;
       el('sentenceLessonSample').textContent=t.answer+'.';
+    }else{
+      el('sentenceLessonTitle').textContent='Satzbau';el('sentenceLessonText').textContent='Der erste Versuch einer Levelaufgabe zählt. Einführungen, Wiederholungen und Aufgaben mit Hilfe sind ohne Levelwertung.';el('sentenceLessonSample').textContent='';
     }
     const zone=el('answerZone');zone.replaceChildren();
+    const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
     for(const g of t.groups){
-      const section=make('div','sentence-group','');section.dataset.sentenceGroup=g.id;section.classList.toggle('is-active',activeGroup===g.id);
-      const title=make('button','sentence-group-title',g.label+(g.ordered?' · Reihenfolge beachten':''));title.type='button';title.disabled=cur.finished;title.setAttribute('aria-pressed',String(activeGroup===g.id));
+      const title=make('button','sentence-group-title',g.label);title.type='button';title.disabled=cur.finished;title.dataset.sentenceGroup=g.id;title.setAttribute('aria-pressed',String(activeGroup===g.id));
+      title.title=g.ordered?'Reihenfolge beachten':'';
       title.addEventListener('click',()=>{activeGroup=g.id;selected=null;render();});
-      const content=make('div','sentence-group-words','');for(const token of cur.tokens.filter(t=>t.group===g.id))content.append(wordButton(token));
-      section.append(title,content);zone.append(section);
+      tabs.append(title);
     }
-    const bank=el('wordBank');bank.replaceChildren();for(const token of cur.tokens.filter(t=>!t.group))bank.append(wordButton(token));
-    const grammar=el('grammarBank');grammar.replaceChildren();
-    for(const id of ['wordBank','grammarBank','sentenceWordLabel','sentenceGrammarLabel','sentenceEditHint'])el(id).hidden=cur.finished;
-    for(const card of allowedCards()){
-      const button=make('button','sentence-grammar-card',card.label);button.type='button';button.disabled=cur.finished;
-      button.addEventListener('click',()=>{if(dragSuppressed){dragSuppressed=false;return;}apply(card);});attachDrag(button,{card});grammar.append(button);
+    zone.append(tabs);
+    for(const g of t.groups){
+      const content=make('div','sentence-group-words','');content.dataset.sentenceGroup=g.id;content.hidden=g.id!==activeGroup;content.setAttribute('aria-label',g.label);
+      for(const token of cur.tokens.filter(t=>t.group===g.id))content.append(wordButton(token));zone.append(content);
     }
-    for(const id of ['checkSentenceButton','sentenceHintButton','sentenceUnknownButton','sentenceResetButton','sentenceRemoveButton','sentenceClearEndings'])el(id).disabled=cur.finished;
-    el('sentenceRemoveButton').disabled=cur.finished||!cur.tokens.some(t=>t.id===selected&&t.group);
-    el('sentenceClearEndings').disabled=el('sentenceRemoveButton').disabled;
+    const bank=el('wordBank'),words=cur.tokens.filter(t=>!t.group),size=root.matchMedia('(max-height:620px)').matches?3:6,pages=Math.max(1,Math.ceil(words.length/size));bankPage=Math.min(bankPage,pages-1);
+    bank.replaceChildren();for(const token of words.slice(bankPage*size,(bankPage+1)*size))bank.append(wordButton(token));
+    const pager=el('sentenceBankPages');pager.replaceChildren();pager.hidden=pages===1||cur.finished;
+    for(const [label,step] of [['‹',-1],['›',1]]){
+      const button=make('button','sentence-icon',label);button.type='button';button.setAttribute('aria-label',step<0?'Vorherige Wörter':'Weitere Wörter');button.disabled=step<0?bankPage===0:bankPage===pages-1;
+      button.addEventListener('click',()=>{bankPage+=step;render();});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
+    }
+    el('wordBank').parentElement.hidden=cur.finished;
+    renderForms();
+    for(const id of ['checkSentenceButton','sentenceHintButton','sentenceUnknownButton','sentenceResetButton'])el(id).disabled=cur.finished;
+    el('checkSentenceButton').hidden=cur.finished;el('sentenceUnknownButton').hidden=cur.finished;
     el('sentenceNextButton').hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!engine.storageError;
-    const coverage=engine.coverageReport();
-    const names=list=>list.map(c=>labels.case[c].split(' · ')[0]).join(', ')||'keine';
-    el('sentenceCoverageText').textContent=engine.state.level<40?'Alle verfügbaren Fälle werden ab Level 40 regelmäßig wiederholt.':'In der aktuellen Übungsfolge bereits geprüft: '+names(coverage.covered)+'. Noch einzuplanen: '+names(coverage.missing)+'. Noch nicht verfügbar: '+names(coverage.unavailable)+'.';
+  }
+  function renderForms(){
+    const cur=current(),all=allowedCards(),cards=all.filter(c=>all.filter(other=>other.field===c.field).length>1),targets=cur.tokens.filter(t=>t.group===activeGroup&&cards.some(c=>fits(t,c))),grammar=el('grammarBank');grammar.replaceChildren();
+    el('sentenceForms').hidden=cur.finished||!targets.length;grammar.hidden=cur.finished;
+    if(!targets.length)return;
+    let token=targets.find(t=>t.id===selected)||targets.filter(t=>t.group===activeGroup).at(-1)||targets.at(-1);selected=token.id;
+    const target=el('sentenceFormTarget');target.replaceChildren();
+    for(const t of targets){const option=make('option','',surface(t));option.value=t.id;target.append(option);}target.value=token.id;
+    const fields=[...new Set(cards.filter(c=>fits(token,c)).map(c=>c.field))];if(!fields.includes(formField)){formField=fields[0];formPage=0;}
+    const field=el('sentenceFormField');field.replaceChildren();for(const f of fields){const option=make('option','',fieldNames[f]);option.value=f;field.append(option);}field.value=formField;
+    const options=cards.filter(c=>c.field===formField&&fits(token,c)),pageSize=options.length>4?3:4,pages=Math.ceil(options.length/pageSize);formPage=Math.min(formPage,pages-1);
+    for(const card of options.slice(formPage*pageSize,(formPage+1)*pageSize)){
+      const text=shortLabels[card.field]?.[card.value]||(card.field==='predicatePerson'?shortLabels.person[card.value]:card.value===null?'∅':card.value===false?'Nein':card.value===true?'Ja':card.label);
+      const button=make('button','sentence-grammar-card',text);button.type='button';button.setAttribute('aria-label',card.label);button.title=card.label;
+      button.setAttribute('aria-pressed',String(token.features[card.field]===card.value));
+      button.addEventListener('click',event=>{if(event.detail&&Date.now()<suppressUntil)return;apply(card);});attachDrag(button,{card});grammar.append(button);
+    }
+    if(pages>1){const more=make('button','sentence-grammar-card sentence-form-next',formPage===pages-1?'‹':'›');more.type='button';more.setAttribute('aria-label','Weitere Endungen, Seite '+(formPage+1)+' von '+pages);more.addEventListener('click',()=>{formPage=(formPage+1)%pages;renderForms();el('grammarBank').querySelector('.sentence-form-next')?.focus({preventScroll:true});});grammar.append(more);}
+  }
+  function help(open){
+    el('sentenceHelp').hidden=!open;el('sentenceHelpButton').setAttribute('aria-expanded',String(open));
+    for(const child of el('sentenceGameActive').children)if(child.id!=='sentenceHelp')child.inert=open;
+    if(open)el('sentenceHelpClose').focus({preventScroll:true});else el('sentenceHelpButton').focus({preventScroll:true});
   }
   function start(){
     stop();running=true;sentenceGameRunning=true;
     next();
   }
   function stop(){
-    running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;drag=null;stopConfettiCelebration();
+    running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();help(false);stopConfettiCelebration();
   }
   function next(){
     if(!running)return;
-    clearTimeout(advanceTimer);advanceTimer=null;selected=null;activeGroup=null;
+    clearTimeout(advanceTimer);advanceTimer=null;selected=null;activeGroup=null;formField=null;formPage=0;bankPage=0;help(false);el('sentenceHintText').textContent='';
     const cur=engine.next();
-    el('sentenceGameActive').style.display=cur?'flex':'none';el('sentenceComplete').classList.toggle('show',!cur);
+    el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
       document.querySelector('#sentenceComplete h2').textContent='Wörter für den nächsten Schritt';
       const needed=engine.missingWords();
       document.querySelector('#sentenceComplete p').textContent=needed.length?'Schalte diese Wörter frei: '+needed.map(w=>w.tr+' ('+w.de+')').join(', ')+'.':'Schalte zuerst Wörter wie ev und güzel im Worttrainer frei.';
       return;
     }
-    message(cur.attempts?'Dein erster Versuch ist bereits gewertet. Korrigiere den Satz ohne weitere Leveländerung.':'');render();
+    message(cur.attempts?'Korrigiere weiter.':'');render();
     el('sentencePrompt').focus({preventScroll:true});
     const needed=engine.missingWords();
-    if(cur.kind!=='current'&&needed.length&&C.bandAt(engine.state.level).start>1)message('Für neue Levelaufgaben fehlen noch Wörter: '+needed.map(w=>w.tr).join(', ')+'. Diese Wiederholung ist ohne Levelwertung.');
+    if(cur.kind!=='current'&&needed.length&&C.bandAt(engine.state.level).start>1)message('Wiederholung · neue Wörter im Worttrainer freischalten.');
   }
   function check(unknown=false){
     if(!running||!current()||current().finished)return;
@@ -185,23 +240,21 @@
     if(result.ignored)return;
     render();
     if(result.correct){
-      const missing=engine.missingSkills();
-      message('Richtig!'+(result.delta>0?' Level '+result.level+'.':result.direct&&result.kind==='current'&&missing.length&&engine.state.level===C.bandAt(engine.state.level).end?' Für den nächsten Abschnitt üben wir noch: '+missing.map(s=>s.title).join(', ')+'.':' Weiter üben, ohne zusätzliche Leveländerung.'),'ok');
+      message('Richtig!'+(result.delta>0?' Level '+result.level+'.':' Weiter ohne Leveländerung.'),'ok');
       const duration=celebrateCorrectAnswer();
       advanceTimer=setTimeout(()=>{if(running)next();},Math.max(1000,duration));
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
       const issue=result.issue;
-      const hints={word:'Ein Wort passt noch nicht zur Bedeutung.',role:'Ein Wort steht im falschen Satzteil.',missing:'Es fehlt noch ein Baustein oder eine Verbform.',extra:'Ein Baustein ist zu viel.',grammar:'Eine Endung oder Verbform passt noch nicht.'};
-      message((hints[issue.area]||'Prüfe die Bausteine.')+(issue.group?' Satzteil: '+issue.group+'.':'')+(result.delta<0?' Level '+result.level+'.':'')+' Du kannst korrigieren oder einen Hinweis öffnen.','bad');
+      const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:'Prüfe die Endungen.'};
+      message((hints[issue.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
     }
   }
   function reset(){
     if(!running||current()?.finished)return;
-    current().tokens.forEach(t=>{t.group=null;t.features={};});selected=null;engine.save();render();
-    message('Satz zurückgesetzt. Die bisherige Wertung bleibt erhalten.');
+    current().tokens.forEach(t=>{t.group=null;t.features={};});selected=null;bankPage=0;engine.save();render();help(false);message('');
   }
-  function hint(){if(!running)return;const text=engine.hint();if(text){render();message(text);}}
+  function hint(){if(!running)return;const text=engine.hint();if(text){render();el('sentenceHintText').textContent=text;help(true);}}
   function removeSelected(clearOnly=false){
     const token=current()?.tokens.find(t=>t.id===selected);if(!token||current().finished)return;
     if(clearOnly)token.features={};else token.group=null;
@@ -271,8 +324,15 @@
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
   root.SentenceGame={engine,start,stop,next,render,check,hint,moveToken,apply,reset,allowedCards,removeSelected};
   el('sentenceHintButton').addEventListener('click',hint);el('sentenceUnknownButton').addEventListener('click',()=>check(true));
-  el('sentenceNextButton').addEventListener('click',next);el('sentenceRemoveButton').addEventListener('click',()=>removeSelected());
-  el('sentenceClearEndings').addEventListener('click',()=>removeSelected(true));
+  el('sentenceNextButton').addEventListener('click',next);
+  el('sentenceHelpButton').addEventListener('click',()=>help(true));el('sentenceHelpClose').addEventListener('click',()=>help(false));
+  el('sentenceHelp').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();help(false);}
+    else if(event.key==='Tab'){const buttons=[el('sentenceHelpClose'),el('sentenceHintButton'),el('sentenceResetButton')].filter(b=>!b.disabled);const index=buttons.indexOf(document.activeElement);event.preventDefault();buttons[(index+(event.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}
+  });
+  el('sentenceFormTarget').addEventListener('change',event=>{selected=event.currentTarget.value;activeGroup=current().tokens.find(t=>t.id===selected)?.group;formPage=0;render();el('sentenceFormTarget').focus({preventScroll:true});});
+  el('sentenceFormField').addEventListener('change',event=>{formField=event.currentTarget.value;formPage=0;renderForms();el('sentenceFormField').focus({preventScroll:true});});
+  root.addEventListener('resize',()=>{if(running){clearDrag();render();}});
   backupPanel();grammarIndex();
   root.addEventListener('pagehide',()=>{stop();engine.save();});
 })(window);
