@@ -105,6 +105,11 @@
 
     button,input{font:inherit}
 
+    button:focus-visible,[role="button"]:focus-visible,[role="textbox"]:focus-visible{
+      outline:3px solid var(--lavender-dark);
+      outline-offset:3px;
+    }
+
     .pull-refresh{
       position:fixed;
       z-index:50000;
@@ -2044,6 +2049,7 @@
     }
 
   </style>
+<link rel="stylesheet" href="sentence-game.css">
 </head>
 
 <body>
@@ -2081,44 +2087,7 @@
       <input id="search" class="search" type="search" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
 
       <div id="wordList" class="word-list">
-        <div class="word-row noun" data-search="baum ağaç agac nomen"><div><div class="word-de">Baum</div><div class="word-tr">ağaç</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="weg straße strasse yol nomen"><div><div class="word-de">Weg / Straße</div><div class="word-tr">yol</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="haus ev nomen"><div><div class="word-de">Haus</div><div class="word-tr">ev</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="auto araba nomen"><div><div class="word-de">Auto</div><div class="word-tr">araba</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="mama mutter anne nomen"><div><div class="word-de">Mama / Mutter</div><div class="word-tr">anne</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="papa vater baba nomen"><div><div class="word-de">Papa / Vater</div><div class="word-tr">baba</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="älterer bruder aelterer bruder abi nomen"><div><div class="word-de">älterer Bruder</div><div class="word-tr">abi</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="ältere schwester aeltere schwester abla nomen"><div><div class="word-de">ältere Schwester</div><div class="word-tr">abla</div><span class="type-badge noun">Nomen</span></div></div>
-        <div class="word-row noun" data-search="penis yarak nomen"><div><div class="word-de">Penis</div><div class="word-tr">yarak</div><span class="type-badge noun">Nomen</span></div><div class="word-note">vulgär</div></div>
-
-        <div class="word-row adj" data-search="schön schoen güzel guzel adjektiv"><div><div class="word-de">schön</div><div class="word-tr">güzel</div><span class="type-badge adj">Adjektiv</span></div></div>
-
-        <div class="word-row verb" data-search="gehen gitmek verb"><div><div class="word-de">gehen</div><div class="word-tr">gitmek</div><span class="type-badge verb">Verb</span></div><div class="word-note">auch „das Gehen“</div></div>
-        <div class="word-row verb" data-search="lieben mögen moegen sevmek verb"><div><div class="word-de">lieben / mögen</div><div class="word-tr">sevmek</div><span class="type-badge verb">Verb</span></div></div>
-        <div class="word-row verb" data-search="kommen gelmek verb"><div><div class="word-de">kommen</div><div class="word-tr">gelmek</div><span class="type-badge verb">Verb</span></div></div>
-        <div class="word-row verb" data-search="sehen görmek gormek verb"><div><div class="word-de">sehen</div><div class="word-tr">görmek</div><span class="type-badge verb">Verb</span></div></div>
-        <div class="word-row existential" data-search="var es gibt vorhanden haben existenzwort"><div><div class="word-de">es gibt / vorhanden · „haben“</div><div class="word-tr">var</div><span class="type-badge existential">Existenzwort</span></div></div>
-        <div class="word-row existential" data-search="yok es gibt nicht nicht vorhanden existenzwort"><div><div class="word-de">es gibt nicht / nicht vorhanden · „nicht haben“</div><div class="word-tr">yok</div><span class="type-badge existential">Existenzwort</span></div></div>
-        <div class="word-row colloquial" data-search="yo nö noe nein umgangssprache"><div><div class="word-de">nö</div><div class="word-tr">yo</div><span class="type-badge colloquial">Umgangssprache</span></div></div>
-
-        <div class="word-row response" data-search="ja evet antwortwort"><div><div class="word-de">ja</div><div class="word-tr">evet</div><span class="type-badge response">Antwortwort</span></div></div>
-        <div class="word-row response" data-search="genau aynen antwortwort"><div><div class="word-de">genau</div><div class="word-tr">aynen</div><span class="type-badge response">Antwortwort</span></div></div>
-        <div class="word-row response" data-search="nein hayır hayir antwortwort"><div><div class="word-de">nein</div><div class="word-tr">hayır</div><span class="type-badge response">Antwortwort</span></div></div>
-        <div class="word-row conjunction" data-search="und ve konjunktion"><div><div class="word-de">und</div><div class="word-tr">ve</div><span class="type-badge conjunction">Konjunktion</span></div></div>
-        <div class="word-row demonstrative" data-search="das dies bu demonstrativ"><div><div class="word-de">das / dies</div><div class="word-tr">bu</div><span class="type-badge demonstrative">Demonstrativ</span></div></div>
-        <div class="word-row questionword" data-search="was ne fragewort"><div><div class="word-de">was</div><div class="word-tr">ne</div><span class="type-badge questionword">Fragewort</span></div></div>
-
-        <div class="word-row greeting" data-search="hallo merhaba grußformel grussformel"><div><div class="word-de">Hallo</div><div class="word-tr">merhaba</div><span class="type-badge greeting">Grußformel</span></div></div>
-        <div class="word-row greeting" data-search="tschüss tschuess auf wiedersehen güle güle gule gule grußformel grussformel"><div><div class="word-de">Tschüss / Auf Wiedersehen</div><div class="word-tr">güle güle</div><span class="type-badge greeting">Grußformel</span></div></div>
-        <div class="word-row polite" data-search="bitte lütfen lutfen höflichkeitswort hoeflichkeitswort"><div><div class="word-de">bitte</div><div class="word-tr">lütfen</div><span class="type-badge polite">Höflichkeit</span></div></div>
-        <div class="word-row polite" data-search="ja bitte wie bitte efendim mein herr meine dame höflichkeit hoeflichkeit"><div><div class="word-de">Ja bitte? / Wie bitte?</div><div class="word-tr">efendim</div><span class="type-badge polite">Höflichkeit</span></div><div class="word-note">wörtlich: Mein Herr / Meine Dame</div></div>
-        <div class="word-row phrase" data-search="gesundheit lebe lange çok yaşa cok yasa redewendung"><div><div class="word-de">Gesundheit! (Lebe lange!)</div><div class="word-tr">Çok yaşa!</div><span class="type-badge phrase">Redewendung</span></div></div>
-        <div class="word-row phrase" data-search="gleichfalls sehe es auch sen de gör sen de gor redewendung"><div><div class="word-de">Gleichfalls! (Sehe es auch!)</div><div class="word-tr">Sen de gör!</div><span class="type-badge phrase">Redewendung</span></div></div>
-
-        <div class="word-row pronoun" data-search="ich ben pronomen"><div><div class="word-de">ich</div><div class="word-tr">ben</div><span class="type-badge pronoun">Pronomen</span></div></div>
-        <div class="word-row pronoun" data-search="du sen pronomen"><div><div class="word-de">du</div><div class="word-tr">sen</div><span class="type-badge pronoun">Pronomen</span></div></div>
-        <div class="word-row pronoun" data-search="er sie es o pronomen"><div><div class="word-de">er / sie / es</div><div class="word-tr">o</div><span class="type-badge pronoun">Pronomen</span></div></div>
-        <div class="word-row pronoun" data-search="wir biz pronomen"><div><div class="word-de">wir</div><div class="word-tr">biz</div><span class="type-badge pronoun">Pronomen</span></div></div>
+        <!-- Populated from data/words.js. -->
       </div>
     </div>
   </section>
@@ -2275,7 +2244,7 @@
           <button id="quizModeSwitch" class="mode-switch" onclick="cycleQuizMode(event)">Deutsch → Türkisch</button>
         </div>
 
-        <div id="quizCard" class="quiz-card neutral" onclick="revealAnswer()">
+        <div id="quizCard" class="quiz-card neutral" role="button" tabindex="0" aria-expanded="false" aria-controls="quizAnswer" onclick="revealAnswer()" onkeydown="handleQuizCardKeydown(event)">
           <div id="quizDirection" class="quiz-direction"></div>
           <div id="quizType" class="quiz-type neutral"></div>
           <div id="quizFront" class="quiz-front"></div>
@@ -2312,55 +2281,40 @@
               <span id="sentenceLevelText" class="sentence-level-number" aria-hidden="true">1</span>
             </div>
             <div class="sentence-game-meters">
-              <div id="sentenceLives" class="sentence-lives" role="img" aria-label="3 von 3 Leben">
-                <span id="sentenceProgressText" class="sentence-lives-copy" aria-hidden="true">3 Leben</span>
-                <div class="sentence-hearts" aria-hidden="true">
-                  <span id="sentenceHeart0" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
-                  <span id="sentenceHeart1" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
-                  <span id="sentenceHeart2" class="sentence-heart"><svg viewBox="0 0 24 24"><path d="M12 21S2 14.7 2 8.3C2 4.9 6.2 2.8 9 4.5L12 7l3-2.5c2.8-1.7 7 .4 7 3.8C22 14.7 12 21 12 21Z"/></svg></span>
-                </div>
-              </div>
-              <div class="sentence-level-progress">
-                <div id="sentenceLevelProgress" class="sentence-progress-track" role="progressbar" aria-label="Fortschritt zum nächsten Level" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
-                  <span id="sentenceStep0" class="sentence-progress-step" aria-hidden="true"></span>
-                  <span id="sentenceStep1" class="sentence-progress-step" aria-hidden="true"></span>
-                  <span id="sentenceStep2" class="sentence-progress-step" aria-hidden="true"></span>
-                  <span id="sentenceStep3" class="sentence-progress-step" aria-hidden="true"></span>
-                  <span id="sentenceStep4" class="sentence-progress-step" aria-hidden="true"></span>
-                </div>
-                <div id="sentenceLevelProgressText" class="sentence-progress-caption">0 / 5 geschafft</div>
-              </div>
+              <div id="sentenceTaskLabel" class="sentence-task-label">Aufgabe · A1</div>
+              <div id="sentenceModeLabel" class="sentence-mode-label"></div>
+              <div id="sentenceChapterBar" class="sentence-chapter-bar" role="progressbar" aria-label="Fortschritt im Abschnitt" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><span id="sentenceChapterFill"></span></div>
+              <div id="sentenceLevelProgressText" class="sentence-progress-caption"></div>
             </div>
           </div>
-
-          <div class="sentence-prompt">
-            <div class="sentence-prompt-label">Deutsch → Türkisch</div>
-            <div id="sentencePrompt" class="sentence-prompt-text"></div>
+          <div id="sentenceStorageWarning" class="sentence-lesson" role="status" hidden></div>
+          <details class="sentence-storage"><summary>Fallmix</summary><p id="sentenceCoverageText"></p></details>
+          <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
+          <div id="sentenceLesson" class="sentence-lesson" hidden>
+            <strong id="sentenceLessonTitle"></strong><p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
+            <p>Setze das Beispiel selbst zusammen. Diese Einführung wird nicht gewertet.</p>
           </div>
-
           <div class="sentence-zone-label">Dein Satz</div>
-          <div id="answerZone" class="drop-zone answer-zone"></div>
-
-          <div class="sentence-zone-label">Wörter & Endungen</div>
-          <div class="sentence-case-hint">Suffix → Nomen · Verbendung → Infinitiv</div>
-          <div id="wordBank" class="drop-zone word-bank"></div>
-
+          <div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div>
+          <div class="sentence-edit-actions"><button id="sentenceRemoveButton" type="button">Gewähltes Wort zurücklegen</button><button id="sentenceClearEndings" type="button">Endungen am Wort entfernen</button></div>
+          <div id="sentenceWordLabel" class="sentence-zone-label">Wörter</div><div id="wordBank" class="drop-zone word-bank" aria-label="Wortbank"></div>
+          <div id="sentenceGrammarLabel" class="sentence-zone-label">Endungen und Formen</div><div id="grammarBank" aria-label="Grammatikbausteine"></div>
+          <div id="sentenceEditHint" class="sentence-case-hint">Wort antippen → einsetzen. Wort im Satz auswählen → Endung ergänzen. Ziehen ordnet Wörter und Endungen einem anderen Ziel zu.</div>
           <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
-
           <div class="sentence-actions">
-            <button class="sentence-btn secondary" onclick="resetSentence()">Zurücksetzen</button>
+            <button id="sentenceResetButton" class="sentence-btn secondary" onclick="resetSentence()">Satz leeren</button>
+            <button id="sentenceHintButton" class="sentence-btn secondary">Hinweis</button>
+            <button id="sentenceUnknownButton" class="sentence-btn secondary">Keine Ahnung</button>
             <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
+            <button id="sentenceNextButton" class="sentence-btn primary" hidden>Weiter</button>
           </div>
         </div>
-
         <div id="sentenceComplete" class="sentence-complete">
-          <div class="big">✓</div>
-          <h2>Alle Sätze geschafft</h2>
-          <p class="section-sub">Du hast alle Satzbau-Aufgaben richtig gelöst.</p>
-          <button class="restart-btn" onclick="startSentenceGame()">Nochmal starten</button>
+          <div class="big">◫</div><h2>Noch keine passenden Sätze</h2><p class="section-sub"></p>
+          <button class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
+          <button class="restart-btn" onclick="startSentenceGame()">Erneut prüfen</button>
         </div>
       </div>
-
     </div>
 
     <div id="chatLearning" class="learn-mode">
@@ -2391,8 +2345,8 @@
             <div id="typingPrompt" class="typing-word"></div>
           </div>
 
-          <div id="typingAnswer" class="typing-answer empty" role="textbox" aria-readonly="true">Antwort tippen …</div>
-          <div id="typingFeedback" class="typing-feedback"></div>
+          <div id="typingAnswer" class="typing-answer empty" role="textbox" tabindex="0" aria-label="Antwort" aria-readonly="true">Antwort tippen …</div>
+          <div id="typingFeedback" class="typing-feedback" role="status" aria-live="polite"></div>
         </div>
 
         <div id="typingComplete" class="typing-complete">
@@ -2426,243 +2380,13 @@
   </nav>
 </div>
 
+<script src="data/words.js"></script>
+<script src="lib/turkish.js"></script>
+<script src="lib/curriculum.js"></script>
+<script src="lib/learning.js"></script>
 <script>
-  const flashcards = [
-    {de:"Baum", tr:"ağaç", type:"noun", tipDe:"Im Garten steht ein großer Baum.", tipTr:"Bahçede büyük bir ağaç var."},
-    {de:"Weg / Straße", tr:"yol", type:"noun", tipDe:"Dieser Weg ist sehr lang.", tipTr:"Bu yol çok uzun."},
-    {de:"Haus", tr:"ev", type:"noun", tipDe:"Das Haus ist sehr schön.", tipTr:"Ev çok güzel."},
-    {de:"Auto", tr:"araba", type:"noun", tipDe:"Das Auto steht vor dem Haus.", tipTr:"Araba evin önünde."},
-    {de:"Mama / Mutter", tr:"anne", type:"noun", tipDe:"Mama ist zu Hause.", tipTr:"Anne evde."},
-    {de:"Papa / Vater", tr:"baba", type:"noun", tipDe:"Papa ist im Auto.", tipTr:"Baba arabada."},
-    {de:"älterer Bruder", tr:"abi", type:"noun", tipDe:"Mein älterer Bruder ist zu Hause.", tipTr:"Abim evde."},
-    {de:"ältere Schwester", tr:"abla", type:"noun", tipDe:"Meine ältere Schwester ist zu Hause.", tipTr:"Ablam evde."},
-    {de:"Penis (vulgär)", tr:"yarak", type:"noun", tipDe:"Das Wort ist sehr vulgär.", tipTr:"Bu kelime çok kaba."},
-
-    {de:"schön", tr:"güzel", type:"adj", tipDe:"Das Haus ist schön.", tipTr:"Ev güzel."},
-
-    {de:"gehen", tr:"gitmek", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."},
-    {de:"lieben / mögen", tr:"sevmek", type:"verb", tipDe:"Ich mag dich.", tipTr:"Seni seviyom."},
-    {de:"kommen", tr:"gelmek", type:"verb", tipDe:"Ich komme nach Hause.", tipTr:"Eve geliyom."},
-    {de:"sehen", tr:"görmek", type:"verb", tipDe:"Ich möchte das Haus sehen.", tipTr:"Evi görmek güzel."},
-    {de:"es gibt / vorhanden · „haben“", tr:"var", type:"existential", tipDe:"Ich habe ein Auto.", tipTr:"Benim arabam var."},
-    {de:"es gibt nicht / nicht vorhanden · „nicht haben“", tr:"yok", type:"existential", tipDe:"Ich habe kein Auto.", tipTr:"Benim arabam yok."},
-    {de:"nö", tr:"yo", type:"colloquial", tipDe:"Nö, heute nicht.", tipTr:"Yo, bugün değil."},
-    {de:"ja", tr:"evet", type:"response", tipDe:"Ja, das ist schön.", tipTr:"Evet, bu güzel."},
-    {de:"genau", tr:"aynen", type:"response", tipDe:"Genau, das meine ich.", tipTr:"Aynen, onu diyorum."},
-    {de:"nein", tr:"hayır", type:"response", tipDe:"Nein, heute nicht.", tipTr:"Hayır, bugün değil."},
-    {de:"und", tr:"ve", type:"conjunction", tipDe:"Mama und Papa sind zu Hause.", tipTr:"Anne ve baba evde."},
-    {de:"das / dies", tr:"bu", type:"demonstrative", tipDe:"Das ist schön.", tipTr:"Bu güzel."},
-    {de:"was", tr:"ne", type:"questionword", tipDe:"Was ist das?", tipTr:"Bu ne?"},
-    {de:"Hallo", tr:"merhaba", type:"greeting", tipDe:"Hallo, André!", tipTr:"Merhaba, André!"},
-    {de:"Tschüss / Auf Wiedersehen", tr:"güle güle", type:"greeting", tipDe:"Tschüss, bis später!", tipTr:"Güle güle!"},
-    {de:"bitte", tr:"lütfen", type:"polite", tipDe:"Bitte, André.", tipTr:"Lütfen, André."},
-    {de:"Ja bitte? / Wie bitte?", tr:"efendim", type:"polite", tipDe:"Jemand ruft dich – du antwortest höflich.", tipTr:"Biri seni çağırıyor: Efendim?"},
-    {de:"Gesundheit! (Lebe lange!)", tr:"Çok yaşa!", type:"phrase", tipDe:"Nach dem Niesen: Gesundheit!", tipTr:"Hapşırınca: Çok yaşa!"},
-    {de:"Gleichfalls! (Sehe es auch!)", tr:"Sen de gör!", type:"phrase", tipDe:"Als Antwort: Gleichfalls!", tipTr:"Cevap: Sen de gör!"},
-
-    {de:"zum Haus / nach Hause", tr:"eve", type:"noun", tipDe:"Ich gehe nach Hause.", tipTr:"Eve gidiyom."},
-    {de:"aus dem Haus", tr:"evden", type:"noun", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
-    {de:"im Haus", tr:"evde", type:"noun", tipDe:"Mama ist im Haus.", tipTr:"Anne evde."},
-    {de:"das Haus (bestimmtes Objekt)", tr:"evi", type:"noun", tipDe:"Ich sehe das Haus.", tipTr:"Evi görüyom."},
-    {de:"des Hauses", tr:"evin", type:"noun", tipDe:"Die Tür des Hauses ist schön.", tipTr:"Evin kapısı güzel."},
-
-    {de:"Ist es schön?", tr:"Güzel mi?", type:"adj", tipDe:"Ist das Haus schön?", tipTr:"Ev güzel mi?"},
-    {de:"Ich bin schön.", tr:"Güzelim.", type:"adj", tipDe:"Heute bin ich schön.", tipTr:"Bugün güzelim."},
-    {de:"Du bist schön.", tr:"Güzelsin.", type:"adj", tipDe:"Du bist heute schön.", tipTr:"Bugün güzelsin."},
-    {de:"Er/Sie/Es ist schön.", tr:"O güzel.", type:"adj", tipDe:"Er/Sie/Es ist schön.", tipTr:"O güzel."},
-
-    {de:"ich komme", tr:"geliyom", type:"verb", tipDe:"Ich komme aus dem Haus.", tipTr:"Evden geliyom."},
-    {de:"du kommst", tr:"geliyon", type:"verb", tipDe:"Du kommst nach Hause.", tipTr:"Eve geliyon."},
-    {de:"er/sie/es kommt", tr:"geliyo", type:"verb", tipDe:"Mein älterer Bruder kommt nach Hause.", tipTr:"Abi eve geliyo."},
-    {de:"wir kommen", tr:"geliyoz", type:"verb", tipDe:"Wir kommen nach Hause.", tipTr:"Eve geliyoz."},
-    {de:"Gehen ist schön.", tr:"Gitmek güzel.", type:"verb", tipDe:"Gehen ist schön.", tipTr:"Gitmek güzel."},
-
-    {de:"ich", tr:"ben", type:"pronoun", tipDe:"Ich bin schön.", tipTr:"Ben güzelim."},
-    {de:"du", tr:"sen", type:"pronoun", tipDe:"Du bist schön.", tipTr:"Sen güzelsin."},
-    {de:"er / sie / es", tr:"o", type:"pronoun", tipDe:"Er/Sie/Es ist schön.", tipTr:"O güzel."},
-    {de:"wir", tr:"biz", type:"pronoun", tipDe:"Wir kommen.", tipTr:"Biz geliyoz."}
-  ];
-
-  const typingWords = [
-    {de:"Baum", tr:"ağaç", deAnswers:["baum"]},
-    {de:"Weg / Straße", tr:"yol", deAnswers:["weg","straße","strasse"]},
-    {de:"Haus", tr:"ev", deAnswers:["haus"]},
-    {de:"Auto", tr:"araba", deAnswers:["auto"]},
-    {de:"Mama / Mutter", tr:"anne", deAnswers:["mama","mutter"]},
-    {de:"Papa / Vater", tr:"baba", deAnswers:["papa","vater"]},
-    {de:"älterer Bruder", tr:"abi", deAnswers:["älterer bruder","aelterer bruder"]},
-    {de:"ältere Schwester", tr:"abla", deAnswers:["ältere schwester","aeltere schwester"]},
-    {de:"Penis", tr:"yarak", deAnswers:["penis"]},
-    {de:"schön", tr:"güzel", deAnswers:["schön","schoen"]},
-    {de:"gehen", tr:"gitmek", deAnswers:["gehen"]},
-    {de:"lieben / mögen", tr:"sevmek", deAnswers:["lieben","mögen","moegen"]},
-    {de:"kommen", tr:"gelmek", deAnswers:["kommen"]},
-    {de:"sehen", tr:"görmek", deAnswers:["sehen"]},
-    {de:"es gibt / vorhanden / haben", tr:"var", deAnswers:["es gibt","vorhanden","haben"]},
-    {de:"es gibt nicht / nicht vorhanden / nicht haben", tr:"yok", deAnswers:["es gibt nicht","nicht vorhanden","nicht haben"]},
-    {de:"nö", tr:"yo", deAnswers:["nö","noe"]},
-    {de:"ja", tr:"evet", deAnswers:["ja"]},
-    {de:"genau", tr:"aynen", deAnswers:["genau"]},
-    {de:"nein", tr:"hayır", deAnswers:["nein"]},
-    {de:"und", tr:"ve", deAnswers:["und"]},
-    {de:"das / dies", tr:"bu", deAnswers:["das","dies"]},
-    {de:"was", tr:"ne", deAnswers:["was"]},
-    {de:"Hallo", tr:"merhaba", deAnswers:["hallo"]},
-    {de:"Tschüss / Auf Wiedersehen", tr:"güle güle", deAnswers:["tschüss","tschuess","auf wiedersehen"]},
-    {de:"bitte", tr:"lütfen", deAnswers:["bitte"]},
-    {de:"Ja bitte? / Wie bitte?", tr:"efendim", deAnswers:["ja bitte","wie bitte","mein herr","meine dame"]},
-    {de:"Gesundheit! / Lebe lange!", tr:"Çok yaşa!", deAnswers:["gesundheit","lebe lange"]},
-    {de:"Gleichfalls! / Sehe es auch!", tr:"Sen de gör!", deAnswers:["gleichfalls","sehe es auch"]},
-    {de:"ich", tr:"ben", deAnswers:["ich"]},
-    {de:"du", tr:"sen", deAnswers:["du"]},
-    {de:"er / sie / es", tr:"o", deAnswers:["er","sie","es"]},
-    {de:"wir", tr:"biz", deAnswers:["wir"]}
-  ];
-
-  const sentenceChallenges = [
-    {de:"Das Haus ist schön.", answer:["Ev","güzel."], distractors:["O"], requires:["ev","güzel"]},
-    {de:"Ich bin schön.", answer:["Ben","güzelim."], distractors:["Sen","güzelsin."], requires:["ben","güzel"]},
-    {de:"Du bist schön.", answer:["Sen","güzelsin."], distractors:["Ben","güzelim."], requires:["sen","güzel"]},
-    {de:"Er/Sie/Es ist schön.", answer:["O","güzel."], distractors:["Ev","güzelim."], requires:["o","güzel"]},
-
-    {de:"Mama ist im Haus.", answer:["Anne","evde."], distractors:["Baba"], requires:["anne","ev"],
-      caseBuilds:[{result:"evde.", base:"ev"}]},
-
-    {de:"Papa ist im Haus.", answer:["Baba","evde."], distractors:["Anne"], requires:["baba","ev"],
-      caseBuilds:[{result:"evde.", base:"ev"}]},
-
-    {de:"Ich komme nach Hause.", answer:["Ben","eve","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
-
-    {de:"Du kommst nach Hause.", answer:["Sen","eve","geliyon."], distractors:["Ben","geliyom."], requires:["sen","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"geliyon.", base:"gelmek", ending:"iyon"}]},
-
-    {de:"Er/Sie/Es kommt nach Hause.", answer:["O","eve","geliyo."], distractors:["Biz","geliyoz."], requires:["o","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"geliyo.", base:"gelmek", ending:"iyo"}]},
-
-    {de:"Wir kommen nach Hause.", answer:["Biz","eve","geliyoz."], distractors:["O","geliyo."], requires:["biz","ev","gelmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"geliyoz.", base:"gelmek", ending:"iyoz"}]},
-
-    {de:"Gehen ist schön.", answer:["Gitmek","güzel."], distractors:["Gelmek","güzelim."], requires:["gitmek","güzel"]},
-
-    {de:"Ich komme aus dem Haus.", answer:["Ben","evden","geliyom."], distractors:["Sen","geliyon."], requires:["ben","ev","gelmek"],
-      caseBuilds:[{result:"evden", base:"ev"}],
-      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
-
-    {de:"Das Auto ist bei Mama.", answer:["Araba","annede."], distractors:["Baba"], requires:["araba","anne"],
-      caseBuilds:[{result:"annede.", base:"anne"}]},
-
-    {de:"Ich gehe nach Hause.", answer:["Ben","eve","gidiyom."], distractors:["Sen"], requires:["ben","ev","gitmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
-
-    {de:"Ich sehe das Haus.", answer:["Ben","evi","görüyom."], distractors:["Sen"], requires:["ben","ev","görmek"],
-      caseBuilds:[{result:"evi", base:"ev"}],
-      verbBuilds:[{result:"görüyom.", base:"görmek", ending:"iyom"}]},
-
-    {de:"Ich gehe zu Mama.", answer:["Ben","anneye","gidiyom."], distractors:["Baba"], requires:["ben","anne","gitmek"],
-      caseBuilds:[{result:"anneye", base:"anne"}],
-      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
-
-    {de:"Ich komme von Mama.", answer:["Ben","anneden","geliyom."], distractors:["Baba"], requires:["ben","anne","gelmek"],
-      caseBuilds:[{result:"anneden", base:"anne"}],
-      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
-
-    {de:"Ich komme von Papa.", answer:["Ben","babadan","geliyom."], distractors:["Anne"], requires:["ben","baba","gelmek"],
-      caseBuilds:[{result:"babadan", base:"baba"}],
-      verbBuilds:[{result:"geliyom.", base:"gelmek", ending:"iyom"}]},
-
-    {de:"Ich gehe zum Auto.", answer:["Ben","arabaya","gidiyom."], distractors:["Ev"], requires:["ben","araba","gitmek"],
-      caseBuilds:[{result:"arabaya", base:"araba"}],
-      verbBuilds:[{result:"gidiyom.", base:"gitmek", ending:"iyom"}]},
-
-    {de:"Der Penis ist im Auto.", answer:["Yarak","arabada."], distractors:["Ev"], requires:["yarak","araba"],
-      caseBuilds:[{result:"arabada.", base:"araba"}]},
-
-    {de:"Ich sehe den Penis.", answer:["Ben","yarağı","görüyom."], distractors:["Ev"], requires:["ben","yarak","görmek"],
-      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}],
-      verbBuilds:[{result:"görüyom.", base:"görmek", ending:"iyom"}]},
-
-    {de:"Du kommst aus dem Haus.", answer:["Sen","evden","geliyon."], distractors:["Ben"], requires:["sen","ev","gelmek"],
-      caseBuilds:[{result:"evden", base:"ev"}],
-      verbBuilds:[{result:"geliyon.", base:"gelmek", ending:"iyon"}]},
-
-    {de:"Du gehst nach Hause.", answer:["Sen","eve","gidiyon."], distractors:["Ben"], requires:["sen","ev","gitmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"gidiyon.", base:"gitmek", ending:"iyon"}]},
-
-    {de:"Du siehst das Haus.", answer:["Sen","evi","görüyon."], distractors:["Ben"], requires:["sen","ev","görmek"],
-      caseBuilds:[{result:"evi", base:"ev"}],
-      verbBuilds:[{result:"görüyon.", base:"görmek", ending:"iyon"}]},
-
-    {de:"Du gehst zu Mama.", answer:["Sen","anneye","gidiyon."], distractors:["Baba"], requires:["sen","anne","gitmek"],
-      caseBuilds:[{result:"anneye", base:"anne"}],
-      verbBuilds:[{result:"gidiyon.", base:"gitmek", ending:"iyon"}]},
-
-    {de:"Du kommst von Mama.", answer:["Sen","anneden","geliyon."], distractors:["Baba"], requires:["sen","anne","gelmek"],
-      caseBuilds:[{result:"anneden", base:"anne"}],
-      verbBuilds:[{result:"geliyon.", base:"gelmek", ending:"iyon"}]},
-
-    {de:"Du kommst von Papa.", answer:["Sen","babadan","geliyon."], distractors:["Anne"], requires:["sen","baba","gelmek"],
-      caseBuilds:[{result:"babadan", base:"baba"}],
-      verbBuilds:[{result:"geliyon.", base:"gelmek", ending:"iyon"}]},
-
-    {de:"Du gehst zum Auto.", answer:["Sen","arabaya","gidiyon."], distractors:["Ev"], requires:["sen","araba","gitmek"],
-      caseBuilds:[{result:"arabaya", base:"araba"}],
-      verbBuilds:[{result:"gidiyon.", base:"gitmek", ending:"iyon"}]},
-
-    {de:"Du siehst den Penis.", answer:["Sen","yarağı","görüyon."], distractors:["Ev"], requires:["sen","yarak","görmek"],
-      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}],
-      verbBuilds:[{result:"görüyon.", base:"görmek", ending:"iyon"}]},
-
-    {de:"Wir kommen aus dem Haus.", answer:["Biz","evden","geliyoz."], distractors:["Sen"], requires:["biz","ev","gelmek"],
-      caseBuilds:[{result:"evden", base:"ev"}],
-      verbBuilds:[{result:"geliyoz.", base:"gelmek", ending:"iyoz"}]},
-
-    {de:"Wir gehen nach Hause.", answer:["Biz","eve","gidiyoz."], distractors:["Sen"], requires:["biz","ev","gitmek"],
-      caseBuilds:[{result:"eve", base:"ev"}],
-      verbBuilds:[{result:"gidiyoz.", base:"gitmek", ending:"iyoz"}]},
-
-    {de:"Wir sehen das Haus.", answer:["Biz","evi","görüyoz."], distractors:["Sen"], requires:["biz","ev","görmek"],
-      caseBuilds:[{result:"evi", base:"ev"}],
-      verbBuilds:[{result:"görüyoz.", base:"görmek", ending:"iyoz"}]},
-
-    {de:"Wir gehen zu Mama.", answer:["Biz","anneye","gidiyoz."], distractors:["Baba"], requires:["biz","anne","gitmek"],
-      caseBuilds:[{result:"anneye", base:"anne"}],
-      verbBuilds:[{result:"gidiyoz.", base:"gitmek", ending:"iyoz"}]},
-
-    {de:"Wir kommen von Mama.", answer:["Biz","anneden","geliyoz."], distractors:["Baba"], requires:["biz","anne","gelmek"],
-      caseBuilds:[{result:"anneden", base:"anne"}],
-      verbBuilds:[{result:"geliyoz.", base:"gelmek", ending:"iyoz"}]},
-
-    {de:"Wir kommen von Papa.", answer:["Biz","babadan","geliyoz."], distractors:["Anne"], requires:["biz","baba","gelmek"],
-      caseBuilds:[{result:"babadan", base:"baba"}],
-      verbBuilds:[{result:"geliyoz.", base:"gelmek", ending:"iyoz"}]},
-
-    {de:"Wir gehen zum Auto.", answer:["Biz","arabaya","gidiyoz."], distractors:["Ev"], requires:["biz","araba","gitmek"],
-      caseBuilds:[{result:"arabaya", base:"araba"}],
-      verbBuilds:[{result:"gidiyoz.", base:"gitmek", ending:"iyoz"}]},
-
-    {de:"Wir sehen den Penis.", answer:["Biz","yarağı","görüyoz."], distractors:["Ev"], requires:["biz","yarak","görmek"],
-      caseBuilds:[{result:"yarağı", base:"yarak", suffix:"ı", soften:true}],
-      verbBuilds:[{result:"görüyoz.", base:"görmek", ending:"iyoz"}]},
-
-    {de:"Der Penis ist schön.", answer:["Yarak","güzel."], distractors:["Ev"], requires:["yarak","güzel"]}
-  ];
-
-  const sentenceVerbEndings = ["iyom","iyon","iyo","iyoz"];
-
-  const sentenceSuffixFamilies = [
-    {key:"dative", pairs:[["e","ye"],["a","ya"]]},
-    {key:"locative", pairs:[["de","te"],["da","ta"]]},
-    {key:"ablative", pairs:[["den","ten"],["dan","tan"]]},
-    {key:"accusative", pairs:[["i","yi"],["ı","yı"],["u","yu"],["ü","yü"]]},
-    {key:"genitive", pairs:[["in","nin"],["ın","nın"],["un","nun"],["ün","nün"]]}
-  ];
+  const flashcards = AndreWords.cards.map(card=>({...card}));
+  const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
 
   const typeNames = {
     noun:"Nomen",
@@ -2682,27 +2406,8 @@
     neutral:"Grammatik"
   };
 
-  let sentenceOrder = [];
-  let sentenceRoundIndex = 0;
-  let draggedSentenceToken = null;
-  let pointerDrag = null;
-  const sentenceLearningStorageKey = "andreTurkishSentenceLearningV1";
-  const sentenceLevelSize = 5;
-  const sentencePeople = [
-    {word:"ben", de:"Ich", ending:"iyom", index:0},
-    {word:"sen", de:"Du", ending:"iyon", index:1},
-    {word:"o", de:"Er/Sie/Es", ending:"iyo", index:2},
-    {word:"biz", de:"Wir", ending:"iyoz", index:3}
-  ];
-  let sentenceLearning = null;
-  let sentenceAttempts = 0;
-  let sentenceLocked = false;
   let sentenceGameRunning = false;
-  let sentenceTransitionTimer = null;
-  let sentenceLastChallengeKey = "";
-  let sentenceLivesDepleted = false;
   let confettiCelebration = null;
-  let sentenceChallengeCache = {signature:"", challenges:[]};
 
   let typingDirection = "toTurkish";
   let typingRemaining = [];
@@ -2712,6 +2417,9 @@
   let typedAnswer = "";
   let typingUnknownState = {};
   let typingRevealPending = false;
+  let typingGameRunning = false;
+  let typingTransitionPending = false;
+  let typingTransitionTimer = null;
 
   const unlockProgressStorageKey = "andreTurkishUnlockProgressV1";
 
@@ -2722,7 +2430,13 @@
   function getUnlockProgress(){
     try{
       const saved = JSON.parse(localStorage.getItem(unlockProgressStorageKey) || "{}");
-      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+      if(!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
+      return Object.fromEntries(Object.entries(saved)
+        .filter(([key]) => !["__proto__","constructor","prototype"].includes(key))
+        .map(([key, value]) => {
+          const state = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+          return [key, {toTurkish:state.toTurkish === true, toGerman:state.toGerman === true}];
+        }));
     }catch{
       return {};
     }
@@ -2740,7 +2454,7 @@
 
   function isWordUnlocked(turkishWord, progress = getUnlockProgress()){
     const state = progress[unlockWordKey(turkishWord)];
-    return !!(state?.toTurkish && state?.toGerman);
+    return state?.toTurkish === true && state?.toGerman === true;
   }
 
   function markUnlockDirection(turkishWord, direction){
@@ -2845,317 +2559,13 @@
     return words.every(word => isWordUnlocked(word, progress));
   }
 
-  function getFlashcardRequirements(card){
-    const directKey = unlockWordKey(card.tr);
-    const dictionaryKeys = new Set(
-      getDictionaryRows()
-        .map(row => unlockWordKey(row.querySelector(".word-tr")?.textContent || ""))
-        .filter(Boolean)
-    );
-
-    if(dictionaryKeys.has(directKey)) return [card.tr];
-
-    const special = {
-      "eve":["ev"],
-      "evden":["ev"],
-      "evde":["ev"],
-      "evi":["ev"],
-      "evin":["ev"],
-      "güzel mi?":["güzel"],
-      "güzelim.":["güzel"],
-      "güzelsin.":["güzel"],
-      "o güzel.":["o","güzel"],
-      "geliyom":["gelmek"],
-      "geliyon":["gelmek"],
-      "geliyo":["gelmek"],
-      "geliyoz":["gelmek"],
-      "gitmek güzel.":["gitmek","güzel"]
-    };
-
-    return special[directKey] || [];
-  }
+  function getFlashcardRequirements(card){return card.requires || [];}
 
   function getAvailableFlashcards(){
     return flashcards.filter(card => {
       const requirements = getFlashcardRequirements(card);
       return requirements.length > 0 && areWordsUnlocked(requirements);
     });
-  }
-
-  function getAvailableSentenceChallenges(){
-    const words = getUnlockedSentenceWords();
-    const signature = JSON.stringify(words.map(word => [word.tr,word.de,word.type,
-      word.row.dataset.sentenceForms,word.row.dataset.sentencePattern,word.row.dataset.caseSoften]));
-    if(signature === sentenceChallengeCache.signature) return sentenceChallengeCache.challenges;
-    const available = [...sentenceChallenges, ...generateSentenceChallenges(words)].filter(challenge =>
-      areWordsUnlocked(challenge.requires || [])
-    );
-    // Stable content keys also combine equivalent handwritten/generated exercises.
-    const challenges = [...new Map(available.map(challenge => [getSentenceChallengeKey(challenge), challenge])).values()];
-    sentenceChallengeCache = {signature, challenges};
-    return challenges;
-  }
-
-  function emptySentenceLearning(){
-    return {level:1, levelCorrect:0, mistakes:0, sequence:0, sentences:{}, people:{}, verbs:{}};
-  }
-
-  function sentenceCounter(value, maximum = 1000000){
-    return Number.isFinite(value) ? Math.max(0, Math.min(maximum, Math.floor(value))) : 0;
-  }
-
-  function loadSentenceLearning(){
-    const clean = emptySentenceLearning();
-    try{
-      const saved = JSON.parse(localStorage.getItem(sentenceLearningStorageKey) || "{}");
-      clean.level = Math.max(1, sentenceCounter(saved.level, 10000));
-      clean.levelCorrect = sentenceCounter(saved.levelCorrect, sentenceLevelSize - 1);
-      clean.mistakes = sentenceCounter(saved.mistakes, 2);
-      clean.sequence = sentenceCounter(saved.sequence);
-      for(const name of ["people", "verbs"]){
-        if(saved[name] && typeof saved[name] === "object" && !Array.isArray(saved[name])){
-          for(const [key, value] of Object.entries(saved[name])){
-            if(!["__proto__","constructor","prototype"].includes(key)) clean[name][key] = sentenceCounter(value);
-          }
-        }
-      }
-      if(saved.sentences && typeof saved.sentences === "object"){
-        for(const [key, value] of Object.entries(saved.sentences).slice(-2000)){
-          if(!value || typeof value !== "object" || ["__proto__","constructor","prototype"].includes(key)) continue;
-          clean.sentences[key] = Object.fromEntries(
-            ["seen","errors","solved","directStreak","difficulty","lastSeen"].map(field =>
-              [field, sentenceCounter(value[field])]
-            )
-          );
-        }
-      }
-    }catch{}
-    return clean;
-  }
-
-  function saveSentenceLearning(){
-    try{localStorage.setItem(sentenceLearningStorageKey, JSON.stringify(sentenceLearning));}catch{}
-  }
-
-  function getSentenceChallengeKey(challenge){
-    return challenge.answer.map(normalizeSentencePiece).sort().join("|");
-  }
-
-  function getSentenceStats(challenge){
-    const key = getSentenceChallengeKey(challenge);
-    if(!sentenceLearning.sentences[key]){
-      // Keep local storage bounded even as the dictionary grows.
-      const keys = Object.keys(sentenceLearning.sentences);
-      if(keys.length >= 2000){
-        keys.sort((a,b) => sentenceLearning.sentences[a].lastSeen - sentenceLearning.sentences[b].lastSeen);
-        delete sentenceLearning.sentences[keys[0]];
-      }
-      sentenceLearning.sentences[key] = {seen:0, errors:0, solved:0, directStreak:0, difficulty:0, lastSeen:0};
-    }
-    return sentenceLearning.sentences[key];
-  }
-
-  function getSentenceDifficulty(challenge){
-    if(challenge.difficulty) return challenge.difficulty;
-    const cases = challenge.caseBuilds?.length || 0;
-    const verbs = challenge.verbBuilds?.length || 0;
-    return cases >= 2 ? 4 : verbs && cases ? 3 : cases ? 2 : 1;
-  }
-
-  function getSentencePerson(challenge){
-    return sentencePeople.find(person => challenge.answer.some(word =>
-      normalizeSentencePiece(word) === person.word
-    ))?.word || "";
-  }
-
-  function sentenceReviewWeight(challenge){
-    const stats = sentenceLearning.sentences[getSentenceChallengeKey(challenge)];
-    if(!stats) return 1.5;
-    const practice = 1 + Math.min(8, stats.difficulty * 2);
-    const mastery = 1 / (1 + Math.min(8, stats.directStreak) * .45);
-    const spacing = Math.min(1, .25 + (sentenceLearning.sequence - stats.lastSeen) / 6);
-    return practice * mastery * spacing;
-  }
-
-  function chooseWeightedSentence(challenges){
-    const verbChallenges = challenges.filter(item => item.verbBuilds?.length);
-    const minUses = verbChallenges.length ? Math.min(...verbChallenges
-      .map(item => sentenceLearning.verbs[item.verbBuilds[0].base] || 0)) : 0;
-    const weights = challenges.map(challenge => {
-      const verb = challenge.verbBuilds?.[0]?.base;
-      const uses = verb ? sentenceLearning.verbs[verb] || 0 : 0;
-      return sentenceReviewWeight(challenge) / (1 + Math.max(0, uses - minUses) * .65);
-    });
-    let roll = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
-    for(let i = 0; i < challenges.length; i++){
-      roll -= weights[i];
-      if(roll <= 0) return challenges[i];
-    }
-    return challenges.at(-1);
-  }
-
-  function selectSentenceChallenge(){
-    const available = getAvailableSentenceChallenges();
-    if(!available.length) return null;
-    const ceiling = Math.min(5, sentenceLearning.level);
-    let pool = available.filter(challenge => getSentenceDifficulty(challenge) <= ceiling);
-    // If only more advanced unlocked content exists, keep the game playable.
-    if(!pool.length){
-      const easiest = Math.min(...available.map(getSentenceDifficulty));
-      pool = available.filter(challenge => getSentenceDifficulty(challenge) === easiest);
-    }
-    const hardest = Math.max(...pool.map(getSentenceDifficulty));
-    const easy = pool.filter(challenge => getSentenceDifficulty(challenge) < hardest);
-    pool = easy.length && Math.random() < .25
-      ? easy
-      : pool.filter(challenge => getSentenceDifficulty(challenge) === hardest);
-    const finite = pool.filter(challenge => challenge.verbBuilds?.length);
-    if(finite.length && Math.random() < .8){
-      // Balance actual endings rather than nominal sentences with a pronoun.
-      const people = [...new Set(finite.map(getSentencePerson).filter(Boolean))];
-      const leastSeen = Math.min(...people.map(person => sentenceLearning.people[person] || 0));
-      pool = finite.filter(challenge =>
-        (sentenceLearning.people[getSentencePerson(challenge)] || 0) === leastSeen
-      );
-    }
-    const fresh = pool.filter(challenge => getSentenceChallengeKey(challenge) !== sentenceLastChallengeKey);
-    const chosen = chooseWeightedSentence(fresh.length ? fresh : pool);
-    sentenceLastChallengeKey = getSentenceChallengeKey(chosen);
-    sentenceLearning.sequence++;
-    const stats = getSentenceStats(chosen);
-    stats.seen++;
-    stats.lastSeen = sentenceLearning.sequence;
-    if(chosen.verbBuilds?.length){
-      const person = getSentencePerson(chosen);
-      if(person) sentenceLearning.people[person] = (sentenceLearning.people[person] || 0) + 1;
-      for(const build of chosen.verbBuilds){
-        sentenceLearning.verbs[build.base] = (sentenceLearning.verbs[build.base] || 0) + 1;
-      }
-    }
-    saveSentenceLearning();
-    return chosen;
-  }
-
-  function getUnlockedSentenceWords(){
-    const progress = getUnlockProgress();
-    return getDictionaryRows().map(row => ({
-      tr:normalizeSentencePiece(row.querySelector(".word-tr")?.textContent || ""),
-      de:row.querySelector(".word-de")?.textContent?.trim() || "",
-      type:sentenceWordTypeClasses.find(type => row.classList.contains(type)) || "other",
-      row
-    })).filter(word => word.tr && isWordUnlocked(word.tr, progress));
-  }
-
-  const sentenceNounLabels = {
-    ev:{subject:"Das Haus", object:"das Haus", adjectiveObject:"das schöne Haus", to:"nach Hause", from:"aus dem Haus", at:"im Haus"},
-    araba:{subject:"Das Auto", object:"das Auto", adjectiveObject:"das schöne Auto", to:"zum Auto", from:"vom Auto", at:"im Auto"},
-    yol:{subject:"Der Weg", object:"den Weg", adjectiveObject:"den schönen Weg", to:"zum Weg", from:"vom Weg", at:"auf dem Weg"},
-    "ağaç":{subject:"Der Baum", object:"den Baum", adjectiveObject:"den schönen Baum", to:"zum Baum", from:"vom Baum", at:"am Baum"},
-    anne:{subject:"Mama", object:"Mama", adjectiveObject:"die schöne Mama", to:"zu Mama", from:"von Mama", at:"bei Mama"},
-    baba:{subject:"Papa", object:"Papa", adjectiveObject:"den schönen Papa", to:"zu Papa", from:"von Papa", at:"bei Papa"},
-    abi:{subject:"Der ältere Bruder", object:"den älteren Bruder", to:"zum älteren Bruder", from:"vom älteren Bruder", at:"beim älteren Bruder"},
-    abla:{subject:"Die ältere Schwester", object:"die ältere Schwester", to:"zur älteren Schwester", from:"von der älteren Schwester", at:"bei der älteren Schwester"},
-    yarak:{subject:"Der Penis", object:"den Penis", adjectiveObject:"den schönen Penis", to:"zum Penis", from:"vom Penis", at:"am Penis"}
-  };
-
-  const sentenceVerbProfiles = {
-    gelmek:{forms:["komme","kommst","kommt","kommen"], pattern:"motion"},
-    gitmek:{forms:["gehe","gehst","geht","gehen"], pattern:"motion"},
-    "görmek":{forms:["sehe","siehst","sieht","sehen"], pattern:"object"},
-    sevmek:{forms:["mag","magst","mag","mögen"], standaloneForms:["liebe","liebst","liebt","lieben"], pattern:"object"}
-  };
-
-  function sentenceNounSoftens(base){
-    const key = normalizeSentencePiece(base);
-    const row = getDictionaryRows().find(item =>
-      normalizeSentencePiece(item.querySelector(".word-tr")?.textContent) === key
-    );
-    return ["yarak","ağaç"].includes(key) || row?.dataset.caseSoften === "true";
-  }
-
-  function makeSentenceCaseBuild(base, caseKey){
-    const regular = applyTurkishCase(base, caseKey);
-    const suffix = regular.slice(base.length);
-    const soften = sentenceNounSoftens(base) && /^[aeıioöuü]/.test(suffix);
-    return {base, suffix, soften, result:(soften ? softenTurkishStem(base) : base) + suffix};
-  }
-
-  function getSentenceVerbProfile(word){
-    if(sentenceVerbProfiles[word.tr]) return sentenceVerbProfiles[word.tr];
-    // Future dictionary entries can supply four German forms and a semantic pattern.
-    // Without that metadata they still participate as infinitives ("Lernen ist schön.").
-    const forms = word.row.dataset.sentenceForms?.split("|").map(form => form.trim());
-    return forms?.length === 4 && forms.every(Boolean)
-      ? {forms, pattern:word.row.dataset.sentencePattern || "simple"}
-      : null;
-  }
-
-  function generateSentenceChallenges(words = getUnlockedSentenceWords()){
-    const nouns = words.filter(word => word.type === "noun" && sentenceNounLabels[word.tr]);
-    const verbs = words.filter(word => word.type === "verb" && /(?:mek|mak)$/.test(word.tr));
-    const people = sentencePeople.filter(person => words.some(word => word.tr === person.word));
-    const beautiful = words.some(word => word.tr === "güzel");
-    const places = nouns.filter(noun => ["ev","araba","yol"].includes(noun.tr));
-    const generated = [];
-    for(const verb of verbs){
-      if(beautiful){
-        const label = verb.de.split("/")[0].trim();
-        generated.push({de:label.charAt(0).toLocaleUpperCase("de") + label.slice(1) + " ist schön.",
-          answer:[verb.tr,"güzel"], requires:[verb.tr,"güzel"], difficulty:1});
-      }
-      const profile = getSentenceVerbProfile(verb);
-      if(!profile) continue;
-      for(const person of people){
-        const verbResult = buildColloquialPresent(verb.tr, person.ending);
-        const verbBuilds = [{base:verb.tr, ending:person.ending, result:verbResult}];
-        const prefix = person.de + " " + profile.forms[person.index];
-        const standalone = person.de + " " + (profile.standaloneForms || profile.forms)[person.index];
-        generated.push({de:standalone + ".", answer:[person.word,verbResult],
-          requires:[person.word,verb.tr], verbBuilds, difficulty:1});
-        for(const noun of nouns){
-          const label = sentenceNounLabels[noun.tr];
-          const caseKeys = profile.pattern === "motion" ? ["dative","ablative"]
-            : profile.pattern === "object" ? ["accusative"] : [];
-          for(const caseKey of caseKeys){
-            const object = makeSentenceCaseBuild(noun.tr, caseKey);
-            const objectDe = caseKey === "dative" ? label.to : caseKey === "ablative" ? label.from : label.object;
-            generated.push({de:prefix + " " + objectDe + ".",
-              answer:[person.word,object.result,verbResult], requires:[person.word,noun.tr,verb.tr],
-              caseBuilds:[object], verbBuilds, difficulty:3});
-            if(caseKey !== "accusative") continue;
-            for(const place of places){
-              if(place.tr === noun.tr || (place.tr === "araba" && ["ev","ağaç","yol"].includes(noun.tr))) continue;
-              const location = makeSentenceCaseBuild(place.tr, "locative");
-              const at = sentenceNounLabels[place.tr].at;
-              generated.push({de:prefix + " " + label.object + " " + at + ".",
-                answer:[person.word,location.result,object.result,verbResult],
-                requires:[person.word,place.tr,noun.tr,verb.tr],
-                caseBuilds:[location,object], verbBuilds, difficulty:4});
-              if(beautiful && label.adjectiveObject){
-                generated.push({de:prefix + " " + label.adjectiveObject + " " + at + ".",
-                  answer:[person.word,location.result,"güzel",object.result,verbResult],
-                  requires:[person.word,place.tr,noun.tr,verb.tr,"güzel"],
-                  caseBuilds:[location,object], verbBuilds, difficulty:5});
-              }
-            }
-          }
-        }
-      }
-    }
-    // More low-level case practice is possible even before verbs are unlocked.
-    for(const noun of nouns){
-      if(beautiful) generated.push({de:sentenceNounLabels[noun.tr].subject + " ist schön.",
-        answer:[noun.tr,"güzel"], requires:[noun.tr,"güzel"], difficulty:1});
-      for(const place of places){
-        if(noun.tr === place.tr) continue;
-        if(place.tr === "araba" && ["ev","ağaç","yol"].includes(noun.tr)) continue;
-        const location = makeSentenceCaseBuild(place.tr, "locative");
-        generated.push({de:sentenceNounLabels[noun.tr].subject + " ist " + sentenceNounLabels[place.tr].at + ".",
-          answer:[noun.tr,location.result], requires:[noun.tr,place.tr],
-          caseBuilds:[location], difficulty:2});
-      }
-    }
-    return generated;
   }
 
   let quizMode = "toTurkish";
@@ -3181,6 +2591,7 @@
 
   function openLearnMode(mode){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.add("game-mode-active");
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
@@ -3201,6 +2612,7 @@
 
   function backToLearnHome(){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.remove("game-mode-active");
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
@@ -3222,6 +2634,7 @@
 
   function showView(id, btn, swipeDirection = null){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.remove("game-mode-active");
 
     const currentView = document.querySelector(".view.active");
@@ -3296,15 +2709,36 @@
     });
   }
 
-  function normalizeTypedAnswer(value){
+  function normalizeTypedAnswer(value, language = "de"){
     return value
-      .toLowerCase()
+      .normalize("NFC")
+      .toLocaleLowerCase(language === "tr" ? "tr-TR" : "de-DE")
       .replace(/[.,!?;:()"“”'’]/g, "")
       .replace(/\s+/g, " ")
       .trim();
   }
 
+  function stopTypingGame(){
+    typingGameRunning = false;
+    clearTimeout(typingTransitionTimer);
+    typingTransitionTimer = null;
+    typingTransitionPending = false;
+    typingRevealPending = false;
+  }
+
+  function scheduleTypingTransition(delay){
+    if(!typingGameRunning || typingTransitionPending) return;
+    typingTransitionPending = true;
+    document.querySelectorAll("#customKeyboard .key").forEach(key => {key.disabled = true;});
+    typingTransitionTimer = setTimeout(() => {
+      typingTransitionTimer = null;
+      if(typingGameRunning) nextTypingWord();
+    }, delay);
+  }
+
   function startTypingGame(){
+    stopTypingGame();
+    typingGameRunning = true;
     typingRemaining = typingWords
       .map((word, index) => ({...word, originalIndex:index}))
       .filter(word => !isWordUnlocked(word.tr));
@@ -3325,7 +2759,12 @@
   }
 
   function nextTypingWord(){
+    if(!typingGameRunning) return;
+    clearTimeout(typingTransitionTimer);
+    typingTransitionTimer = null;
+    typingTransitionPending = false;
     if(typingRemaining.length === 0){
+      typingGameRunning = false;
       document.getElementById("typingGameActive").style.display = "none";
       document.getElementById("customKeyboard").style.display = "none";
       document.getElementById("typingComplete").classList.add("show");
@@ -3377,6 +2816,7 @@
     feedback.style.color = "";
 
     renderCustomKeyboard(toTurkish ? "tr" : "de");
+    answerEl.focus({preventScroll:true});
   }
 
   function renderCustomKeyboard(language){
@@ -3451,7 +2891,7 @@
   }
 
   function typeCustomKey(key){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const answerEl = document.getElementById("typingAnswer");
 
@@ -3476,19 +2916,37 @@
     feedback.style.color = "";
   }
 
+  function handleTypingKeyboard(event){
+    if(!typingGameRunning || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
+    if(event.target.closest?.("input,textarea,select,[contenteditable='true']")) return;
+    // Enter/Space must still activate a focused screen-keyboard or navigation button.
+    if(["Enter"," "].includes(event.key) && event.target.closest?.("button,[role='button']")) return;
+    if(event.key === "Enter"){
+      event.preventDefault();
+      if(!event.repeat) checkTypedAnswer();
+    }else if(event.key === "Backspace"){
+      event.preventDefault();
+      typeCustomKey("BACKSPACE");
+    }else if(/^[\p{L} ]$/u.test(event.key)){
+      event.preventDefault();
+      typeCustomKey(event.key);
+    }
+  }
+
   function checkTypedAnswer(){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const item = typingRemaining[typingCurrentIndex];
     if(!item || !typedAnswer.trim()) return;
 
-    const entered = normalizeTypedAnswer(typedAnswer);
+    const language = typingDirection === "toTurkish" ? "tr" : "de";
+    const entered = normalizeTypedAnswer(typedAnswer, language);
     const accepted = typingDirection === "toTurkish"
       ? [item.tr]
       : (item.deAnswers?.length ? item.deAnswers : [item.de]);
 
     const correct = accepted
-      .map(normalizeTypedAnswer)
+      .map(answer => normalizeTypedAnswer(answer, language))
       .includes(entered);
 
     const answerEl = document.getElementById("typingAnswer");
@@ -3521,7 +2979,7 @@
       feedback.style.color = "var(--verb-dark)";
       updateTypingProgress();
 
-      window.setTimeout(nextTypingWord, unlockedNow ? 650 : 750);
+      scheduleTypingTransition(unlockedNow ? 650 : 750);
     }else{
       answerEl.classList.remove("correct","empty");
       answerEl.classList.add("wrong");
@@ -3531,7 +2989,7 @@
   }
 
   function handleDontKnow(){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const item = typingRemaining[typingCurrentIndex];
     if(!item) return;
@@ -3561,7 +3019,7 @@
       });
 
       updateTypingProgress();
-      window.setTimeout(nextTypingWord, 1700);
+      scheduleTypingTransition(1700);
       return;
     }
 
@@ -3570,7 +3028,7 @@
     feedback.textContent = "";
     feedback.style.color = "";
 
-    window.setTimeout(nextTypingWord, 650);
+    scheduleTypingTransition(650);
   }
 
   function updateTypingProgress(){
@@ -3581,853 +3039,6 @@
       unlockedCount + " / " + total + " freigeschaltet";
     document.getElementById("typingBarFill").style.width =
       ((unlockedCount / total) * 100) + "%";
-  }
-
-  function stopSentenceGame(){
-    sentenceGameRunning = false;
-    clearTimeout(sentenceTransitionTimer);
-    sentenceTransitionTimer = null;
-    sentenceLocked = false;
-    sentenceLivesDepleted = false;
-    pointerDrag?.ghost?.remove();
-    pointerDrag = null;
-    stopConfettiCelebration();
-    document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
-  }
-
-  function updateSentenceProgress({levelUp = false, lifeLost = false} = {}){
-    const levelNumber = document.getElementById("sentenceLevelText");
-    levelNumber.textContent = String(sentenceLearning.level);
-    levelNumber.classList.toggle("long-level", sentenceLearning.level >= 100);
-    levelNumber.classList.toggle("extra-long-level", sentenceLearning.level >= 1000);
-    const badge = document.getElementById("sentenceLevelBadge");
-    badge.setAttribute("aria-label", "Level " + sentenceLearning.level);
-    badge.classList.toggle("level-up", levelUp);
-    const lives = sentenceLivesDepleted ? 0 : Math.max(0, 3 - sentenceLearning.mistakes);
-    document.getElementById("sentenceLives").setAttribute("aria-label", lives + " von 3 Leben");
-    document.getElementById("sentenceProgressText").textContent = lives + " Leben";
-    for(let i = 0; i < 3; i++){
-      const heart = document.getElementById("sentenceHeart" + i);
-      heart.classList.toggle("is-lost", i >= lives);
-      heart.classList.toggle("life-lost", lifeLost && i === lives);
-    }
-    document.getElementById("sentenceLevelProgressText").textContent =
-      sentenceLearning.levelCorrect + " / " + sentenceLevelSize + " geschafft";
-    document.getElementById("sentenceLevelProgress").setAttribute("aria-valuenow", sentenceLearning.levelCorrect);
-    for(let i = 0; i < sentenceLevelSize; i++){
-      document.getElementById("sentenceStep" + i).classList.toggle("is-complete", i < sentenceLearning.levelCorrect);
-    }
-  }
-
-  function startSentenceGame(){
-    stopSentenceGame();
-    sentenceLearning = sentenceLearning || loadSentenceLearning();
-    sentenceGameRunning = true;
-    sentenceOrder = [];
-    sentenceRoundIndex = 0;
-    sentenceLastChallengeKey = "";
-    nextSentence();
-  }
-
-  function normalizeSentencePiece(value){
-    return (value || "")
-      .toLocaleLowerCase("tr-TR")
-      .trim()
-      .replace(/[.!?,;:]+$/g, "")
-      .trim();
-  }
-
-  function getLastTurkishVowel(word){
-    const matches = (word || "").toLocaleLowerCase("tr-TR").match(/[aeıioöuü]/g);
-    return matches?.at(-1) || "e";
-  }
-
-  function twoWayHarmony(word){
-    return ["e","i","ö","ü"].includes(getLastTurkishVowel(word)) ? "e" : "a";
-  }
-
-  function fourWayHarmony(word){
-    const vowel = getLastTurkishVowel(word);
-    if(["a","ı"].includes(vowel)) return "ı";
-    if(["e","i"].includes(vowel)) return "i";
-    if(["o","u"].includes(vowel)) return "u";
-    return "ü";
-  }
-
-  function applyTurkishCase(baseWord, caseKey){
-    const base = (baseWord || "").replace(/[.!?,;:]+$/g, "");
-    const lower = base.toLocaleLowerCase("tr-TR");
-    const lastChar = lower.slice(-1);
-    const endsWithVowel = /[aeıioöuü]/.test(lastChar);
-    const harmony2 = twoWayHarmony(lower);
-    const harmony4 = fourWayHarmony(lower);
-    const stop = /[çfhkpsşt]/.test(lastChar);
-
-    if(caseKey === "dative"){
-      return base + (endsWithVowel ? "y" : "") + harmony2;
-    }
-
-    if(caseKey === "ablative"){
-      return base + (stop ? "t" : "d") + harmony2 + "n";
-    }
-
-    if(caseKey === "locative"){
-      return base + (stop ? "t" : "d") + harmony2;
-    }
-
-    if(caseKey === "accusative"){
-      return base + (endsWithVowel ? "y" : "") + harmony4;
-    }
-
-    if(caseKey === "genitive"){
-      return base + (endsWithVowel ? "n" : "") + harmony4 + "n";
-    }
-
-    return base;
-  }
-
-  function isKnownNounWord(word){
-    const key = unlockWordKey(normalizeSentencePiece(word));
-    return getDictionaryRows().some(row =>
-      row.classList.contains("noun") &&
-      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === key
-    );
-  }
-
-  function getCaseBuildSuffix(build){
-    if(build?.suffix) return build.suffix;
-
-    const result = normalizeSentencePiece(build?.result || "");
-    const base = normalizeSentencePiece(build?.base || "");
-
-    if(!result || !base || !result.startsWith(base)) return "";
-    return result.slice(base.length);
-  }
-
-  function getSuffixFamilyInfo(suffix){
-    for(let familyIndex = 0; familyIndex < sentenceSuffixFamilies.length; familyIndex++){
-      const family = sentenceSuffixFamilies[familyIndex];
-
-      for(const pair of family.pairs){
-        if(pair.includes(suffix)){
-          return {familyIndex, family, pair};
-        }
-      }
-    }
-
-    return null;
-  }
-
-  function getRandomFamilyPairExcluding(excludedFamilyIndices = []){
-    const excluded = new Set(excludedFamilyIndices);
-
-    const candidates = sentenceSuffixFamilies
-      .map((family, familyIndex) => ({family, familyIndex}))
-      .filter(item => !excluded.has(item.familyIndex));
-
-    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-    if(!chosen) return null;
-
-    const pair = chosen.family.pairs[
-      Math.floor(Math.random() * chosen.family.pairs.length)
-    ];
-
-    return {
-      familyIndex:chosen.familyIndex,
-      family:chosen.family,
-      pair:[...pair]
-    };
-  }
-
-  function getRandomSuffixFromFamily(family){
-    if(!family?.pairs?.length) return "";
-
-    const pair = family.pairs[Math.floor(Math.random() * family.pairs.length)];
-    return pair[Math.floor(Math.random() * pair.length)] || "";
-  }
-
-  function getSuffixOptionsForBuild(build){
-    const correctSuffix = getCaseBuildSuffix(build);
-    if(!correctSuffix) return [];
-
-    const correctInfo = getSuffixFamilyInfo(correctSuffix);
-    if(!correctInfo){
-      return [{
-        kind:"suffix",
-        suffix:correctSuffix,
-        targetBase:normalizeSentencePiece(build.base),
-        soften:!!build.soften
-      }];
-    }
-
-    const correctIsInPair = Math.random() < 0.5;
-    let options = [];
-
-    if(correctIsInPair){
-      // 2 Formen aus dem richtigen Fall:
-      // z. B. -ye und -e. Dazu je 1 Suffix aus zwei anderen Fällen.
-      const sameCasePair = [...correctInfo.pair];
-
-      const otherFamilyA = getRandomFamilyPairExcluding([
-        correctInfo.familyIndex
-      ]);
-
-      const otherFamilyB = getRandomFamilyPairExcluding([
-        correctInfo.familyIndex,
-        otherFamilyA?.familyIndex
-      ]);
-
-      options = [
-        ...sameCasePair,
-        getRandomSuffixFromFamily(otherFamilyA?.family),
-        getRandomSuffixFromFamily(otherFamilyB?.family)
-      ];
-    }else{
-      // Das richtige Suffix ist eine der beiden Einzelkarten.
-      // Das 2er-Paar stammt komplett aus einem falschen Fall.
-      const pairedWrongFamily = getRandomFamilyPairExcluding([
-        correctInfo.familyIndex
-      ]);
-
-      const secondSingleFamily = getRandomFamilyPairExcluding([
-        correctInfo.familyIndex,
-        pairedWrongFamily?.familyIndex
-      ]);
-
-      options = [
-        correctSuffix,
-        ...(pairedWrongFamily?.pair || []),
-        getRandomSuffixFromFamily(secondSingleFamily?.family)
-      ];
-    }
-
-    const uniqueOptions = Array.from(new Set(options.filter(Boolean)));
-
-    // Mit den fünf vorhandenen Fällen sollten es immer genau 4 sein.
-    // Falls später Fälle geändert werden, fehlende Plätze aus noch nicht
-    // vertretenen Suffixen auffüllen.
-    if(uniqueOptions.length < 4){
-      const allSuffixes = sentenceSuffixFamilies
-        .flatMap(family => family.pairs.flat())
-        .filter(suffix => !uniqueOptions.includes(suffix));
-
-      uniqueOptions.push(...shuffleArray(allSuffixes).slice(0, 4 - uniqueOptions.length));
-    }
-
-    return shuffleArray(uniqueOptions)
-      .slice(0, 4)
-      .map(suffix => ({
-        kind:"suffix",
-        suffix,
-        targetBase:normalizeSentencePiece(build.base),
-        soften:!!build.soften
-      }));
-  }
-
-  function getVerbEndingOptionsForBuild(build){
-    const correctEnding = build?.ending;
-    if(!correctEnding) return [];
-
-    const wrongEndings = shuffleArray(
-      sentenceVerbEndings.filter(ending => ending !== correctEnding)
-    ).slice(0, 2);
-
-    return shuffleArray([correctEnding, ...wrongEndings]).map(ending => ({
-      kind:"verb-ending",
-      ending,
-      targetBase:normalizeSentencePiece(build.base)
-    }));
-  }
-
-  function isKnownVerbWord(word){
-    const key = unlockWordKey(normalizeSentencePiece(word));
-    return getDictionaryRows().some(row =>
-      row.classList.contains("verb") &&
-      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === key
-    );
-  }
-
-  const sentenceWordTypeClasses = [
-    "noun","verb","adj","pronoun","existential","colloquial","response",
-    "conjunction","demonstrative","questionword","greeting","polite","phrase","other"
-  ];
-
-  function getKnownWordType(word){
-    const normalized = unlockWordKey(normalizeSentencePiece(word));
-    if(!normalized) return "other";
-
-    const rows = getDictionaryRows();
-    const exactRow = rows.find(row =>
-      unlockWordKey(row.querySelector(".word-tr")?.textContent || "") === normalized
-    );
-
-    if(exactRow){
-      return sentenceWordTypeClasses.find(type => exactRow.classList.contains(type)) || "other";
-    }
-
-    const adjectiveRows = rows.filter(row => row.classList.contains("adj"));
-    for(const row of adjectiveRows){
-      const base = unlockWordKey(row.querySelector(".word-tr")?.textContent || "");
-      if(!base || !normalized.startsWith(base)) continue;
-
-      const ending = normalized.slice(base.length);
-      if(["im","ım","um","üm","sin","sın","sun","sün"].includes(ending)){
-        return "adj";
-      }
-    }
-
-    return "other";
-  }
-
-  function getSentenceTokenDescriptors(challenge){
-    const caseBuilds = challenge.caseBuilds || [];
-    const verbBuilds = challenge.verbBuilds || [];
-    const replacements = new Map([
-      ...caseBuilds.map(build => [normalizeSentencePiece(build.result), build.base]),
-      ...verbBuilds.map(build => [normalizeSentencePiece(build.result), build.base])
-    ]);
-    const correctWords = challenge.answer.map(word =>
-      replacements.get(normalizeSentencePiece(word)) || normalizeSentencePiece(word)
-    );
-    const excluded = new Set(correctWords.map(normalizeSentencePiece));
-    const unlocked = getUnlockedSentenceWords();
-    const distractors = [];
-    const add = word => {
-      const normalized = normalizeSentencePiece(word);
-      if(excluded.has(normalized)) return false;
-      excluded.add(normalized);
-      distractors.push(normalized);
-      return true;
-    };
-    const types = [...new Set(correctWords.map(getKnownWordType))];
-    for(const type of types){
-      const candidates = shuffleArray(unlocked.filter(word => word.type === type && !excluded.has(word.tr)));
-      const desired = 2;
-      let count = 0;
-      for(const candidate of candidates){
-        if(add(candidate.tr)) count++;
-        if(count >= desired) break;
-      }
-      // Copula forms share an unlocked adjective; no unseen vocabulary is introduced.
-      if(type === "adj" && count < desired){
-        for(const adjective of unlocked.filter(word => word.type === "adj")){
-          const vowel = fourWayHarmony(adjective.tr);
-          const forms = [adjective.tr, adjective.tr + (/[aeıioöuü]$/.test(adjective.tr) ? "y" : "") + vowel + "m",
-            adjective.tr + "s" + vowel + "n"];
-          for(const form of shuffleArray(forms)){
-            if(count < desired && add(form)) count++;
-          }
-        }
-      }
-      // Verbs always use only the correct infinitive and up to two unlocked infinitives.
-      if(type === "verb") continue;
-      // Only related content categories are fallback candidates, never greetings or polite phrases.
-      const related = {noun:["adj"], adj:["noun"], pronoun:["demonstrative"],
-        existential:["response"], response:["existential"], demonstrative:["pronoun"]}[type] || [];
-      if(count < desired){
-        for(const candidate of shuffleArray(unlocked.filter(word => related.includes(word.type)))){
-          if(count < desired && add(candidate.tr)) count++;
-        }
-      }
-    }
-    return shuffleArray([
-      ...correctWords.map(word => ({kind:"word", word})),
-      ...distractors.map(word => ({kind:"word", word})),
-      ...caseBuilds.flatMap(getSuffixOptionsForBuild),
-      ...verbBuilds.flatMap(getVerbEndingOptionsForBuild)
-    ]);
-  }
-
-  function renderSentenceChallenge(){
-    const challenge = sentenceOrder[sentenceRoundIndex];
-    if(!challenge) return;
-    sentenceLivesDepleted = false;
-    sentenceLocked = false;
-    document.getElementById("sentenceGameActive").classList.remove("sentence-locked");
-    document.querySelectorAll("#sentenceGameActive button").forEach(button => button.disabled = false);
-    document.getElementById("sentencePrompt").textContent = challenge.de;
-    updateSentenceProgress();
-    const answerZone = document.getElementById("answerZone");
-    const wordBank = document.getElementById("wordBank");
-    answerZone.innerHTML = "";
-    wordBank.innerHTML = "";
-    getSentenceTokenDescriptors(challenge).forEach((descriptor, index) => {
-      wordBank.appendChild(createSentenceToken(descriptor, index));
-    });
-    const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = "";
-    feedback.className = "sentence-feedback";
-    document.getElementById("checkSentenceButton").style.display = "block";
-  }
-
-  function createSentenceToken(descriptor, index){
-    const token = document.createElement("button");
-    token.type = "button";
-    token.className = "sentence-token";
-    token.dataset.tokenId = "sentence-" + sentenceRoundIndex + "-" + index + "-" + Math.random().toString(36).slice(2);
-
-    if(typeof descriptor === "object" && descriptor.kind === "suffix"){
-      token.classList.add("case-card");
-      token.dataset.tokenKind = "suffix";
-      token.dataset.suffix = descriptor.suffix;
-      token.dataset.targetBase = descriptor.targetBase || "";
-      token.dataset.soften = descriptor.soften ? "true" : "false";
-      token.textContent = "-" + descriptor.suffix;
-    }else if(typeof descriptor === "object" && descriptor.kind === "verb-ending"){
-      token.classList.add("verb-ending-card");
-      token.dataset.tokenKind = "verb-ending";
-      token.dataset.ending = descriptor.ending;
-      token.dataset.targetBase = descriptor.targetBase || "";
-      token.textContent = "-" + descriptor.ending;
-    }else{
-      const word = typeof descriptor === "object" ? descriptor.word : descriptor;
-      token.dataset.tokenKind = "word";
-      token.dataset.word = word;
-      token.textContent = word;
-
-      const wordType = getKnownWordType(word);
-      token.dataset.wordType = wordType;
-      token.classList.add("word-type-" + wordType);
-
-      if(isKnownNounWord(word)){
-        token.classList.add("case-target");
-        token.dataset.baseWord = normalizeSentencePiece(word);
-        token.dataset.baseDisplay = word.replace(/[.!?,;:]+$/g, "");
-      }
-
-      if(isKnownVerbWord(word)){
-        token.classList.add("verb-target");
-        token.dataset.baseVerb = normalizeSentencePiece(word);
-        token.dataset.baseVerbDisplay = word.replace(/[.!?,;:]+$/g, "");
-      }
-    }
-
-    token.addEventListener("pointerdown", beginSentencePointerDrag);
-    return token;
-  }
-
-  function beginSentencePointerDrag(event){
-    if(sentenceLocked || !sentenceGameRunning) return;
-    if(event.button !== undefined && event.button !== 0) return;
-
-    const token = event.currentTarget;
-    pointerDrag = {
-      token,
-      startX:event.clientX,
-      startY:event.clientY,
-      dragging:false,
-      ghost:null
-    };
-
-    token.setPointerCapture?.(event.pointerId);
-    token.addEventListener("pointermove", moveSentencePointerDrag);
-    token.addEventListener("pointerup", endSentencePointerDrag);
-    token.addEventListener("pointercancel", endSentencePointerDrag);
-  }
-
-  function clearSentenceDragHighlights(){
-    document.querySelectorAll(".drop-zone").forEach(z => z.classList.remove("drag-over"));
-    document.querySelectorAll(".sentence-token").forEach(t => t.classList.remove("case-drop-over"));
-  }
-
-  function canReceiveSentenceCase(token){
-    return !!token &&
-      token.dataset.tokenKind === "word" &&
-      token.classList.contains("case-target");
-  }
-
-  function canReceiveVerbEnding(token){
-    return !!token &&
-      token.dataset.tokenKind === "word" &&
-      token.classList.contains("verb-target");
-  }
-
-  function moveSentencePointerDrag(event){
-    if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
-
-    const dx = event.clientX - pointerDrag.startX;
-    const dy = event.clientY - pointerDrag.startY;
-
-    if(!pointerDrag.dragging && Math.hypot(dx, dy) > 8){
-      pointerDrag.dragging = true;
-      pointerDrag.token.classList.add("dragging");
-
-      const ghost = pointerDrag.token.cloneNode(true);
-      ghost.classList.remove("dragging");
-      ghost.classList.add("drag-ghost");
-      ghost.style.width = pointerDrag.token.offsetWidth + "px";
-      document.body.appendChild(ghost);
-      pointerDrag.ghost = ghost;
-    }
-
-    if(pointerDrag.dragging){
-      event.preventDefault();
-      pointerDrag.ghost.style.left = event.clientX + "px";
-      pointerDrag.ghost.style.top = event.clientY + "px";
-
-      clearSentenceDragHighlights();
-
-      const under = document.elementFromPoint(event.clientX, event.clientY);
-
-      if(pointerDrag.token.dataset.tokenKind === "suffix"){
-        const target = under?.closest(".sentence-token");
-        if(target !== pointerDrag.token && canReceiveSentenceCase(target)){
-          target.classList.add("case-drop-over");
-        }
-      }else if(pointerDrag.token.dataset.tokenKind === "verb-ending"){
-        const target = under?.closest(".sentence-token");
-        if(target !== pointerDrag.token && canReceiveVerbEnding(target)){
-          target.classList.add("case-drop-over");
-        }
-      }else{
-        const zone = under?.closest(".drop-zone");
-        if(zone) zone.classList.add("drag-over");
-      }
-    }
-  }
-
-  function returnSuffixCard(suffix, targetBase = "", soften = false){
-    const wordBank = document.getElementById("wordBank");
-    if(!suffix || !wordBank) return;
-
-    const index = wordBank.children.length + Math.floor(Math.random() * 1000);
-    wordBank.appendChild(createSentenceToken({
-      kind:"suffix",
-      suffix,
-      targetBase,
-      soften
-    }, index));
-  }
-
-  function getAutomaticSentenceCaseTarget(suffixToken){
-    const targets = Array.from(
-      document.querySelectorAll("#answerZone .sentence-token.case-target")
-    );
-
-    if(!targets.length) return null;
-
-    const preferredBase = suffixToken?.dataset.targetBase || "";
-    const matching = preferredBase
-      ? targets.filter(token => token.dataset.baseWord === preferredBase)
-      : targets;
-
-    const usable = matching.length ? matching : targets;
-    const withoutCase = usable.filter(token => !token.dataset.appliedCase);
-
-    return (withoutCase.length ? withoutCase : usable).at(-1) || null;
-  }
-
-  function removeSentenceCase(target){
-    const suffix = target?.dataset.appliedSuffix;
-    if(!suffix) return false;
-
-    const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
-    const baseDisplay = target.dataset.baseDisplay || base;
-    const targetBase = target.dataset.appliedTargetBase || base;
-    const soften = target.dataset.appliedSoften === "true";
-
-    returnSuffixCard(suffix, targetBase, soften);
-
-    target.dataset.word = base;
-    delete target.dataset.appliedCase;
-    delete target.dataset.appliedSuffix;
-    delete target.dataset.appliedTargetBase;
-    delete target.dataset.appliedSoften;
-    target.textContent = baseDisplay;
-    target.classList.remove("case-applied");
-
-    const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = "Suffix entfernt";
-    feedback.className = "sentence-feedback";
-
-    if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(14);
-    }
-
-    return true;
-  }
-
-  function softenTurkishStem(word){
-    if(word.endsWith("p")) return word.slice(0,-1) + "b";
-    if(word.endsWith("ç")) return word.slice(0,-1) + "c";
-    if(word.endsWith("t")) return word.slice(0,-1) + "d";
-    if(word.endsWith("k")) return word.slice(0,-1) + "ğ";
-    return word;
-  }
-
-  function applySentenceCase(target, suffixToken){
-    const suffix = suffixToken.dataset.suffix;
-    if(!suffix || !canReceiveSentenceCase(target)) return false;
-
-    const previousSuffix = target.dataset.appliedSuffix;
-    if(previousSuffix){
-      returnSuffixCard(
-        previousSuffix,
-        target.dataset.appliedTargetBase || target.dataset.baseWord || "",
-        target.dataset.appliedSoften === "true"
-      );
-    }
-
-    const base = target.dataset.baseWord || normalizeSentencePiece(target.dataset.word);
-    const displayBase = target.dataset.baseDisplay || base;
-    const soften = sentenceNounSoftens(base) && /^[aeıioöuü]/.test(suffix);
-    const inflected = (soften ? softenTurkishStem(displayBase) : displayBase) + suffix;
-
-    target.dataset.baseWord = base;
-    target.dataset.appliedCase = "suffix";
-    target.dataset.appliedSuffix = suffix;
-    target.dataset.appliedTargetBase = suffixToken.dataset.targetBase || base;
-    target.dataset.appliedSoften = suffixToken.dataset.soften || "false";
-    target.dataset.word = inflected;
-    target.textContent = inflected;
-    target.classList.add("case-applied");
-
-    suffixToken.remove();
-
-    const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = base + " → " + inflected;
-    feedback.className = "sentence-feedback";
-
-    if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(18);
-    }
-
-    return true;
-  }
-
-  function returnVerbEndingCard(ending, targetBase = ""){
-    const wordBank = document.getElementById("wordBank");
-    if(!ending || !wordBank) return;
-
-    const index = wordBank.children.length + Math.floor(Math.random() * 1000);
-    wordBank.appendChild(createSentenceToken({
-      kind:"verb-ending",
-      ending,
-      targetBase
-    }, index));
-  }
-
-  function getAutomaticVerbTarget(endingToken){
-    const targets = Array.from(
-      document.querySelectorAll("#answerZone .sentence-token.verb-target")
-    );
-
-    if(!targets.length) return null;
-
-    const preferredBase = endingToken?.dataset.targetBase || "";
-    const matching = preferredBase
-      ? targets.filter(token => token.dataset.baseVerb === preferredBase)
-      : targets;
-
-    const usable = matching.length ? matching : targets;
-    const withoutEnding = usable.filter(token => !token.dataset.appliedVerbEnding);
-
-    return (withoutEnding.length ? withoutEnding : usable).at(-1) || null;
-  }
-
-  function getLastTurkishVowelForVerb(word){
-    const vowels = "aeıioöuü";
-    const lower = (word || "").toLocaleLowerCase("tr-TR");
-
-    for(let i = lower.length - 1; i >= 0; i--){
-      if(vowels.includes(lower[i])) return lower[i];
-    }
-
-    return "e";
-  }
-
-  function getProgressiveVowel(word){
-    const last = getLastTurkishVowelForVerb(word);
-    if(last === "a" || last === "ı") return "ı";
-    if(last === "o" || last === "u") return "u";
-    if(last === "ö" || last === "ü") return "ü";
-    return "i";
-  }
-
-  function buildColloquialPresent(infinitive, ending){
-    let stem = (infinitive || "").replace(/(?:mek|mak)$/i, "");
-    const lowerStem = stem.toLocaleLowerCase("tr-TR");
-
-    if(["git","et"].includes(lowerStem)){
-      stem = stem.slice(0,-1) + "d";
-    }
-    // Vowel-final stems use one progressive vowel: oyna → oynu, oku → oku.
-    let progressiveStem = stem;
-    let progressiveVowel;
-    if(/[ae]$/i.test(stem)){
-      progressiveStem = stem.slice(0,-1);
-      progressiveVowel = getProgressiveVowel(progressiveStem);
-    }else if(/[ıioöuü]$/i.test(stem)){
-      progressiveVowel = "";
-    }else{
-      progressiveVowel = getProgressiveVowel(stem);
-    }
-    const endingTail = ending.replace(/^i/, "");
-
-    return progressiveStem + progressiveVowel + endingTail;
-  }
-
-  function removeVerbEnding(target){
-    const ending = target?.dataset.appliedVerbEnding;
-    if(!ending) return false;
-
-    const base = target.dataset.baseVerb || normalizeSentencePiece(target.dataset.word);
-    const display = target.dataset.baseVerbDisplay || base;
-    const targetBase = target.dataset.appliedVerbTargetBase || base;
-
-    returnVerbEndingCard(ending, targetBase);
-
-    target.dataset.word = base;
-    delete target.dataset.appliedVerbEnding;
-    delete target.dataset.appliedVerbTargetBase;
-    target.textContent = display;
-    target.classList.remove("verb-ending-applied");
-
-    const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = "Verbendung entfernt";
-    feedback.className = "sentence-feedback";
-
-    if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(14);
-    }
-
-    return true;
-  }
-
-  function applyVerbEnding(target, endingToken){
-    const ending = endingToken.dataset.ending;
-    if(!ending || !canReceiveVerbEnding(target)) return false;
-
-    const previousEnding = target.dataset.appliedVerbEnding;
-    if(previousEnding){
-      returnVerbEndingCard(
-        previousEnding,
-        target.dataset.appliedVerbTargetBase || target.dataset.baseVerb || ""
-      );
-    }
-
-    const base = target.dataset.baseVerb || normalizeSentencePiece(target.dataset.word);
-    const display = target.dataset.baseVerbDisplay || base;
-    const conjugated = buildColloquialPresent(display, ending);
-
-    target.dataset.baseVerb = base;
-    target.dataset.appliedVerbEnding = ending;
-    target.dataset.appliedVerbTargetBase = endingToken.dataset.targetBase || base;
-    target.dataset.word = conjugated;
-    target.textContent = conjugated;
-    target.classList.add("verb-ending-applied");
-
-    endingToken.remove();
-
-    const feedback = document.getElementById("sentenceFeedback");
-    feedback.textContent = base + " → " + conjugated;
-    feedback.className = "sentence-feedback";
-
-    if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(18);
-    }
-
-    return true;
-  }
-
-  function endSentencePointerDrag(event){
-    if(!pointerDrag || pointerDrag.token !== event.currentTarget) return;
-
-    const state = pointerDrag;
-    const token = state.token;
-
-    token.removeEventListener("pointermove", moveSentencePointerDrag);
-    token.removeEventListener("pointerup", endSentencePointerDrag);
-    token.removeEventListener("pointercancel", endSentencePointerDrag);
-
-    clearSentenceDragHighlights();
-
-    if(state.dragging){
-      const under = document.elementFromPoint(event.clientX, event.clientY);
-
-      if(token.dataset.tokenKind === "suffix"){
-        const target = under?.closest(".sentence-token");
-
-        if(target !== token && applySentenceCase(target, token)){
-          state.ghost?.remove();
-          pointerDrag = null;
-          return;
-        }
-
-        document.getElementById("wordBank").appendChild(token);
-      }else if(token.dataset.tokenKind === "verb-ending"){
-        const target = under?.closest(".sentence-token");
-
-        if(target !== token && applyVerbEnding(target, token)){
-          state.ghost?.remove();
-          pointerDrag = null;
-          return;
-        }
-
-        document.getElementById("wordBank").appendChild(token);
-      }else{
-        const zone = under?.closest(".drop-zone");
-
-        if(zone){
-          const targetToken = under?.closest(".sentence-token");
-          if(targetToken && targetToken !== token && targetToken.parentElement === zone){
-            const rect = targetToken.getBoundingClientRect();
-            const before = event.clientX < rect.left + rect.width / 2;
-            zone.insertBefore(token, before ? targetToken : targetToken.nextSibling);
-          }else{
-            zone.appendChild(token);
-          }
-        }
-      }
-
-      token.classList.remove("dragging");
-      state.ghost?.remove();
-    }else{
-      if(token.dataset.tokenKind === "suffix"){
-        const target = getAutomaticSentenceCaseTarget(token);
-        const feedback = document.getElementById("sentenceFeedback");
-
-        if(target){
-          applySentenceCase(target, token);
-        }else{
-          feedback.textContent = "Setz zuerst ein Nomen in deinen Satz.";
-          feedback.className = "sentence-feedback";
-        }
-      }else if(token.dataset.tokenKind === "verb-ending"){
-        const target = getAutomaticVerbTarget(token);
-        const feedback = document.getElementById("sentenceFeedback");
-
-        if(target){
-          applyVerbEnding(target, token);
-        }else{
-          feedback.textContent = "Setz zuerst ein Verb im Infinitiv in deinen Satz.";
-          feedback.className = "sentence-feedback";
-        }
-      }else{
-        const answerZone = document.getElementById("answerZone");
-        const wordBank = document.getElementById("wordBank");
-
-        if(token.parentElement === answerZone && token.dataset.appliedCase){
-          removeSentenceCase(token);
-        }else if(token.parentElement === answerZone && token.dataset.appliedVerbEnding){
-          removeVerbEnding(token);
-        }else{
-          (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
-        }
-      }
-    }
-
-    pointerDrag = null;
-  }
-
-  function resetSentence(){
-    if(sentenceLocked || !sentenceGameRunning) return;
-    // Clearing the construction must not reset attempts or erase learning history.
-    renderSentenceChallenge();
-  }
-
-  function sameSentencePieces(a, b){
-    return a.length === b.length && a.every((word, i) => word === b[i]);
   }
 
   function confettiSmoothStep(value){
@@ -4559,181 +3170,6 @@
     return animationMs;
   }
 
-  function sentenceAllowsOmittedPronoun(challenge){
-    if(challenge.verbBuilds?.length) return true;
-    const words = challenge.answer.map(normalizeSentencePiece);
-    return words.includes("ben") && words.some(word => getKnownWordType(word) === "adj" && /(?:im|ım|um|üm)$/.test(word)) ||
-      words.includes("sen") && words.some(word => getKnownWordType(word) === "adj" && /s(?:in|ın|un|ün)$/.test(word));
-  }
-
-  function evaluateSentence(challenge, pieces){
-    const words = pieces.filter(piece => piece.tokenKind !== "suffix" && piece.tokenKind !== "verb-ending");
-    const pronouns = new Set(sentencePeople.map(person => person.word));
-    const expected = challenge.answer.map(normalizeSentencePiece);
-    const expectedPronouns = expected.filter(word => pronouns.has(word));
-    const actualPronouns = words.filter(piece => pronouns.has(normalizeSentencePiece(piece.word)));
-    const badPronoun = actualPronouns.find(piece => !expectedPronouns.includes(normalizeSentencePiece(piece.word)));
-    if(badPronoun) return {correct:false, issue:{area:"pronoun", actual:badPronoun.word, person:getSentencePerson(challenge)}};
-    if(actualPronouns.length > expectedPronouns.length) return {correct:false, issue:{area:"extra"}};
-    if(expectedPronouns.length && !actualPronouns.length && !sentenceAllowsOmittedPronoun(challenge)){
-      return {correct:false, issue:{area:"pronoun", missing:true, person:getSentencePerson(challenge)}};
-    }
-    const content = words.filter(piece => !pronouns.has(normalizeSentencePiece(piece.word)));
-    const expectedContent = expected.filter(word => !pronouns.has(word));
-    const unusedCard = pieces.find(piece => piece.tokenKind === "suffix" || piece.tokenKind === "verb-ending");
-    if(!unusedCard && sameSentencePieces(content.map(piece => normalizeSentencePiece(piece.word)).sort(), [...expectedContent].sort())){
-      return {correct:true};
-    }
-    if(unusedCard) return {correct:false, issue:{area:unusedCard.tokenKind === "suffix" ? "case" : "ending", detached:true}};
-    const remaining = [...content];
-    const unmatched = [];
-    for(const word of expectedContent){
-      const exact = remaining.findIndex(piece => normalizeSentencePiece(piece.word) === word);
-      if(exact >= 0){remaining.splice(exact,1);continue;}
-      const caseBuild = challenge.caseBuilds?.find(build => normalizeSentencePiece(build.result) === word);
-      const verbBuild = challenge.verbBuilds?.find(build => normalizeSentencePiece(build.result) === word);
-      unmatched.push({word, base:normalizeSentencePiece(caseBuild?.base || verbBuild?.base || word),
-        type:caseBuild ? "noun" : verbBuild ? "verb" : getKnownWordType(word), caseBuild, verbBuild});
-    }
-    // Match stems before diagnosing substitutions: a correct noun with a wrong suffix is a case error.
-    const issues = [];
-    for(const slot of unmatched){
-      const matchingBase = remaining.findIndex(piece =>
-        normalizeSentencePiece(piece.baseWord || piece.baseVerb || piece.word) === slot.base
-      );
-      if(matchingBase < 0) continue;
-      const actual = remaining.splice(matchingBase,1)[0];
-      const area = slot.verbBuild || actual.appliedVerbEnding ? "ending"
-        : slot.caseBuild || actual.appliedSuffix ? "case" : slot.type;
-      issues.push({area, base:slot.base, actual:actual.word,
-        caseKey:getSuffixFamilyInfo(getCaseBuildSuffix(slot.caseBuild))?.family.key,
-        person:getSentencePerson(challenge)});
-      slot.matched = true;
-    }
-    for(const slot of unmatched.filter(slot => !slot.matched)){
-      const replacement = remaining.findIndex(piece => (piece.wordType || getKnownWordType(piece.baseWord || piece.baseVerb || piece.word)) === slot.type);
-      if(replacement >= 0){
-        const actual = remaining.splice(replacement,1)[0];
-        issues.push({area:slot.type, actual:actual.word, base:slot.base});
-      }else{
-        issues.push({area:"missing", type:slot.type});
-      }
-    }
-    return {correct:false, issue:issues[0] || {area:remaining.length ? "extra" : "word"}};
-  }
-
-  function getSentenceErrorHint(issue, attempts){
-    if(attempts === 1) return "Noch nicht richtig";
-    const broad = {verb:"Prüfe das Verb.", noun:"Prüfe das Nomen.", adj:"Prüfe das Adjektiv.",
-      pronoun:"Prüfe das Personalpronomen.", case:"Prüfe den Kasus am Nomen.", ending:"Prüfe die Verbendung.",
-      missing:"Ein Wort fehlt noch.", extra:"Ein Wort ist zu viel.", word:"Prüfe die Wortauswahl."};
-    if(attempts === 2) return broad[issue.area] || broad.word;
-    if(issue.detached) return issue.area === "case" ? "Zieh die Kasusendung auf ein Nomen." : "Zieh die Verbendung auf den Infinitiv.";
-    if(issue.area === "case"){
-      const question = {dative:"Wohin / zu wem?", ablative:"Woher / von wem?", locative:"Wo / bei wem?",
-        accusative:"Wen oder was?", genitive:"Wessen?"}[issue.caseKey];
-      return question ? "Frage beim Nomen: " + question : "Dieses Nomen braucht hier kein Kasussuffix.";
-    }
-    if(issue.area === "ending" || issue.area === "pronoun"){
-      const person = sentencePeople.find(item => item.word === issue.person);
-      const label = person?.de.toLocaleLowerCase("de") || "der Person im deutschen Satz";
-      return issue.area === "ending" ? "Die Verbendung muss zu „" + label + "“ passen."
-        : issue.missing ? "Hier brauchst du das Pronomen für „" + label + "“." : "Das Pronomen muss zu „" + label + "“ passen.";
-    }
-    if(["verb","noun","adj"].includes(issue.area) && issue.actual){
-      return "„" + issue.actual + "“ passt hier nicht zum deutschen Satz.";
-    }
-    if(issue.area === "missing") return "Es fehlt noch ein " + (typeNames[issue.type] || "Wort") + ".";
-    if(issue.area === "extra") return "Entferne das zusätzliche Wort oder doppelte Pronomen.";
-    return broad[issue.area] || broad.word;
-  }
-
-  function lockSentenceConstruction(){
-    sentenceLocked = true;
-    document.getElementById("sentenceGameActive").classList.add("sentence-locked");
-    document.querySelectorAll("#sentenceGameActive .sentence-token, #sentenceGameActive .sentence-actions button")
-      .forEach(button => button.disabled = true);
-  }
-
-  function checkSentence(){
-    if(sentenceLocked || !sentenceGameRunning) return;
-    const challenge = sentenceOrder[sentenceRoundIndex];
-    if(!challenge) return;
-    const answerTokens = Array.from(document.querySelectorAll("#answerZone .sentence-token"));
-    const result = evaluateSentence(challenge, answerTokens.map(token => ({...token.dataset})));
-    const feedback = document.getElementById("sentenceFeedback");
-    const stats = getSentenceStats(challenge);
-    if(result.correct){
-      stats.solved++;
-      if(sentenceAttempts === 0){
-        stats.directStreak++;
-        stats.difficulty = Math.max(0, stats.difficulty - 1);
-      }
-      sentenceLearning.levelCorrect++;
-      const levelUp = sentenceLearning.levelCorrect >= sentenceLevelSize;
-      if(levelUp){sentenceLearning.level++;sentenceLearning.levelCorrect = 0;}
-      saveSentenceLearning();
-      updateSentenceProgress({levelUp});
-      feedback.textContent = levelUp ? "Richtig! Level " + sentenceLearning.level : "Richtig!";
-      feedback.className = "sentence-feedback ok";
-      // Keep the actual accepted construction visible throughout the entire animation.
-      if(answerTokens.length){
-        const first = answerTokens[0];
-        first.textContent = first.textContent.charAt(0).toLocaleUpperCase("tr") + first.textContent.slice(1);
-        answerTokens.at(-1).textContent += ".";
-      }
-      lockSentenceConstruction();
-      document.getElementById("checkSentenceButton").style.display = "none";
-      const celebrationDuration = Math.max(1800, celebrateCorrectAnswer());
-      sentenceTransitionTimer = setTimeout(() => {
-        if(sentenceGameRunning) nextSentence();
-      }, celebrationDuration);
-    }else{
-      sentenceAttempts++;
-      stats.errors++;
-      stats.difficulty = Math.min(12, stats.difficulty + 1);
-      stats.directStreak = 0;
-      sentenceLearning.mistakes++;
-      const hint = getSentenceErrorHint(result.issue, sentenceAttempts);
-      feedback.className = "sentence-feedback bad";
-      if(sentenceLearning.mistakes >= 3){
-        sentenceLivesDepleted = true;
-        sentenceLearning.level = 1;
-        sentenceLearning.levelCorrect = 0;
-        sentenceLearning.mistakes = 0;
-        feedback.textContent = "Keine Leben mehr · Neustart in Level 1. " + hint;
-        lockSentenceConstruction();
-        sentenceTransitionTimer = setTimeout(() => {
-          if(sentenceGameRunning) nextSentence();
-        }, 2600);
-      }else{
-        feedback.textContent = hint;
-      }
-      saveSentenceLearning();
-      updateSentenceProgress({lifeLost:true});
-    }
-  }
-
-  function nextSentence(){
-    if(!sentenceGameRunning) return;
-    clearTimeout(sentenceTransitionTimer);
-    sentenceTransitionTimer = null;
-    const challenge = selectSentenceChallenge();
-    if(!challenge){
-      document.getElementById("sentenceGameActive").style.display = "none";
-      document.getElementById("sentenceComplete").classList.add("show");
-      document.querySelector("#sentenceComplete h2").textContent = "Noch keine passenden Sätze";
-      document.querySelector("#sentenceComplete p").textContent = "Schalte zuerst die Wörter frei, die für einen Satz gebraucht werden.";
-      return;
-    }
-    document.getElementById("sentenceGameActive").style.display = "flex";
-    document.getElementById("sentenceComplete").classList.remove("show");
-    sentenceOrder = [challenge];
-    sentenceRoundIndex = 0;
-    sentenceAttempts = 0;
-    renderSentenceChallenge();
-  }
-
   function startQuiz(mode = "toTurkish"){
     quizMode = mode;
     currentDirection = mode === "roulette"
@@ -4810,6 +3246,7 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
+    cardEl.setAttribute("aria-expanded", "false");
 
     renderQuizDirection(remaining[currentIndex], currentDirection);
   }
@@ -4835,6 +3272,7 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
+    cardEl.setAttribute("aria-expanded", "false");
 
     let candidateIndices = remaining.map((_, i) => i);
 
@@ -4869,6 +3307,12 @@
     }
   }
 
+  function handleQuizCardKeydown(event){
+    if(event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    if(!event.repeat) revealAnswer();
+  }
+
   function revealAnswer(){
     const cardEl = document.getElementById("quizCard");
 
@@ -4883,6 +3327,7 @@
     }
 
     cardEl.classList.add("revealed");
+    cardEl.setAttribute("aria-expanded", "true");
   }
 
   function updateProgress(){
@@ -5017,7 +3462,7 @@
       return;
     }
 
-    const interactive = event.target.closest("input, textarea, select, .custom-keyboard");
+    const interactive = event.target.closest("input, textarea, select, .custom-keyboard, .sentence-token, .sentence-grammar-card, .sentence-group");
     horizontalSwipeBlocked = !!interactive;
 
     horizontalSwipeStartX = event.touches[0].clientX;
@@ -5123,7 +3568,10 @@
   }
 
   document.addEventListener("click", handleAppClick, true);
+  document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
+<script src="lib/dictionary.js"></script>
+<script src="sentence-game.js"></script>
 </body>
 </html>

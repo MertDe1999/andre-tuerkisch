@@ -1,0 +1,65 @@
+EINGEREICHTER FRÜHERER VORSCHLAG
+Quelle: vom Nutzer am 02.10.2026 im Chat übergebener früherer Vorschlag.
+Historische Vorlage; der geprüfte Nachfolgeplan steht in satzbau-plan.md.
+Die Vorlage ist keine Beschreibung des derzeit implementierten Spiels.
+
+Ich würde 160 Spiellevel vorschlagen: jeweils 40 für A1, A2, B1 und B2. So steigt die Schwierigkeit langsam genug, und André bekommt Zeit, neue Regeln in verschiedenen Sätzen zu üben.
+
+Als Orientierung habe ich mir den Türkisch-Lehrplan der Universität Kastamonu angesehen: Dort stehen die Fälle bereits in A1, weitere Zeitformen in A2 und zunehmend komplexe Satzverbindungen in B1 und B2. Die genaue Aufteilung unten ist mein Vorschlag für André.
+
+So würde ich die Grammatik aufbauen:
+
+1–5 A1: Sehr kurze Aussagen mit bekannten Wörtern: „Das Haus ist schön.“ Grundform der Nomen, keine Kasusendung nötig.
+6–10 A1: Einfache Verben im Präsens: „Ich komme“, „Du gehst“. Verbwahl und Personalendung; ben, sen, o und biz gleichmäßig üben.
+11–15 A1: Bekannte Ortsfälle festigen: zuerst Lokativ – „im Haus“, anschließend Dativ – „zum Auto“. Jeweils kurze Sätze.
+16–20 A1: Akkusativ einführen: „Ich sehe das Auto.“ Zunächst bekannte Verben und einfache Nomen, damit die neue Endung im Mittelpunkt steht.
+21–25 A1: Akkusativ vertiefen: Vokalharmonie, Bindekonsonant y, später Stammveränderungen. Schrittweise den Unterschied zwischen einem unbestimmten und einem bestimmten Objekt üben.
+26–30 A1: Ablativ: „aus dem Haus“, „vom Auto“. Dativ, Lokativ und Akkusativ bleiben dabei im Aufgabenmix.
+31–35 A1: Genitiv und Besitz: „das Auto meines Vaters“. Dabei gehören die Genitivendung beim Besitzer und die passende Besitzendung am zweiten Nomen zusammen.
+36–40 A1: Alle Fälle mischen; einfache Kombinationen aus Objekt, Ort und Verb. Dazu schrittweise Plural, Verneinung und einfache Fragen.
+41–50 A2: Vergangenheit mit -di; bekannte Fälle jetzt auch in vergangenen Handlungen verwenden.
+51–60 A2: Zukunft und Gewohnheiten: -acak/-ecek, anschließend der Aorist.
+61–70 A2: Können mit -abil/-ebil, einfache Aufforderungen und Vergleiche. Besitzformen mit weiteren Kasusendungen verbinden.
+71–80 A2: -miş, einfache Begründungen und verbundene Handlungen, beispielsweise mit -ip.
+81–90 B1: Wünsche, Notwendigkeit und Zweck: „Ich muss …“, „Ich möchte …“, „um … zu“.
+91–100 B1: Zeitliche Verbindungen: „während“, „als“, „sobald“; Formen wie -ken, -ince und -erek/-arak.
+101–110 B1: Bedingungen mit -se/-sa und nominalisierte Handlungen, etwa „dein Kommen“.
+111–120 B1: Die bisherigen Mechaniken in Sätzen mit mehreren Satzteilen kombinieren.
+121–130 B2: Relativkonstruktionen: „das Auto, das du gesehen hast“, „der Mann, der kommt“.
+131–140 B2: Passiv, reflexive Formen und Veranlassung: „wird gesehen“, „lässt reparieren“.
+141–150 B2: Indirekte Rede und anspruchsvollere Verbindungen wie „obwohl“ oder „trotzdem“.
+151–160 B2: Gemischte Aufgaben mit Nebensätzen, Zeitformen, Besitz und mehreren Kasusendungen. Danach bleibt ein B2-Trainingsbereich.
+
+Innerhalb eines Abschnitts würde ich eine neue Regel zuerst mit vertrauten Wörtern zeigen. Erst anschließend kommen zusätzliche Entscheidungen dazu. Ein längerer Satz wird dadurch schwieriger, dass André mehrere bekannte Regeln verbinden muss.
+
+Für den Akkusativ würde ich André gezielt mehr Übung geben. Beispielsweise:
+- Zuerst: „Du siehst das Auto.“
+- Danach: „Du siehst das schöne Auto.“
+- Später: „Du siehst den Penis im Auto.“
+
+Der letzte Satz verbindet Akkusativ, Lokativ, Verbwahl und Personalendung. Er kann trotzdem eine A1-Aufgabe mit höherer Schwierigkeit sein: Mehr Bausteine machen einen Satz nicht automatisch zu B1 oder B2.
+
+Ab Level 35 wären alle sechs Grundfälle eingeführt: Grundform/Nominativ, Akkusativ, Dativ, Lokativ, Ablativ und Genitiv. Ab Level 40 würde ich ihre Abdeckung ausdrücklich sichern: In jeweils 20 neuen Aufgaben kommt jeder Fall mindestens einmal als tatsächlicher Übungsschwerpunkt vor – soweit passende Wörter freigeschaltet sind. Für André könnten zunächst ungefähr sechs dieser Aufgaben den Akkusativ enthalten. Die anderen Fälle bleiben präsent. Die Mit-Form ile/-le/-la würde ich zusätzlich aufnehmen.
+
+Die Wiederholungen würde ich so steuern:
+- Ein Wort wird falsch gewählt: Dieses Wort erscheint nach etwa 3–5 anderen Aufgaben erneut, möglichst in einem anderen Satz.
+- Eine Kasus- oder Verbendung ist falsch: Die betreffende Grammatik erscheint häufiger, auch mit anderen bekannten Wörtern.
+- Derselbe Bereich wird wiederholt falsch gelöst: Kürzere Aufgaben mit weniger zusätzlichen Mechaniken; höchstens etwa ein Drittel der Aufgaben behandelt dieselbe Schwäche.
+- Eine Aufgabe wird ohne Hilfe richtig gelöst: Der Abstand wächst: zunächst ungefähr 10 Aufgaben, später 1, 3, 7 und 21 Tage.
+- Etwas wird mehrfach über mehrere Tage direkt richtig gelöst: Es erscheint seltener, bleibt aber in gelegentlichen Wiederholungen.
+
+Die Tagesabstände bedeuten: Die Wiederholung wartet beim nächsten Öffnen der App. Alles bleibt lokal im Browser gespeichert.
+
+Als normalen Aufgabenmix würde ich mit 60 % Aufgaben des aktuellen Abschnitts, 25 % gezielten Wiederholungen und 15 % leichteren, älteren Aufgaben starten. Die Fallabdeckung und die ausgewogene Verteilung der Personen würden innerhalb dieses Mixes berücksichtigt.
+
+Für Aufstieg und Abstieg empfehle ich eine Wertung pro Satz:
+- Beim ersten Versuch richtig: ein Level hoch.
+- Beim ersten Versuch falsch: ein Level runter, mindestens bis Level 1.
+- Danach darf André denselben Satz mit den gestuften Hinweisen korrigieren. Diese Übungsversuche ändern das Level nicht nochmals.
+- Der nächste Satz richtet sich nach dem neuen Level. Gespeicherte Lernerfahrungen bleiben erhalten.
+
+So kann André aus einem Fehler lernen, ohne für jeden weiteren Korrekturversuch erneut abzusteigen.
+
+Die Anzeige würde ich als große „Level 24“ und daneben ein ruhiges „Aufgabe · A1“ gestalten. Bei einer leichteren Wiederholung auf Level 100 könnte dort weiterhin A1 stehen. Das Sprachlabel beschreibt die ungefähre Anforderung des konkreten Satzes. Der europäische Referenzrahmen legt keine verbindliche Grammatikliste pro Stufe fest; deshalb würde ich die Zuordnung anhand von Satzstruktur, Wortschatz und Aufgabe treffen.
+
+Für die Umsetzung bis B2 braucht der aktuelle Satzbauer zusätzliche Zeitformen, Besitzendungen, kombinierbare Suffixe und Nebensatzmuster. Die bisherigen Alltagsformen -iyom, -iyon, -iyo und -iyoz würde ich erhalten und die Standardformen schrittweise ergänzen. Neue Aufgaben und Ablenker verwenden weiterhin ausschließlich freigeschaltete Wörter.
