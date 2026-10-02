@@ -2261,11 +2261,7 @@
           <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
           <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
           <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
-          <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wortbank"></div></div>
-          <div id="sentenceForms" class="sentence-forms" hidden>
-            <div class="sentence-form-heading"><select id="sentenceFormTarget" aria-label="Wort für eine Endung"></select><select id="sentenceFormField" aria-label="Art der Endung"></select></div>
-            <div id="grammarBank" aria-label="Grammatikbausteine"></div>
-          </div>
+          <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wörter, Endungen und Formen"></div></div>
           <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
           <div class="sentence-actions">
             <button id="sentenceUnknownButton" class="sentence-btn secondary">Keine Ahnung</button>
@@ -2275,7 +2271,7 @@
           <div id="sentenceHelp" class="sentence-help" role="dialog" aria-modal="true" aria-label="Hilfe zum Satzbau" hidden>
             <div class="sentence-help-top"><strong id="sentenceLessonTitle">Satzbau</strong><button id="sentenceHelpClose" class="sentence-icon" type="button" aria-label="Hilfe schließen">×</button></div>
             <p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
-            <p id="sentenceHelpGestures">Wörter antippen oder ziehen. Im Satz: Tippen nimmt die letzte Endung weg, danach das Wort. Endungen antippen oder auf ein Wort ziehen.</p>
+            <p id="sentenceHelpGestures">Wörter antippen oder in den Satz ziehen. Endungen auf ein Wort ziehen – in der Wortbank oder im Satz. Auch ein Wort auf eine Endung ziehen geht. Antippen ergänzt das zuletzt verwendete passende Wort. Im Satz nimmt Tippen erst die letzte Endung weg, danach das Wort.</p>
             <div id="sentenceHintText" role="status"></div>
             <div class="sentence-help-actions"><button id="sentenceHintButton" class="sentence-btn primary" type="button">Tipp zeigen</button><button id="sentenceResetButton" class="sentence-btn secondary" type="button" onclick="resetSentence()">Neu bauen</button></div>
           </div>
