@@ -105,6 +105,11 @@
 
     button,input{font:inherit}
 
+    button:focus-visible,[role="button"]:focus-visible,[role="textbox"]:focus-visible{
+      outline:3px solid var(--lavender-dark);
+      outline-offset:3px;
+    }
+
     .pull-refresh{
       position:fixed;
       z-index:50000;
@@ -2275,7 +2280,7 @@
           <button id="quizModeSwitch" class="mode-switch" onclick="cycleQuizMode(event)">Deutsch → Türkisch</button>
         </div>
 
-        <div id="quizCard" class="quiz-card neutral" onclick="revealAnswer()">
+        <div id="quizCard" class="quiz-card neutral" role="button" tabindex="0" aria-expanded="false" aria-controls="quizAnswer" onclick="revealAnswer()" onkeydown="handleQuizCardKeydown(event)">
           <div id="quizDirection" class="quiz-direction"></div>
           <div id="quizType" class="quiz-type neutral"></div>
           <div id="quizFront" class="quiz-front"></div>
@@ -2391,8 +2396,8 @@
             <div id="typingPrompt" class="typing-word"></div>
           </div>
 
-          <div id="typingAnswer" class="typing-answer empty" role="textbox" aria-readonly="true">Antwort tippen …</div>
-          <div id="typingFeedback" class="typing-feedback"></div>
+          <div id="typingAnswer" class="typing-answer empty" role="textbox" tabindex="0" aria-label="Antwort" aria-readonly="true">Antwort tippen …</div>
+          <div id="typingFeedback" class="typing-feedback" role="status" aria-live="polite"></div>
         </div>
 
         <div id="typingComplete" class="typing-complete">
@@ -2712,6 +2717,9 @@
   let typedAnswer = "";
   let typingUnknownState = {};
   let typingRevealPending = false;
+  let typingGameRunning = false;
+  let typingTransitionPending = false;
+  let typingTransitionTimer = null;
 
   const unlockProgressStorageKey = "andreTurkishUnlockProgressV1";
 
@@ -2722,7 +2730,13 @@
   function getUnlockProgress(){
     try{
       const saved = JSON.parse(localStorage.getItem(unlockProgressStorageKey) || "{}");
-      return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+      if(!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
+      return Object.fromEntries(Object.entries(saved)
+        .filter(([key]) => !["__proto__","constructor","prototype"].includes(key))
+        .map(([key, value]) => {
+          const state = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+          return [key, {toTurkish:state.toTurkish === true, toGerman:state.toGerman === true}];
+        }));
     }catch{
       return {};
     }
@@ -2740,7 +2754,7 @@
 
   function isWordUnlocked(turkishWord, progress = getUnlockProgress()){
     const state = progress[unlockWordKey(turkishWord)];
-    return !!(state?.toTurkish && state?.toGerman);
+    return state?.toTurkish === true && state?.toGerman === true;
   }
 
   function markUnlockDirection(turkishWord, direction){
@@ -3181,6 +3195,7 @@
 
   function openLearnMode(mode){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.add("game-mode-active");
     document.getElementById("learnHome").style.display = "none";
     document.getElementById("cardsLearning").classList.toggle("active", mode === "cards");
@@ -3201,6 +3216,7 @@
 
   function backToLearnHome(){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.remove("game-mode-active");
     document.getElementById("learnHome").style.display = "block";
     document.getElementById("cardsLearning").classList.remove("active");
@@ -3222,6 +3238,7 @@
 
   function showView(id, btn, swipeDirection = null){
     stopSentenceGame();
+    stopTypingGame();
     document.body.classList.remove("game-mode-active");
 
     const currentView = document.querySelector(".view.active");
@@ -3296,15 +3313,36 @@
     });
   }
 
-  function normalizeTypedAnswer(value){
+  function normalizeTypedAnswer(value, language = "de"){
     return value
-      .toLowerCase()
+      .normalize("NFC")
+      .toLocaleLowerCase(language === "tr" ? "tr-TR" : "de-DE")
       .replace(/[.,!?;:()"“”'’]/g, "")
       .replace(/\s+/g, " ")
       .trim();
   }
 
+  function stopTypingGame(){
+    typingGameRunning = false;
+    clearTimeout(typingTransitionTimer);
+    typingTransitionTimer = null;
+    typingTransitionPending = false;
+    typingRevealPending = false;
+  }
+
+  function scheduleTypingTransition(delay){
+    if(!typingGameRunning || typingTransitionPending) return;
+    typingTransitionPending = true;
+    document.querySelectorAll("#customKeyboard .key").forEach(key => {key.disabled = true;});
+    typingTransitionTimer = setTimeout(() => {
+      typingTransitionTimer = null;
+      if(typingGameRunning) nextTypingWord();
+    }, delay);
+  }
+
   function startTypingGame(){
+    stopTypingGame();
+    typingGameRunning = true;
     typingRemaining = typingWords
       .map((word, index) => ({...word, originalIndex:index}))
       .filter(word => !isWordUnlocked(word.tr));
@@ -3325,7 +3363,12 @@
   }
 
   function nextTypingWord(){
+    if(!typingGameRunning) return;
+    clearTimeout(typingTransitionTimer);
+    typingTransitionTimer = null;
+    typingTransitionPending = false;
     if(typingRemaining.length === 0){
+      typingGameRunning = false;
       document.getElementById("typingGameActive").style.display = "none";
       document.getElementById("customKeyboard").style.display = "none";
       document.getElementById("typingComplete").classList.add("show");
@@ -3377,6 +3420,7 @@
     feedback.style.color = "";
 
     renderCustomKeyboard(toTurkish ? "tr" : "de");
+    answerEl.focus({preventScroll:true});
   }
 
   function renderCustomKeyboard(language){
@@ -3451,7 +3495,7 @@
   }
 
   function typeCustomKey(key){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const answerEl = document.getElementById("typingAnswer");
 
@@ -3476,19 +3520,37 @@
     feedback.style.color = "";
   }
 
+  function handleTypingKeyboard(event){
+    if(!typingGameRunning || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
+    if(event.target.closest?.("input,textarea,select,[contenteditable='true']")) return;
+    // Enter/Space must still activate a focused screen-keyboard or navigation button.
+    if(["Enter"," "].includes(event.key) && event.target.closest?.("button,[role='button']")) return;
+    if(event.key === "Enter"){
+      event.preventDefault();
+      if(!event.repeat) checkTypedAnswer();
+    }else if(event.key === "Backspace"){
+      event.preventDefault();
+      typeCustomKey("BACKSPACE");
+    }else if(/^[\p{L} ]$/u.test(event.key)){
+      event.preventDefault();
+      typeCustomKey(event.key);
+    }
+  }
+
   function checkTypedAnswer(){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const item = typingRemaining[typingCurrentIndex];
     if(!item || !typedAnswer.trim()) return;
 
-    const entered = normalizeTypedAnswer(typedAnswer);
+    const language = typingDirection === "toTurkish" ? "tr" : "de";
+    const entered = normalizeTypedAnswer(typedAnswer, language);
     const accepted = typingDirection === "toTurkish"
       ? [item.tr]
       : (item.deAnswers?.length ? item.deAnswers : [item.de]);
 
     const correct = accepted
-      .map(normalizeTypedAnswer)
+      .map(answer => normalizeTypedAnswer(answer, language))
       .includes(entered);
 
     const answerEl = document.getElementById("typingAnswer");
@@ -3521,7 +3583,7 @@
       feedback.style.color = "var(--verb-dark)";
       updateTypingProgress();
 
-      window.setTimeout(nextTypingWord, unlockedNow ? 650 : 750);
+      scheduleTypingTransition(unlockedNow ? 650 : 750);
     }else{
       answerEl.classList.remove("correct","empty");
       answerEl.classList.add("wrong");
@@ -3531,7 +3593,7 @@
   }
 
   function handleDontKnow(){
-    if(typingRevealPending) return;
+    if(!typingGameRunning || typingRevealPending || typingTransitionPending) return;
 
     const item = typingRemaining[typingCurrentIndex];
     if(!item) return;
@@ -3561,7 +3623,7 @@
       });
 
       updateTypingProgress();
-      window.setTimeout(nextTypingWord, 1700);
+      scheduleTypingTransition(1700);
       return;
     }
 
@@ -3570,7 +3632,7 @@
     feedback.textContent = "";
     feedback.style.color = "";
 
-    window.setTimeout(nextTypingWord, 650);
+    scheduleTypingTransition(650);
   }
 
   function updateTypingProgress(){
@@ -4003,6 +4065,11 @@
     }
 
     token.addEventListener("pointerdown", beginSentencePointerDrag);
+    // Native keyboard and assistive activation sends click with detail 0.
+    // Pointer taps are already handled by pointerup and must not run twice.
+    token.addEventListener("click", event => {
+      if(event.detail === 0) activateSentenceToken(token)?.focus({preventScroll:true});
+    });
     return token;
   }
 
@@ -4342,6 +4409,13 @@
 
     clearSentenceDragHighlights();
 
+    if(event.type === "pointercancel"){
+      token.classList.remove("dragging");
+      state.ghost?.remove();
+      pointerDrag = null;
+      return;
+    }
+
     if(state.dragging){
       const under = document.elementFromPoint(event.clientX, event.clientY);
 
@@ -4383,41 +4457,50 @@
       token.classList.remove("dragging");
       state.ghost?.remove();
     }else{
-      if(token.dataset.tokenKind === "suffix"){
-        const target = getAutomaticSentenceCaseTarget(token);
-        const feedback = document.getElementById("sentenceFeedback");
-
-        if(target){
-          applySentenceCase(target, token);
-        }else{
-          feedback.textContent = "Setz zuerst ein Nomen in deinen Satz.";
-          feedback.className = "sentence-feedback";
-        }
-      }else if(token.dataset.tokenKind === "verb-ending"){
-        const target = getAutomaticVerbTarget(token);
-        const feedback = document.getElementById("sentenceFeedback");
-
-        if(target){
-          applyVerbEnding(target, token);
-        }else{
-          feedback.textContent = "Setz zuerst ein Verb im Infinitiv in deinen Satz.";
-          feedback.className = "sentence-feedback";
-        }
-      }else{
-        const answerZone = document.getElementById("answerZone");
-        const wordBank = document.getElementById("wordBank");
-
-        if(token.parentElement === answerZone && token.dataset.appliedCase){
-          removeSentenceCase(token);
-        }else if(token.parentElement === answerZone && token.dataset.appliedVerbEnding){
-          removeVerbEnding(token);
-        }else{
-          (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
-        }
-      }
+      activateSentenceToken(token);
     }
 
     pointerDrag = null;
+  }
+
+  function activateSentenceToken(token){
+    if(sentenceLocked || !sentenceGameRunning || token.disabled) return;
+    let focusTarget = token;
+    if(token.dataset.tokenKind === "suffix"){
+      const target = getAutomaticSentenceCaseTarget(token);
+      const feedback = document.getElementById("sentenceFeedback");
+
+      if(target){
+        applySentenceCase(target, token);
+        focusTarget = target;
+      }else{
+        feedback.textContent = "Setz zuerst ein Nomen in deinen Satz.";
+        feedback.className = "sentence-feedback";
+      }
+    }else if(token.dataset.tokenKind === "verb-ending"){
+      const target = getAutomaticVerbTarget(token);
+      const feedback = document.getElementById("sentenceFeedback");
+
+      if(target){
+        applyVerbEnding(target, token);
+        focusTarget = target;
+      }else{
+        feedback.textContent = "Setz zuerst ein Verb im Infinitiv in deinen Satz.";
+        feedback.className = "sentence-feedback";
+      }
+    }else{
+      const answerZone = document.getElementById("answerZone");
+      const wordBank = document.getElementById("wordBank");
+
+      if(token.parentElement === answerZone && token.dataset.appliedCase){
+        removeSentenceCase(token);
+      }else if(token.parentElement === answerZone && token.dataset.appliedVerbEnding){
+        removeVerbEnding(token);
+      }else{
+        (token.parentElement === wordBank ? answerZone : wordBank).appendChild(token);
+      }
+    }
+    return focusTarget;
   }
 
   function resetSentence(){
@@ -4810,6 +4893,7 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
+    cardEl.setAttribute("aria-expanded", "false");
 
     renderQuizDirection(remaining[currentIndex], currentDirection);
   }
@@ -4835,6 +4919,7 @@
 
     const cardEl = document.getElementById("quizCard");
     cardEl.classList.remove("revealed");
+    cardEl.setAttribute("aria-expanded", "false");
 
     let candidateIndices = remaining.map((_, i) => i);
 
@@ -4869,6 +4954,12 @@
     }
   }
 
+  function handleQuizCardKeydown(event){
+    if(event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    if(!event.repeat) revealAnswer();
+  }
+
   function revealAnswer(){
     const cardEl = document.getElementById("quizCard");
 
@@ -4883,6 +4974,7 @@
     }
 
     cardEl.classList.add("revealed");
+    cardEl.setAttribute("aria-expanded", "true");
   }
 
   function updateProgress(){
@@ -5123,6 +5215,7 @@
   }
 
   document.addEventListener("click", handleAppClick, true);
+  document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 </body>
