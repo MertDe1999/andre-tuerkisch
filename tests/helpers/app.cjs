@@ -52,7 +52,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),
  matchMedia:query=>({matches:query.includes('prefers-reduced-motion')?reducedMotion:false}),addEventListener(){},scrollTo(){}};
  sandbox.window=sandbox;vm.createContext(sandbox);
- for(const [,src,inline] of html.matchAll(/<script(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g))vm.runInContext(src?fs.readFileSync(path.join(root,src),'utf8'):inline,sandbox,{filename:src||'index.html'});
+ for(const [,src,inline] of html.matchAll(/<script(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g))vm.runInContext(src?fs.readFileSync(path.join(root,src.split('?')[0]),'utf8'):inline,sandbox,{filename:src||'index.html'});
  const run=code=>vm.runInContext(code,sandbox),json=code=>JSON.parse(JSON.stringify(run(code)));
  const unlock=keys=>run('saveUnlockProgress(Object.fromEntries('+JSON.stringify(keys||el('wordList').children.map(row=>row.querySelector('.word-tr').textContent))+'.map(word=>[unlockWordKey(word),{toTurkish:true,toGerman:true}])));refreshUnlockUI();');
  const advance=ms=>{const until=now+ms;while(true){const next=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;timers.delete(next[0]);now=next[1].at;next[1].fn();}now=until;};
