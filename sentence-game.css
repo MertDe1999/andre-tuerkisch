@@ -31,6 +31,7 @@ body.learning-games-view #sentenceGameActive .sentence-bank-area{flex:1 1 auto;m
 .sentence-pages .sentence-icon{width:26px;height:24px;border-radius:8px;font-size:16px}
 body.learning-games-view #sentenceGameActive #wordBank{flex:1 1 auto;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:52px;align-content:start;gap:8px;padding:10px;border-color:var(--line);background:var(--surface-soft)}
 #wordBank .sentence-token{padding:9px 6px;min-width:0}
+#wordBank .sentence-token,#wordBank .sentence-grammar-card{align-self:stretch}
 #wordBank.drag-over,#answerZone .drag-over{border-color:var(--lavender-dark);background:var(--lavender)}
 .sentence-grammar-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:10px;background:var(--lavender);color:var(--lavender-dark);font:inherit;font-size:14px;font-weight:850;min-width:0;padding:5px 3px;cursor:grab;overflow-wrap:anywhere;line-height:1.1}
 #wordBank .sentence-wide-card{grid-column:span 2}
