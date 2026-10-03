@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'../..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-function app({reducedMotion=true,storage=new Map()}={}){
+function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  const animations=[],ids=new Map(),listeners=new Map();let document;
  const match=(element,selector)=>{
    selector=selector.trim();
@@ -31,7 +31,7 @@ function app({reducedMotion=true,storage=new Map()}={}){
   setAttribute(name,value){this.attributes.set(name,String(value));}getAttribute(name){return this.attributes.get(name)??null;}
   setPointerCapture(){}
   releasePointerCapture(){}
-  getBoundingClientRect(){return {left:0,top:0,width:90,height:this.id==='wordBank'?250:40};}
+  getBoundingClientRect(){return {left:0,top:0,width:90,height:this.id==='wordBank'?bankHeight:40};}
   animate(keyframes,options){const a={keyframes,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(a);return a;}
  }
  const el=id=>{if(!ids.has(id)){const e=new Element();e.id=id;}return ids.get(id);};

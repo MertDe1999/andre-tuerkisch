@@ -1,5 +1,9 @@
 # Satzbau: gemeinsame Wortbank
 
+Historischer Bericht. Die Beschriftungen, automatische Zielwahl und Speicherdaten
+wurden am 03.10.2026 durch [konkrete türkische Bausteine](satzbau-tuerkische-bausteine.md)
+ersetzt. Die folgenden Aussagen gelten für den damals geprüften Stand aus PR #3.
+
 Stand: 02.10.2026. Nutzeranforderung: Wörter, Suffixe und Verbformen gehören in
 einen Bereich und lassen sich dort oder im Satz verbinden. Der separate
 Bearbeitungsblock aus PR #2 entfällt.

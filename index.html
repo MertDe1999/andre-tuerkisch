@@ -2023,7 +2023,7 @@
     }
 
   </style>
-<link rel="stylesheet" href="sentence-game.css">
+<link rel="stylesheet" href="sentence-game.css?v=20261003-tuerkische-bausteine">
 </head>
 
 <body>
@@ -2271,7 +2271,7 @@
           <div id="sentenceHelp" class="sentence-help" role="dialog" aria-modal="true" aria-label="Hilfe zum Satzbau" hidden>
             <div class="sentence-help-top"><strong id="sentenceLessonTitle">Satzbau</strong><button id="sentenceHelpClose" class="sentence-icon" type="button" aria-label="Hilfe schließen">×</button></div>
             <p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
-            <p id="sentenceHelpGestures">Wörter antippen oder in den Satz ziehen. Endungen auf ein Wort ziehen – in der Wortbank oder im Satz. Auch ein Wort auf eine Endung ziehen geht. Antippen ergänzt das zuletzt verwendete passende Wort. Im Satz nimmt Tippen erst die letzte Endung weg, danach das Wort.</p>
+            <p id="sentenceHelpGestures">Türkische Wörter und Endungen antippen oder ziehen. Eine Endung auf ein Wort ziehen funktioniert in der Wortbank und im Satz, auch in umgekehrter Richtung. Ohne gewähltes Wort zuerst die Endung und dann das Zielwort antippen. Im Satz nimmt Tippen erst den letzten Baustein weg, danach das Wort.</p>
             <div id="sentenceHintText" role="status"></div>
             <div class="sentence-help-actions"><button id="sentenceHintButton" class="sentence-btn primary" type="button">Tipp zeigen</button><button id="sentenceResetButton" class="sentence-btn secondary" type="button" onclick="resetSentence()">Neu bauen</button></div>
           </div>
@@ -2349,6 +2349,7 @@
 
 <script src="data/words.js"></script>
 <script src="lib/turkish.js"></script>
+<script src="lib/building-blocks.js"></script>
 <script src="lib/curriculum.js"></script>
 <script src="lib/learning.js"></script>
 <script>

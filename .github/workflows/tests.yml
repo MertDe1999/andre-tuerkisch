@@ -17,4 +17,4 @@ jobs:
         with:
           node-version: '22'
       - name: Lernlogik und Bedienung prüfen
-        run: node --test tests/sentence-builder.test.cjs tests/learning-controls.test.cjs
+        run: node --test tests/*.test.cjs
