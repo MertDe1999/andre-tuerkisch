@@ -11,7 +11,7 @@
   const surface=token=>{try{return B.surface(token);}catch{return W.byId[token.lemma].tr+' · ?';}};
   const message=(text,kind='')=>{el('sentenceFeedback').textContent=text;el('sentenceFeedback').className='sentence-feedback '+kind;};
   const introduced=()=>new Set([...engine.state.introduced,...(current()?.kind==='intro'?task().skills:[])]);
-  function allowedCards(){return B.cards(task(),current(),[...introduced()]);}
+  function allowedCards(){return B.availableCards(task(),current(),[...introduced()]);}
   const fits=(token,card)=>B.fits(token,card);
   function selectTarget(card){
     const cur=current();
@@ -20,6 +20,8 @@
   function saveAndRender(focusId){engine.save();render();if(focusId)el('sentenceToken-'+focusId)?.focus({preventScroll:true});}
   function apply(card,tokenId){
     if(!running||current()?.finished)return;
+    card=allowedCards().find(c=>c.text===card.text);
+    if(!card){pendingCard=null;render();return;}
     const token=tokenId?current().tokens.find(t=>t.id===tokenId):selectTarget(card);
     if(!token){pendingCard=card;render();message('Tippe auf das passende Wort.');return;}
     if(!fits(token,card)||!B.apply(token,card)){message('Diese Endung passt hier nicht.');return;}
@@ -146,7 +148,7 @@
       const content=make('div','sentence-group-words','');content.dataset.sentenceGroup=g.id;content.hidden=g.id!==activeGroup;content.setAttribute('aria-label',g.label);
       for(const token of cur.tokens.filter(t=>t.group===g.id))content.append(wordButton(token));zone.append(content);
     }
-    const bank=el('wordBank'),cards=allowedCards(),words=cur.tokens.filter(t=>!t.group);
+    const bank=el('wordBank'),cards=allowedCards().flatMap(card=>Array(card.count).fill(card)),words=cur.tokens.filter(t=>!t.group);
     // Keep the word being inflected visible while paging through further endings.
     const anchor=words.find(t=>t.id===selected),remaining=words.filter(t=>t!==anchor),items=[];
     const wordOrder=B.shuffle(remaining,(()=>{let seed=cur.bankSeed||cur.id||1;return()=>((seed=seed*16807%2147483647)-1)/2147483646;})());
