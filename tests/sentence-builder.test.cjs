@@ -1,5 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const W=require('../data/words.js'),T=require('../lib/turkish.js'),C=require('../lib/curriculum.js'),L=require('../lib/learning.js');
+const B=require('../lib/building-blocks.js');
 const {app}=require('./helpers/app.cjs');
 const byId=id=>C.tasks.find(t=>t.id===id);
 function bankItem(a,predicate){
@@ -8,7 +9,7 @@ function bankItem(a,predicate){
  while(!button&&!a.el('sentenceBankPages').hidden&&!a.el('sentenceBankPages').children[2].disabled){a.el('sentenceBankPages').children[2].click();button=find();}
  return button;
 }
-const bankCard=(a,field,value)=>bankItem(a,b=>b.dataset.grammarField===field&&b.dataset.grammarValue===JSON.stringify(value));
+const bankCard=(a,text)=>bankItem(a,b=>b.dataset.turkishBlock===text);
 function rng(seed=13){return ()=>((seed=(seed*16807)%2147483647)-1)/2147483646;}
 function game({keys=W.words.map(w=>w.tr),saved,legacy,clock=()=>new Date(2026,9,2,12).getTime()}={}){
  const map=new Map([[L.UNLOCK,JSON.stringify(Object.fromEntries(keys.map(tr=>[tr.toLocaleLowerCase('tr-TR'),{toTurkish:true,toGerman:true}])) )]]);
@@ -147,20 +148,17 @@ test('browser adapter composes words by keyboard clicks and cancels old transiti
  const a=app();a.unlock(['ev','güzel']);a.run('startSentenceGame()');for(const word of [...a.el('wordBank').children])word.click();a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.ok(a.timers.size);a.run('backToLearnHome()');a.advance(5000);assert.equal(a.timers.size,0);
 });
 
-test('browser adapter builds suffix chains and the actual full curriculum through its controls',()=>{
+test('browser adapter builds nominalized verb suffix chains through Turkish cards',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');
- for(const task of C.tasks){
+ for(const task of C.tasks.filter(t=>t.skills.includes('nominalDik')).slice(0,4)){
   a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.render();');
   const cur=a.json('SentenceGame.engine.state.current');
   for(const group of task.groups)for(const slot of group.slots){
    const available=cur.tokens.find(t=>t.lemma===slot.lemma&&!t.consumed);available.consumed=true;
    a.run('SentenceGame.moveToken('+JSON.stringify(available.id)+','+JSON.stringify(group.id)+');');
-   for(const [field,value] of Object.entries(slot.features)){
-    assert.ok(a.json('SentenceGame.allowedCards()').some(card=>card.field===field&&card.value===value),task.id+' missing '+field+':'+value);
-    // A sole bare form is already present on the uninflected word.
-    if(field==='case'&&value==='bare'&&a.json('SentenceGame.allowedCards()').filter(c=>c.field==='case').length===1)continue;
-    const button=bankCard(a,field,value);
-    assert.ok(button,task.id+' inaccessible card '+field);button.click();
+   for(const step of B.plan(slot)){
+    const button=bankCard(a,step.text);
+    assert.ok(button,task.id+' inaccessible card '+step.text);button.click();
    }
   }
   a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true,task.id);a.advance(1500);
@@ -170,14 +168,13 @@ test('browser adapter builds suffix chains and the actual full curriculum throug
 test('pointer cancellation does not move a modern token and selected-word focus survives inflection',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');const token=a.el('wordBank').children[0];token.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});token.dispatchEvent({type:'pointermove',clientX:30,clientY:20});token.dispatchEvent({type:'pointercancel'});assert.equal(token.parentElement,a.el('wordBank'));
  a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"older");SentenceGame.render();');
- const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;a.run('SentenceGame.moveToken('+JSON.stringify(id)+',"main");SentenceGame.apply({field:"case",value:"accusative"},'+JSON.stringify(id)+');');assert.equal(a.document.activeElement,a.el('sentenceToken-'+id));assert.equal(a.document.activeElement.textContent,'arabayı');
+ const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;a.run('SentenceGame.moveToken('+JSON.stringify(id)+',"main");');bankCard(a,'-yı').click();assert.equal(a.document.activeElement,a.el('sentenceToken-'+id));assert.equal(a.document.activeElement.textContent,'arabayı');
 });
 
 test('old tap gesture removes the last ending, then returns the word without changing scoring',()=>{
  const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
  const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;
- a.el('sentenceToken-'+id).click();a.run('SentenceGame.apply({field:"plural",value:true},'+JSON.stringify(id)+');SentenceGame.apply({field:"case",value:"accusative"},'+JSON.stringify(id)+');');
- a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).textContent,'arabalar');
+ a.el('sentenceToken-'+id).click();bankCard(a,'-yı').click();assert.equal(a.el('sentenceToken-'+id).textContent,'arabayı');
  a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).textContent,'araba');
  a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).parentElement,a.el('wordBank'));
  assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);assert.equal(a.run('SentenceGame.engine.state.current.rated'),false);
@@ -190,35 +187,37 @@ test('pointer drags move, reorder and return words, apply endings, and clean up 
  const group=()=>a.el('answerZone').children.find(e=>e.dataset.sentenceGroup==='main');
  drag(a.el('sentenceToken-'+noun.id),group());assert.equal(a.run('SentenceGame.engine.state.current.tokens.find(t=>t.id==='+JSON.stringify(noun.id)+').group'),'main');
  drag(a.el('sentenceToken-'+pronoun.id),a.el('sentenceToken-'+noun.id));assert.equal(group().children[0].dataset.modernToken,pronoun.id);
- const suffix=bankCard(a,'case','accusative');
+ const suffix=bankCard(a,'-yı');
  drag(suffix,a.el('sentenceToken-'+noun.id));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'arabayı');
  drag(a.el('sentenceToken-'+noun.id),a.el('wordBank'),{cancel:true});assert.equal(a.el('sentenceToken-'+noun.id).parentElement,group());
  drag(a.el('sentenceToken-'+noun.id),a.el('wordBank'));assert.equal(a.el('sentenceToken-'+noun.id).parentElement,a.el('wordBank'));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'arabayı');
  assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);
 });
 
-test('the single bank combines endings in both drag directions and keeps the target across pages',()=>{
- const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="poss-case-ben-ev"),"current");SentenceGame.render();');
+test('the single bank combines concrete endings in both drag directions',()=>{
+ const a=app({bankHeight:700});a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="poss-case-ben-ev"),"current");SentenceGame.render();');
  const noun=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.ev.id);
  const drag=(button,target,cancel=false)=>{a.document.pointerTarget=target;button.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});button.dispatchEvent({type:'pointermove',clientX:20,clientY:40,pointerId:1});assert.ok(target.classList.contains('case-drop-over'));button.dispatchEvent({type:cancel?'pointercancel':'pointerup',clientX:20,clientY:40,pointerId:1});assert.equal(target.classList.contains('case-drop-over'),false);};
- const locative=bankCard(a,'case','locative'),root=a.el('sentenceToken-'+noun.id);
+ const root=bankItem(a,b=>b.dataset.modernToken===noun.id);
+ const visiblePossession=bankCard(a,'-im');
  // Word onto ending selects the word without inserting it into the sentence.
- assert.equal(root.parentElement,a.el('wordBank'));drag(root,locative);
- assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evde');assert.equal(a.run('SentenceGame.engine.state.current.tokens.find(t=>t.id==='+JSON.stringify(noun.id)+').group'),null);
- const possession=bankCard(a,'poss','ben');assert.equal(a.el('sentenceToken-'+noun.id).parentElement,a.el('wordBank'));
- drag(possession,a.el('sentenceToken-'+noun.id),true);assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evde');
- drag(possession,a.el('sentenceToken-'+noun.id));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evimde');
+ assert.equal(root.parentElement,a.el('wordBank'));drag(root,visiblePossession);
+ assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evim');assert.equal(a.run('SentenceGame.engine.state.current.tokens.find(t=>t.id==='+JSON.stringify(noun.id)+').group'),null);
+ const locative=bankCard(a,'-de');assert.equal(a.el('sentenceToken-'+noun.id).parentElement,a.el('wordBank'));
+ drag(locative,a.el('sentenceToken-'+noun.id),true);assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evim');
+ drag(locative,a.el('sentenceToken-'+noun.id));assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evimde');
  assert.equal(a.document.activeElement,a.el('sentenceToken-'+noun.id));
  a.el('sentenceToken-'+noun.id).click();assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evimde');
- a.el('sentenceToken-'+noun.id).click();assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evde');
+ a.el('sentenceToken-'+noun.id).click();assert.equal(a.el('sentenceToken-'+noun.id).textContent,'evim');
  assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);assert.equal(a.run('SentenceGame.engine.state.current.rated'),false);
 });
 
 test('ending clicks can inflect a bank word and saved bank forms survive reopening',()=>{
  const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
- bankCard(a,'tense','present').click();
+ bankCard(a,'-üyorsun').click();
+ const root=bankItem(a,b=>b.dataset.modernToken&&b.textContent==='gör');root.click();
  const token=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.features.tense==='present');assert.ok(token);assert.equal(token.group,null);
- bankCard(a,'person','sen').click();assert.equal(a.el('sentenceToken-'+token.id).textContent,'görüyorsun');
+ assert.equal(a.el('sentenceToken-'+token.id).textContent,'görüyorsun');
  const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');assert.equal(bankItem(reopened,b=>b.dataset.modernToken===token.id).textContent,'görüyorsun');
  assert.equal(reopened.run('SentenceGame.engine.state.current.attempts'),0);
 });

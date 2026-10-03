@@ -33,6 +33,7 @@ body.learning-games-view #sentenceGameActive #wordBank{flex:1 1 auto;min-height:
 #wordBank .sentence-token{padding:9px 6px;min-width:0}
 #wordBank.drag-over,#answerZone .drag-over{border-color:var(--lavender-dark);background:var(--lavender)}
 .sentence-grammar-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:10px;background:var(--lavender);color:var(--lavender-dark);font:inherit;font-size:14px;font-weight:850;min-width:0;padding:5px 3px;cursor:grab;overflow-wrap:anywhere;line-height:1.1}
+#wordBank .sentence-wide-card{grid-column:span 2}
 .sentence-form-label{font-size:9px;font-weight:600}
 .sentence-grammar-card[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--lavender-dark)}
 .sentence-token,.sentence-grammar-card{touch-action:none;user-select:none;-webkit-user-select:none}
