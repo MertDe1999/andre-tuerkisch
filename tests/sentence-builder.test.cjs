@@ -135,12 +135,11 @@ test('immediate correction keeps the later error review and corrected scoring fe
  assert.equal(a.run('SentenceGame.engine.state.level'),15);assert.match(a.el('sentenceFeedback').textContent,/ohne Leveländerung/);assert.equal(a.el('wordBank').parentElement.hidden,true);
 });
 
-test('reset and restoration require explicit in-app confirmation and retain a fallback',()=>{
+test('automatic browser storage preserves level and unlocks without manual backup controls',()=>{
  const a=app();a.unlock();a.run('SentenceGame.engine.state.level=42;SentenceGame.engine.save();');
- const click=text=>{const button=a.el('learnHome').querySelectorAll('button').find(b=>b.textContent===text);assert.ok(button,text);button.click();};
- click('Satzbau zurücksetzen');assert.equal(a.run('SentenceGame.engine.state.level'),42);click('Abbrechen');assert.equal(a.run('SentenceGame.engine.state.level'),42);
- click('Satzbau zurücksetzen');click('Satzbau jetzt zurücksetzen');assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.equal(a.run('SentenceGame.engine.unlocked().size'),51);
- click('Letzte Rückfallsicherung wiederherstellen');assert.equal(a.run('SentenceGame.engine.state.level'),1);click('Lernstand jetzt wiederherstellen');assert.equal(a.run('SentenceGame.engine.state.level'),42);
+ assert.equal(a.el('learnHome').querySelectorAll('.sentence-storage').length,0);
+ const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),42);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),51);
+ assert.equal(a.storage.has('andreTurkishLastBackupV2'),false);
  const {e}=game();e.state.level=42;e.storage.setItem=()=>{throw Error('full');};assert.equal(e.reset(),false);assert.equal(e.state.level,42);
 });
 
@@ -222,10 +221,16 @@ test('ending clicks can inflect a bank word and saved bank forms survive reopeni
  assert.equal(reopened.run('SentenceGame.engine.state.current.attempts'),0);
 });
 
-test('help is optional, hints stay neutral and keyboard focus returns to the help control',()=>{
- const a=app();a.unlock();a.run('startSentenceGame()');a.el('sentenceHelpButton').click();assert.equal(a.el('sentenceHelp').hidden,false);assert.equal(a.document.activeElement,a.el('sentenceHelpClose'));
- a.el('sentenceHintButton').click();assert.equal(a.run('SentenceGame.engine.state.current.assisted'),true);assert.ok(a.el('sentenceHintText').textContent);
- a.el('sentenceHelp').dispatchEvent({type:'keydown',key:'Escape',preventDefault(){}});assert.equal(a.el('sentenceHelp').hidden,true);assert.equal(a.document.activeElement,a.el('sentenceHelpButton'));
+test('empty sentence game points to unlocking and keeps browser progress across reopening',()=>{
+ const a=app();a.run('openLearnMode("sentences")');
+ assert.equal(a.el('sentenceGameActive').style.display,'none');assert.equal(a.el('sentenceComplete').classList.contains('show'),true);
+ assert.equal(a.document.querySelector('#sentenceComplete h2').textContent,'Noch keine Wörter freigeschaltet');
+ assert.equal(a.document.querySelector('#sentenceComplete p').textContent,'Schalte zuerst Wörter frei, damit sie hier erscheinen');
+ a.run('openLearnMode("typing")');assert.equal(a.run('typingGameRunning'),true);
+ a.unlock(['ev','güzel']);a.run('openLearnMode("sentences")');
+ assert.equal(a.el('sentenceComplete').classList.contains('show'),false);assert.ok(a.run('SentenceGame.engine.state.current'));
+ const before=a.json('AndreLearning.cleanState(SentenceGame.engine.state).current');const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');
+ assert.deepEqual(reopened.json('SentenceGame.engine.state.current'),before);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),2);
 });
 
 test('confetti retains reduced-motion behavior and terminates after the celebration',()=>{

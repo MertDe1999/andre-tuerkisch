@@ -24,11 +24,13 @@ Der Satzbau umfasst 160 Spiellevel mit A1–B2-Orientierung. Im Wörter-Bereich 
 
 Verwendete Suffix-Bausteine verschwinden aus dem Wörterblock, auch wenn sie dort bereits mit einem Wort verbunden werden. Beim Zurücknehmen erscheint die Endung wieder. Für mehrfach benötigte gleiche Endungen gibt es entsprechend mehrere Karten; jede Kopie wird einzeln verwendet. Angeheftete Endungen bleiben auch nach Neuladen verwendet.
 
+Präsensfragen in A1/A2 behalten die vereinfachte Person am Verb: `geliyom mu`, `geliyon mu`, `geliyo mu`, `geliyoz mu`. Ab B1 stehen die Standardformen, etwa `geliyor musun` oder `geliyor muyuz`. Bereits gespeicherte korrekte Alltagsfragen werden samt verbrauchter Endung angepasst; Lernfortschritt und Wertung bleiben erhalten. Die Satzbaufläche hat keinen Info-Button. Ohne Freischaltungen zeigt sie nur den Titel „Noch keine Wörter freigeschaltet“, den Text „Schalte zuerst Wörter frei, damit sie hier erscheinen“ und den Button „Benötigte Wörter freischalten“ zum Worttrainer.
+
 Nur der erste Versuch einer aktuellen Levelaufgabe zählt: richtig +1, falsch −1, mindestens Level 1 und höchstens 160. Einführungen, Hinweise, gezielte/ältere Wiederholungen und Fehlerkorrekturen bleiben ohne Leveländerung. Vor dem nächsten Abschnitt müssen seine Regeln an jeweils zwei verschiedenen Aufgaben ohne Hilfe gelöst sein. Bereits eingeführte Regeln bleiben nach einem Abstieg verfügbar.
 
 Aufgaben und Ablenker verwenden ausschließlich Wörter, die im Worttrainer in beiden Richtungen freigeschaltet wurden. Auch Einführungen enthalten bis zu zwei zufällige ähnliche Wörter derselben Wortart, soweit welche verfügbar sind. Hinzu kommen bis zu drei ähnliche türkische Endungen derselben Endungsfamilie. Der Mix bleibt während einer Aufgabe und nach Neuladen stabil. Falsche Vokalharmonie bleibt sichtbar und wird nicht automatisch korrigiert. Der gemeinsame Katalog enthält die bisherigen 33 Wörter und 18 Ergänzungen für die neuen Konstruktionen, insgesamt 51 Wörter und 65 Karten. Fehlende Wörter werden angezeigt.
 
-Der Aufgabenplan verbindet aktuelle Übungen, fällige Wiederholungen und ältere Aufgaben. Wiederholungen warten beim nächsten Öffnen; die App arbeitet nicht im Hintergrund. Unter **Lernspiele → Lernstand sichern** lassen sich Fortschritt und Freischaltungen als JSON herunterladen, mit Vorschau importieren oder der Satzbau zurücksetzen. Vor Import/Rücksetzen wird eine Rückfallsicherung aufbewahrt. Die alten Wortfreischaltungen bleiben gültig; der frühere Spiellevel wird als Historie erhalten, das neue Curriculum beginnt bei Level 1.
+Der Aufgabenplan verbindet aktuelle Übungen, fällige Wiederholungen und ältere Aufgaben. Wiederholungen warten beim nächsten Öffnen; die App arbeitet nicht im Hintergrund. Lernstand, angefangene Aufgaben und Wortfreischaltungen werden automatisch im jeweiligen Browser gespeichert und beim Öffnen geladen. Eine Oberfläche zum Herunterladen, Importieren oder Zurücksetzen des Lernstands gibt es derzeit nicht. Die alten Wortfreischaltungen bleiben gültig; der frühere Spiellevel wird als Historie erhalten, das neue Curriculum beginnt bei Level 1.
 
 ## Tests
 
@@ -38,7 +40,7 @@ Node.js 22 oder neuer:
 node --test tests/*.test.cjs
 ```
 
-55 Tests prüfen unabhängige Flexionsbeispiele, falsche Formen/Satzbezüge, den vollständigen Weg bis Level 160, Wiederholungsdaten, Migration, Sicherungen und Bedienung. Das DOM-Modell führt alle tatsächlichen Skripte in Seitenreihenfolge aus und baut jede der 733 Aufgaben über konkrete türkische Karten und Seitenpfeile der gemeinsamen Wortbank. Zusätzliche Prüfungen sichern Infinitive, den Wechsel ab Level 81, viewabhängige Freischalten-Buttons, türkische Beschriftungen, gleichartige Ablenker, sichtbare falsche Allomorphe, gespeicherte Rücknahmeketten und lange Karten. GitHub Actions führt die Tests bei Pull Requests und Änderungen an `main` oder `codex/**` aus.
+57 Tests prüfen unabhängige Flexionsbeispiele, falsche Formen/Satzbezüge, den vollständigen Weg bis Level 160, Wiederholungsdaten, Migration, Sicherungen und Bedienung. Das DOM-Modell führt alle tatsächlichen Skripte in Seitenreihenfolge aus und baut jede der 733 Aufgaben über konkrete türkische Karten und Seitenpfeile der gemeinsamen Wortbank. Zusätzliche Prüfungen sichern Infinitive, vereinfachte Fragen und deren Migration, den Wechsel ab Level 81, viewabhängige Freischalten-Buttons, türkische Beschriftungen, gleichartige Ablenker, sichtbare falsche Allomorphe, gespeicherte Rücknahmeketten und lange Karten. GitHub Actions führt die Tests bei Pull Requests und Änderungen an `main` oder `codex/**` aus.
 
 ## Aufbau und Prüfstand
 
