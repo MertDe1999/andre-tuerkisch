@@ -523,7 +523,7 @@
       pointer-events:none;
     }
 
-    body.unlock-complete .app{
+    body.without-unlock-button .app{
       padding-bottom:calc(104px + env(safe-area-inset-bottom));
     }
 
@@ -2271,7 +2271,7 @@
           <div id="sentenceHelp" class="sentence-help" role="dialog" aria-modal="true" aria-label="Hilfe zum Satzbau" hidden>
             <div class="sentence-help-top"><strong id="sentenceLessonTitle">Satzbau</strong><button id="sentenceHelpClose" class="sentence-icon" type="button" aria-label="Hilfe schließen">×</button></div>
             <p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
-            <p id="sentenceHelpGestures">Türkische Wörter und Endungen antippen oder ziehen. Eine Endung auf ein Wort ziehen funktioniert in der Wortbank und im Satz, auch in umgekehrter Richtung. Ohne gewähltes Wort zuerst die Endung und dann das Zielwort antippen. Im Satz nimmt Tippen erst den letzten Baustein weg, danach das Wort.</p>
+            <p id="sentenceHelpGestures">Türkische Wörter und Endungen antippen oder ziehen. Verben starten im Infinitiv; beim Verbinden ersetzt die Endung -mak/-mek, etwa sevmek + -iyo → seviyo. Das geht in der Wortbank und im Satz, auch in umgekehrter Ziehrichtung. Ohne gewähltes Wort zuerst die Endung und dann das Zielwort antippen. Im Satz nimmt Tippen erst den letzten Baustein weg, danach das Wort.</p>
             <div id="sentenceHintText" role="status"></div>
             <div class="sentence-help-actions"><button id="sentenceHintButton" class="sentence-btn primary" type="button">Tipp zeigen</button><button id="sentenceResetButton" class="sentence-btn secondary" type="button" onclick="resetSentence()">Neu bauen</button></div>
           </div>
@@ -2332,6 +2332,9 @@
 <div class="bottom-nav-wrap">
   <button id="unlockFloatingButton" class="unlock-floating" onclick="openTypingFromFloating()">
     <span>Wörter Freischalten</span>
+  </button>
+  <button id="grammarUnlockFloatingButton" class="unlock-floating" type="button" hidden>
+    <span>Grammatik Freischalten</span>
   </button>
 
   <nav class="bottom-nav">
@@ -2508,13 +2511,17 @@
     }
 
     const allUnlocked = rows.length > 0 && unlockedCount === rows.length;
-    const unlockButton = document.getElementById("unlockFloatingButton");
-
-    if(unlockButton){
-      unlockButton.hidden = allUnlocked;
-    }
-
     document.body.classList.toggle("unlock-complete", allUnlocked);
+    updateUnlockButtons(allUnlocked);
+  }
+
+  let currentMainView = "dictionary";
+  function updateUnlockButtons(allUnlocked = document.body.classList.contains("unlock-complete")){
+    const words = document.getElementById("unlockFloatingButton");
+    const grammar = document.getElementById("grammarUnlockFloatingButton");
+    words.hidden = currentMainView !== "dictionary" || allUnlocked;
+    grammar.hidden = currentMainView !== "grammar";
+    document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
   function refreshUnlockUI(){
@@ -2626,6 +2633,8 @@
 
     const targetView = document.getElementById(id);
     targetView.classList.add("active");
+    currentMainView = id;
+    updateUnlockButtons();
 
     if(swipeDirection === "left"){
       targetView.classList.add("nav-slide-from-right");

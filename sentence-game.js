@@ -6,7 +6,7 @@
   let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
-  const task=()=>C.tasks.find(t=>t.id===engine.state.current?.taskId);
+  const task=()=>{const cur=engine.state.current,t=C.tasks.find(t=>t.id===cur?.taskId);return t?C.forLevel(t,cur.levelAtStart):null;};
   const current=()=>engine.state.current;
   const surface=token=>{try{return B.surface(token);}catch{return W.byId[token.lemma].tr+' · ?';}};
   const message=(text,kind='')=>{el('sentenceFeedback').textContent=text;el('sentenceFeedback').className='sentence-feedback '+kind;};

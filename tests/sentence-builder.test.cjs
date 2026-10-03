@@ -18,7 +18,7 @@ function game({keys=W.words.map(w=>w.tr),saved,legacy,clock=()=>new Date(2026,9,
  return {e:new L.Engine({storage,clock,random:rng()}),map,storage};
 }
 function tokens(task){return task.groups.flatMap(g=>g.slots.map((s,i)=>({...structuredClone(s),id:g.id+'-'+i,group:g.id})));}
-function solve(e){const cur=e.next(),t=byId(cur.taskId);cur.tokens=tokens(t);return e.check();}
+function solve(e){const cur=e.next(),t=C.forLevel(byId(cur.taskId),cur.levelAtStart);cur.tokens=tokens(t);return e.check();}
 function mature(e,level){e.state.level=level;e.state.highestLevel=level;e.state.introduced=C.skills.filter(s=>s.min<=level).map(s=>s.id);}
 function current(e,id,kind='current'){return e.begin(byId(id),kind);}
 
@@ -214,11 +214,11 @@ test('the single bank combines concrete endings in both drag directions',()=>{
 
 test('ending clicks can inflect a bank word and saved bank forms survive reopening',()=>{
  const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
- bankCard(a,'-üyorsun').click();
- const root=bankItem(a,b=>b.dataset.modernToken&&b.textContent==='gör');root.click();
+ bankCard(a,'-üyon').click();
+ const root=bankItem(a,b=>b.dataset.modernToken&&b.textContent==='görmek');root.click();
  const token=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.features.tense==='present');assert.ok(token);assert.equal(token.group,null);
- assert.equal(a.el('sentenceToken-'+token.id).textContent,'görüyorsun');
- const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');assert.equal(bankItem(reopened,b=>b.dataset.modernToken===token.id).textContent,'görüyorsun');
+ assert.equal(a.el('sentenceToken-'+token.id).textContent,'görüyon');
+ const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');assert.equal(bankItem(reopened,b=>b.dataset.modernToken===token.id).textContent,'görüyon');
  assert.equal(reopened.run('SentenceGame.engine.state.current.attempts'),0);
 });
 
