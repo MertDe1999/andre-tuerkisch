@@ -1,6 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const W=require('../data/words'),T=require('../lib/turkish'),B=require('../lib/building-blocks'),C=require('../lib/curriculum'),L=require('../lib/learning');
 const {app}=require('./helpers/app.cjs');
+const G=require('../lib/grammar');
 function fixture(task,seed=13){return {id:seed,bankSeed:seed,tokens:task.groups.flatMap(g=>g.slots).map((s,i)=>({...s,id:'t'+i,features:B.baseFeatures(s.lemma),group:null}))};}
 const rules=C.skills.map(s=>s.id);
 function bankItem(a,predicate){
@@ -66,6 +67,7 @@ test('multi-vowel harmony alternatives are complete Turkish allomorphs',()=>{
 test('literal spelling and undo history survive export/import and retain first rating',()=>{
  const storage=new Map(),io={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
  const e=new L.Engine({storage:io});storage.set(L.UNLOCK,JSON.stringify(Object.fromEntries(W.words.map(w=>[w.tr,{toGerman:true,toTurkish:true}]))));
+ e.grammar.state.unlocked=Object.fromEntries(G.entries.map(e=>[e.id,true]));e.grammar.save();
  const task=C.tasks.find(t=>t.id==='poss-case-ben-ev');e.begin(task,'current');
  const noun=e.state.current.tokens.find(t=>W.byId[t.lemma].tr==='ev');
  for(const step of B.plan(task.groups[0].slots.find(s=>s.lemma===noun.lemma)))B.apply(noun,{text:step.text,operations:[step]});

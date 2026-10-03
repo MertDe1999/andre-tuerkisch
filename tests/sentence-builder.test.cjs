@@ -1,6 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const W=require('../data/words.js'),T=require('../lib/turkish.js'),C=require('../lib/curriculum.js'),L=require('../lib/learning.js');
 const B=require('../lib/building-blocks.js');
+const G=require('../lib/grammar.js');
 const {app}=require('./helpers/app.cjs');
 const byId=id=>C.tasks.find(t=>t.id===id);
 function bankItem(a,predicate){
@@ -13,6 +14,7 @@ const bankCard=(a,text)=>bankItem(a,b=>b.dataset.turkishBlock===text);
 function rng(seed=13){return ()=>((seed=(seed*16807)%2147483647)-1)/2147483646;}
 function game({keys=W.words.map(w=>w.tr),saved,legacy,clock=()=>new Date(2026,9,2,12).getTime()}={}){
  const map=new Map([[L.UNLOCK,JSON.stringify(Object.fromEntries(keys.map(tr=>[tr.toLocaleLowerCase('tr-TR'),{toTurkish:true,toGerman:true}])) )]]);
+ map.set(G.KEY,JSON.stringify({version:1,unlocked:Object.fromEntries(G.entries.map(e=>[e.id,true]))}));
  if(saved)map.set(L.KEY,JSON.stringify(saved));if(legacy)map.set(L.LEGACY,JSON.stringify(legacy));
  const storage={getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)};
  return {e:new L.Engine({storage,clock,random:rng()}),map,storage};

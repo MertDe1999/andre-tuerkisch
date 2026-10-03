@@ -1,6 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const W=require('../data/words'),T=require('../lib/turkish'),B=require('../lib/building-blocks'),C=require('../lib/curriculum'),L=require('../lib/learning');
 const {app}=require('./helpers/app.cjs');
+const G=require('../lib/grammar');
 const task=id=>C.tasks.find(t=>t.id===id);
 const rules=C.skills.map(s=>s.id);
 function build(slot){
@@ -64,6 +65,7 @@ test('saved simplified questions migrate their forms and consumed cards without 
 
 test('level 80 and 81 switch cards, solutions and hints together, also for older A1 tasks',()=>{
  const map=new Map([[L.UNLOCK,JSON.stringify(Object.fromEntries(W.words.map(w=>[w.tr,{toGerman:true,toTurkish:true}])) )]]);
+ map.set(G.KEY,JSON.stringify({version:1,unlocked:Object.fromEntries(G.entries.map(e=>[e.id,true]))}));
  const e=new L.Engine({storage:{getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,v)}});
  for(const level of [80,81,120,160])for(const id of ['present-sevmek-o','colloquial-gelmek-ben','negative-present-gitmek-sen','question-present-gelmek-biz']){
   e.state.level=level;e.begin(task(id),'older');const effective=C.forLevel(task(id),e.state.current.levelAtStart);
@@ -97,11 +99,11 @@ test('previous stem-based saved state migrates without losing rating, wrong spel
  state.current.taskId=past.id;state.current.levelAtStart=50;
  assert.equal(B.surface(L.cleanState(state).current.tokens[1]),'görüyon','present alternatives in a past task follow the level policy too');
 });
-test('unlock buttons belong to their own views and the grammar placeholder has no action',()=>{
+test('unlock buttons belong to their own views and grammar opens its own training',()=>{
  const a=app();a.run('refreshUnlockUI()');assert.equal(a.el('unlockFloatingButton').hidden,false);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
  a.run('showView("grammar",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,false);
- a.unlock();assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'all words learned must not hide grammar button');
- const before=a.storage.size;a.el('grammarUnlockFloatingButton').click();assert.equal(a.storage.size,before);assert.equal(a.run('currentMainView'),'grammar');
+ a.unlock(undefined,{grammar:false});assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'all words learned must not hide grammar button');
+ a.el('grammarUnlockFloatingButton').click();assert.equal(a.run('SentenceGame.training'),true);assert.equal(a.run('currentMainView'),'grammar');
  a.run('showView("flashcards",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
  a.run('openLearnMode("sentences")');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
  a.run('showView("dictionary",null)');assert.equal(a.el('unlockFloatingButton').hidden,true,'all words learned keeps the prior completed state');

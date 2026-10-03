@@ -54,7 +54,9 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  sandbox.window=sandbox;vm.createContext(sandbox);
  for(const [,src,inline] of html.matchAll(/<script(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g))vm.runInContext(src?fs.readFileSync(path.join(root,src.split('?')[0]),'utf8'):inline,sandbox,{filename:src||'index.html'});
  const run=code=>vm.runInContext(code,sandbox),json=code=>JSON.parse(JSON.stringify(run(code)));
- const unlock=keys=>run('saveUnlockProgress(Object.fromEntries('+JSON.stringify(keys||el('wordList').children.map(row=>row.querySelector('.word-tr').textContent))+'.map(word=>[unlockWordKey(word),{toTurkish:true,toGerman:true}])));refreshUnlockUI();');
+ // Existing curriculum/gesture fixtures assume all grammar is already learned.
+ // New unlock tests pass grammar:false to exercise a fresh real learner.
+ const unlock=(keys,{grammar=true}={})=>run('saveUnlockProgress(Object.fromEntries('+JSON.stringify(keys||el('wordList').children.map(row=>row.querySelector('.word-tr').textContent))+'.map(word=>[unlockWordKey(word),{toTurkish:true,toGerman:true}])));'+(grammar?'SentenceGame.engine.grammar.state.unlocked=Object.fromEntries(AndreGrammar.entries.map(e=>[e.id,true]));SentenceGame.engine.grammar.save();':'')+'refreshUnlockUI();');
  const advance=ms=>{const until=now+ms;while(true){const next=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;timers.delete(next[0]);now=next[1].at;next[1].fn();}now=until;};
  return {run,json,unlock,advance,el,get rows(){return el('wordList').children;},storage,document,animations,timers};
 }
