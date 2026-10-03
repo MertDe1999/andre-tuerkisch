@@ -207,7 +207,6 @@
       "gehen"
     ],
     "type": "verb",
-    "note": "auch „das Gehen“",
     "profile": {
       "forms": [
         "gehe",
