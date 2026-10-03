@@ -2024,6 +2024,7 @@
 
   </style>
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
+  <link rel="stylesheet" href="grammar.css?v=20261003-varianten">
 </head>
 
 <body>
@@ -2141,86 +2142,10 @@
 
   <!-- Grammatik -->
   <section id="grammar" class="view">
-    <div class="panel">
+    <div id="grammarPanel" class="panel">
       <h2 class="section-title">Grammatik</h2>
-
-      <div class="legend">
-        <span class="legend-item legend-noun"><span class="dot"></span>Nomen</span>
-        <span class="legend-item legend-verb"><span class="dot"></span>Verben</span>
-        <span class="legend-item legend-adj"><span class="dot"></span>Adjektive</span>
-      </div>
-
-      <div class="grammar-card pronoun">
-        <h3>Personalpronomen</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>ich</strong><div>ben<span class="standard">Ben güzelim. = Ich bin schön.</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div>sen<span class="standard">Sen güzelsin. = Du bist schön.</span></div></div>
-          <div class="grammar-row"><strong>er/sie/es</strong><div>o<span class="standard">O güzel. = Er/Sie/Es ist schön.</span></div></div>
-          <div class="grammar-row"><strong>wir</strong><div>biz<span class="standard">Biz geliyoz. = Wir kommen.</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card noun">
-        <h3>Nomen · Fälle</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>Dativ</strong><div><span class="suffix noun">-(y)e / -(y)a</span><span class="case-question">Wohin? / Wem?</span></div></div>
-          <div class="grammar-row"><strong>Ablativ</strong><div><span class="suffix noun">-den / -dan / -ten / -tan</span><span class="case-question">Woher? / Von wem oder was?</span></div></div>
-          <div class="grammar-row"><strong>Lokativ</strong><div><span class="suffix noun">-de / -da / -te / -ta</span><span class="case-question">Wo? / Bei wem oder was?</span></div></div>
-          <div class="grammar-row"><strong>Akkusativ</strong><div><span class="suffix noun">-(y)i / ı / u / ü</span><span class="case-question">Was? / Wen?</span></div></div>
-          <div class="grammar-row"><strong>Genitiv</strong><div><span class="suffix noun">-(n)in / ın / un / ün</span><span class="case-question">Wessen?</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card adj">
-        <h3>Adjektiv · „sein“</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>ich bin</strong><div><span class="suffix adj">-(y)im / -(y)ım / -(y)um / -(y)üm</span><span class="standard">Güzelim. = Ich bin schön.</span></div></div>
-          <div class="grammar-row"><strong>du bist</strong><div><span class="suffix adj">-sin / -sın / -sun / -sün</span><span class="standard">Güzelsin. = Du bist schön.</span></div></div>
-          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="suffix adj">keine Endung</span><span class="standard">O güzel. = Er/Sie/Es ist schön.</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card neutral">
-        <h3>Frage</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>Frage</strong><div><span class="suffix neutral">-mi / -mı / -mu / -mü?</span><span class="standard">Güzel mi? = Ist es schön?</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card neutral">
-        <h3>Existenzwörter · var / yok</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>var</strong><div>„es gibt / ist vorhanden“<span class="standard">Benim arabam var. = Ich habe ein Auto.</span></div></div>
-          <div class="grammar-row"><strong>yok</strong><div>„es gibt nicht / ist nicht vorhanden“<span class="standard">Benim arabam yok. = Ich habe kein Auto.</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card verb">
-        <h3>Verb · Präsens</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>ich</strong><div><span class="suffix verb">-iyom</span><span class="standard">Standard: -iyorum · geliyom / geliyorum</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">-iyon</span><span class="standard">Standard: -iyorsun · geliyon / geliyorsun</span></div></div>
-          <div class="grammar-row"><strong>er/sie/es</strong><div><span class="suffix verb">-iyo</span><span class="standard">Standard: -iyor · geliyo / geliyor</span></div></div>
-          <div class="grammar-row"><strong>wir</strong><div><span class="suffix verb">-iyoz</span><span class="standard">Standard: -iyoruz · geliyoz / geliyoruz</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card verb">
-        <h3>Verb · Imperativ / Aufforderung</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">Verbstamm</span><span class="standard">gitmek → Git! = Geh!</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">Verbstamm</span><span class="standard">görmek → Gör! = Sieh!</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">Verbstamm</span><span class="standard">gelmek → Gel! = Komm!</span></div></div>
-          <div class="grammar-row"><strong>du</strong><div><span class="suffix verb">Verbstamm</span><span class="standard">sevmek → Sev! = Liebe! / Mag!</span></div></div>
-        </div>
-      </div>
-
-      <div class="grammar-card verb">
-        <h3>Verb · Infinitiv / Tätigkeit</h3>
-        <div class="grammar-list">
-          <div class="grammar-row"><strong>Infinitiv</strong><div><span class="suffix verb">-mek / -mak</span><span class="standard">gitmek = gehen · Gitmek güzel. = Gehen ist schön.</span></div></div>
-        </div>
-      </div>
+      <p id="grammarStatus" class="standard" role="status"></p>
+      <div id="grammarList"></div>
     </div>
   </section>
 
@@ -2247,7 +2172,7 @@
 
 
     <div id="sentenceBuilder" class="learn-mode">
-      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
+      <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Lernspiele</button>
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
           <div class="sentence-game-hud">
@@ -2271,7 +2196,7 @@
         </div>
         <div id="sentenceComplete" class="sentence-complete completion">
           <h2>Noch keine Wörter freigeschaltet</h2><p>Schalte zuerst Wörter frei, damit sie hier erscheinen</p>
-          <button class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
+          <button id="sentenceUnlockNeededButton" class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
         </div>
       </div>
     </div>
@@ -2342,11 +2267,12 @@
   </nav>
 </div>
 
-<script src="data/words.js?v=20261003-gehen-ohne-notiz"></script>
+<script src="data/words.js?v=20261003-varianten"></script>
 <script src="lib/turkish.js?v=20261003-vereinfachen"></script>
-<script src="lib/building-blocks.js?v=20261003-suffix-verbrauch"></script>
+<script src="lib/building-blocks.js?v=20261003-varianten"></script>
 <script src="lib/curriculum.js?v=20261003-vereinfachen"></script>
-<script src="lib/learning.js?v=20261003-vereinfachen"></script>
+<script src="lib/grammar.js?v=20261003-varianten"></script>
+<script src="lib/learning.js?v=20261003-varianten"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2365,6 +2291,9 @@
     greeting:"Grußformel",
     polite:"Höflichkeit",
     phrase:"Redewendung",
+    adverb:"Adverb",
+    postposition:"Postposition",
+    negation:"Negationspartikel",
     other:"Sonstige",
     neutral:"Grammatik"
   };
@@ -2512,13 +2441,14 @@
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
     words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || allUnlocked;
-    grammar.hidden = currentMainView !== "grammar";
+    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (SentenceGame.training || SentenceGame.engine.grammar.unlocked().size === AndreGrammar.entries.length));
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
   function refreshUnlockUI(){
     updateWordLocks();
     updateLearnedWordsDisplay();
+    if(window.refreshGrammarUI) refreshGrammarUI();
   }
 
   function areWordsUnlocked(words){
@@ -2644,6 +2574,7 @@
     const targetView = document.getElementById(id);
     targetView.classList.add("active");
     currentMainView = id;
+    if(id === "grammar" && window.refreshGrammarUI) refreshGrammarUI();
     updateUnlockButtons();
 
     if(swipeDirection === "left"){
@@ -3239,10 +3170,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","other"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
@@ -3555,7 +3486,7 @@
   document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
-<script src="lib/dictionary.js?v=20261003-wortarten"></script>
-<script src="sentence-game.js?v=20261003-vereinfachen"></script>
+<script src="lib/dictionary.js?v=20261003-varianten"></script>
+<script src="sentence-game.js?v=20261003-varianten"></script>
 </body>
 </html>

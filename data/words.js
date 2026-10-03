@@ -536,7 +536,7 @@
     "id": "w034",
     "tr": "değil",
     "de": "nicht (bei Nominalsätzen)",
-    "type": "other",
+    "type": "negation",
     "deAnswers": [
       "nicht"
     ]
@@ -564,7 +564,7 @@
     "id": "w037",
     "tr": "için",
     "de": "für / um … zu",
-    "type": "other",
+    "type": "postposition",
     "deAnswers": [
       "für",
       "fuer",
@@ -585,7 +585,7 @@
     "id": "w039",
     "tr": "rağmen",
     "de": "trotz",
-    "type": "other",
+    "type": "postposition",
     "deAnswers": [
       "trotz"
     ]
@@ -594,7 +594,7 @@
     "id": "w040",
     "tr": "daha",
     "de": "mehr / noch",
-    "type": "other",
+    "type": "adverb",
     "deAnswers": [
       "mehr",
       "noch"
@@ -604,7 +604,7 @@
     "id": "w041",
     "tr": "en",
     "de": "am meisten",
-    "type": "other",
+    "type": "adverb",
     "deAnswers": [
       "am meisten"
     ]
@@ -613,7 +613,8 @@
     "id": "w042",
     "tr": "sonra",
     "de": "danach / nach",
-    "type": "other",
+    "type": "adverb",
+    "otherTypes": ["postposition"],
     "deAnswers": [
       "danach",
       "nach"
@@ -623,7 +624,8 @@
     "id": "w043",
     "tr": "önce",
     "de": "vorher / vor",
-    "type": "other",
+    "type": "adverb",
+    "otherTypes": ["postposition"],
     "deAnswers": [
       "vorher",
       "vor"
@@ -633,7 +635,7 @@
     "id": "w044",
     "tr": "hemen",
     "de": "sofort",
-    "type": "other",
+    "type": "adverb",
     "deAnswers": [
       "sofort"
     ]

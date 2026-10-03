@@ -1,0 +1,31 @@
+/* Distinct category colours, shared across dictionary, cards and sentence game. */
+:root{
+  --adverb:#b8e5f3;--adverb-soft:#e9f7fc;--adverb-dark:#246477;
+  --postposition:#edce90;--postposition-soft:#faf2df;--postposition-dark:#76551e;
+  --negation:#bed4af;--negation-soft:#eef5e8;--negation-dark:#4c6639;
+}
+.word-row.adverb,.quiz-card.adverb{background:var(--adverb-soft);border-color:var(--adverb)}
+.type-badge.adverb,.quiz-type.adverb,.sentence-token.word-type-adverb{background:var(--adverb);color:var(--adverb-dark)}
+.quiz-card.adverb .answer-text{color:var(--adverb-dark)}
+.word-row.postposition,.quiz-card.postposition{background:var(--postposition-soft);border-color:var(--postposition)}
+.type-badge.postposition,.quiz-type.postposition,.sentence-token.word-type-postposition{background:var(--postposition);color:var(--postposition-dark)}
+.quiz-card.postposition .answer-text{color:var(--postposition-dark)}
+.word-row.negation,.quiz-card.negation{background:var(--negation-soft);border-color:var(--negation)}
+.type-badge.negation,.quiz-type.negation,.sentence-token.word-type-negation{background:var(--negation);color:var(--negation-dark)}
+.quiz-card.negation .answer-text{color:var(--negation-dark)}
+.grammar-card summary{font-weight:800;cursor:pointer;line-height:1.4}
+.type-badge+.type-badge{margin-left:5px}
+.grammar-card[open] summary{margin-bottom:12px}
+.grammar-entry{width:100%;text-align:left;font:inherit;color:var(--text);cursor:pointer}
+.grammar-entry.locked>*{pointer-events:none}
+.grammar-entry .word-tr{overflow-wrap:anywhere}
+.grammar-entry.neutral{background:var(--surface-soft);border-color:var(--line)}
+#grammarStatus:empty{display:none}
+@media(prefers-color-scheme:dark){
+  :root{
+    --adverb:#235a6c;--adverb-soft:#142e37;--adverb-dark:#a7deef;
+    --postposition:#6e5325;--postposition-soft:#332918;--postposition-dark:#e7c886;
+    --negation:#445e35;--negation-soft:#222f1a;--negation-dark:#c1dcae;
+  }
+  .grammar-entry.neutral{background:var(--surface-soft);border-color:var(--line)}
+}
