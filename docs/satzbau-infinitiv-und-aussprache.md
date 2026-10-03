@@ -16,7 +16,10 @@ Nominalisierungen, Besitz und Fälle bleiben kombinierbar.
 
 A1/A2, Level 1–80: ben/sen/o/biz üben die vereinfachten Präsensformen
 `-iyom/-iyon/-iyo/-iyoz` mit entsprechender Vokalharmonie. Fragen und Verneinung
-verwenden dieselbe Regel, etwa `geliyo musun?` und `gelmiyom`.
+verwenden dieselbe Regel, etwa `geliyon mu?` und `gelmiyom`. Seit dem Folgeauftrag
+vom 03.10.2026 steht bei A1/A2-Fragen die vereinfachte Person am Verb:
+`geliyom mu?`, `geliyon mu?`, `geliyo mu?`, `geliyoz mu?`. Die frühere Frageform
+`geliyo musun?` ist für dieses Register überholt. Ab B1 bleiben Standardfragen.
 Die vier vom Nutzer genannten Personen werden vereinfacht; siz/onlar behalten
 ihre vorhandenen Standardformen. Andere Zeiten bleiben unverändert.
 Ab B1, Level 81, verwenden alle Aufgaben Standardformen, auch ältere A1-Aufgaben.

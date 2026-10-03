@@ -27,11 +27,41 @@ test('infinitive plus real affix gives independent standard and simplified examp
   assert.equal(B.plan(slot)[0].text,ending);assert.equal(B.surface(build(slot)),expected);
  }
  assert.equal(T.verb('gelmek',{tense:'present',negative:true,person:'ben',register:'colloquial'}),'gelmiyom');
- assert.equal(T.verb('gelmek',{tense:'present',question:true,person:'sen',register:'colloquial'}),'geliyo musun');
+ assert.equal(T.verb('gelmek',{tense:'present',question:true,person:'sen',register:'colloquial'}),'geliyon mu');
  const slot={lemma:W.byLemma.sevmek.id,features:{tense:'present',person:'o',register:'colloquial'}},step=B.plan(slot)[0];
  const wrong={lemma:slot.lemma,features:B.baseFeatures(slot.lemma)};B.apply(wrong,{text:'-üyo',operations:[{...step,text:'-üyo'}]});
  assert.equal(B.surface(wrong),'sevüyo');assert.notEqual(B.surface(wrong),T.surface(slot));
 });
+test('simplified questions put the person on the verb, including negation and harmonic stems',()=>{
+ const people=['ben','sen','o','biz'];
+ const samples=[['gelmek',['geliyom mu','geliyon mu','geliyo mu','geliyoz mu']],['görmek',['görüyom mu','görüyon mu','görüyo mu','görüyoz mu']],['gitmek',['gidiyom mu','gidiyon mu','gidiyo mu','gidiyoz mu']],['sevmek',['seviyom mu','seviyon mu','seviyo mu','seviyoz mu']]];
+ for(const [lemma,forms] of samples)for(const [i,person] of people.entries()){
+  const slot={lemma:W.byLemma[lemma].id,features:{tense:'present',person,register:'colloquial',question:true}};
+  assert.equal(T.surface(slot),forms[i]);assert.equal(B.surface(build(slot)),forms[i]);
+ }
+ for(const [i,person] of people.entries())assert.equal(T.verb('gelmek',{tense:'present',person,register:'colloquial',question:true,negative:true}),['gelmiyom mu','gelmiyon mu','gelmiyo mu','gelmiyoz mu'][i]);
+ assert.equal(T.verb('gelmek',{tense:'present',person:'sen',question:true,register:'standard'}),'geliyor musun');
+ assert.equal(T.verb('gelmek',{tense:'present',person:'biz',question:true,register:'standard'}),'geliyor muyuz');
+ assert.equal(T.verb('gelmek',{tense:'past',person:'sen',question:true,register:'colloquial'}),'geldin mi');
+});
+
+test('saved simplified questions migrate their forms and consumed cards without rerating',()=>{
+ for(const person of ['ben','sen','o','biz']){
+  const authored=task('question-present-gelmek-'+person),effective=C.forLevel(authored,40),state=L.empty();
+  state.level=40;const slot=effective.groups[0].slots.find(s=>W.byId[s.lemma].type==='verb'),token=build(slot);
+  const legacy=T.verb(slot.lemma,{...slot.features,register:'standard'}).replace(/r /,' ');
+  token.form=legacy;token.id='verb';token.group='main';token.attachments[0].block=B.plan({...slot,features:{...slot.features,register:'standard'}})[0].text.replace(/r /,' ');
+  state.current={taskId:authored.id,id:3,kind:'current',levelAtStart:40,blocksVersion:2,rated:true,firstOutcome:'wrong',attempts:1,tokens:[token]};
+  const clean=L.cleanState(state),restored=clean.current.tokens[0],ending=B.plan(slot)[0].text;
+  assert.equal(B.surface(restored),T.surface(slot));assert.equal(restored.attachments[0].block,ending);
+  assert.equal(B.availableCards(effective,clean.current,rules).some(c=>c.text===ending),false);
+  assert.equal(clean.current.rated,true);assert.equal(clean.current.firstOutcome,'wrong');assert.equal(clean.current.attempts,1);
+  assert.deepEqual(L.cleanState(clean),clean);assert.equal(B.undo(restored),true);assert.equal(B.surface(restored),'gelmek');
+  assert.ok(B.availableCards(effective,clean.current,rules).some(c=>c.text===ending));
+  token.form='gelüyo musun';assert.equal(L.cleanState(state).current.tokens[0].form,'gelüyo musun','incorrect spellings remain incorrect');
+ }
+});
+
 test('level 80 and 81 switch cards, solutions and hints together, also for older A1 tasks',()=>{
  const map=new Map([[L.UNLOCK,JSON.stringify(Object.fromEntries(W.words.map(w=>[w.tr,{toGerman:true,toTurkish:true}])) )]]);
  const e=new L.Engine({storage:{getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,v)}});

@@ -2023,7 +2023,7 @@
     }
 
   </style>
-<link rel="stylesheet" href="sentence-game.css?v=20261003-gleiche-kartenhoehe">
+<link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
 </head>
 
 <body>
@@ -2256,7 +2256,6 @@
             </div>
             <span id="sentenceTaskLabel" class="sentence-task-label">A1</span>
             <span id="sentenceModeLabel" class="sentence-mode-label"></span>
-            <button id="sentenceHelpButton" class="sentence-icon" type="button" aria-label="Hilfe zum Satzbau" aria-expanded="false" aria-controls="sentenceHelp">?</button>
           </div>
           <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
           <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
@@ -2268,18 +2267,10 @@
             <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
             <button id="sentenceNextButton" class="sentence-btn primary" hidden>Weiter</button>
           </div>
-          <div id="sentenceHelp" class="sentence-help" role="dialog" aria-modal="true" aria-label="Hilfe zum Satzbau" hidden>
-            <div class="sentence-help-top"><strong id="sentenceLessonTitle">Satzbau</strong><button id="sentenceHelpClose" class="sentence-icon" type="button" aria-label="Hilfe schließen">×</button></div>
-            <p id="sentenceLessonText"></p><p id="sentenceLessonSample" class="sample" lang="tr"></p>
-            <p id="sentenceHelpGestures">Türkische Wörter und Endungen antippen oder ziehen. Verben starten im Infinitiv; beim Verbinden ersetzt die Endung -mak/-mek, etwa sevmek + -iyo → seviyo. Das geht in der Wortbank und im Satz, auch in umgekehrter Ziehrichtung. Ohne gewähltes Wort zuerst die Endung und dann das Zielwort antippen. Im Satz nimmt Tippen erst den letzten Baustein weg, danach das Wort.</p>
-            <div id="sentenceHintText" role="status"></div>
-            <div class="sentence-help-actions"><button id="sentenceHintButton" class="sentence-btn primary" type="button">Tipp zeigen</button><button id="sentenceResetButton" class="sentence-btn secondary" type="button" onclick="resetSentence()">Neu bauen</button></div>
-          </div>
         </div>
-        <div id="sentenceComplete" class="sentence-complete">
-          <div class="big">◫</div><h2>Noch keine passenden Sätze</h2><p class="section-sub"></p>
+        <div id="sentenceComplete" class="sentence-complete completion">
+          <h2>Noch keine Wörter freigeschaltet</h2><p>Schalte zuerst Wörter frei, damit sie hier erscheinen</p>
           <button class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
-          <button class="restart-btn" onclick="startSentenceGame()">Erneut prüfen</button>
         </div>
       </div>
     </div>
@@ -2351,10 +2342,10 @@
 </div>
 
 <script src="data/words.js"></script>
-<script src="lib/turkish.js"></script>
+<script src="lib/turkish.js?v=20261003-vereinfachen"></script>
 <script src="lib/building-blocks.js?v=20261003-suffix-verbrauch"></script>
-<script src="lib/curriculum.js"></script>
-<script src="lib/learning.js?v=20261003-suffix-verbrauch"></script>
+<script src="lib/curriculum.js?v=20261003-vereinfachen"></script>
+<script src="lib/learning.js?v=20261003-vereinfachen"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -3549,6 +3540,6 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/dictionary.js"></script>
-<script src="sentence-game.js?v=20261003-suffix-verbrauch"></script>
+<script src="sentence-game.js?v=20261003-vereinfachen"></script>
 </body>
 </html>
