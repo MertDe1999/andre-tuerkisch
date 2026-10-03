@@ -1,5 +1,9 @@
 # Satzbau: türkische Bausteine
 
+Historischer Stand vor der Infinitiv-Ergänzung. Die nachfolgende Stamm-Ausgangsform
+ist inzwischen durch [Infinitive und Aussprache](satzbau-infinitiv-und-aussprache.md)
+ersetzt; Gesten, Ablenker und türkische Karten bleiben erhalten.
+
 Stand: 03.10.2026. Für alle 160 Level enthalten die Karten ausschließlich türkische
 Wörter, Verbstämme und konkrete Endungen. Deutsche Aufgabenstellungen und Hilfe
 bleiben bestehen. Die vom Nutzer bevorzugte gemeinsame, feste Oberfläche bleibt erhalten.
