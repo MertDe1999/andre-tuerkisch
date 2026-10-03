@@ -114,7 +114,10 @@ test('keyboard shortcuts, composing text and focused controls retain their norma
 });
 
 test('flashcards reveal and advance by Enter or Space and expose their current state', () => {
-  const a = app();a.unlock();a.run('startQuiz()');
+  const a = app();a.unlock();const saved=[...a.storage];a.run('openFlashcards()');
+  assert.equal(a.run('currentMainView'),'dictionary');assert.equal(a.el('dictionaryPanel').hidden,true);
+  assert.equal(a.el('cardsLearning').classList.contains('active'),true);
+  assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.document.activeElement,a.el('quizCard'));
   const press = value => a.run('handleQuizCardKeydown')({key:value,preventDefault(){}});
   press('Enter');
   assert.equal(a.el('quizCard').getAttribute('aria-expanded'),'true');
@@ -125,4 +128,10 @@ test('flashcards reveal and advance by Enter or Space and expose their current s
   assert.equal(a.el('quizCard').getAttribute('aria-expanded'),'false');
   press('Enter');a.run('cycleQuizMode()');
   assert.equal(a.el('quizCard').getAttribute('aria-expanded'),'false');
+  a.run('closeFlashcards()');assert.equal(a.run('currentMainView'),'dictionary');assert.equal(a.el('dictionaryPanel').hidden,false);
+  assert.equal(a.el('cardsLearning').classList.contains('active'),false);assert.equal(a.run('remaining.length'),0);
+  assert.equal(a.document.body.classList.contains('game-mode-active'),false);assert.equal(a.document.body.classList.contains('learning-games-view'),false);
+  assert.equal(a.document.activeElement,a.el('dictionaryCardsButton'));assert.deepEqual([...a.storage],saved);
+  a.run('openLearnMode("cards");showView("grammar",null)');assert.equal(a.el('cardsLearning').classList.contains('active'),false);assert.equal(a.el('dictionaryPanel').hidden,false);
+  a.run('openLearnMode("sentences")');assert.equal(a.run('currentMainView'),'flashcards');assert.equal(a.el('sentenceBuilder').classList.contains('active'),true);
 });
