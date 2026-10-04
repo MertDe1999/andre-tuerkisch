@@ -133,5 +133,12 @@ test('flashcards reveal and advance by Enter or Space and expose their current s
   assert.equal(a.document.body.classList.contains('game-mode-active'),false);assert.equal(a.document.body.classList.contains('learning-games-view'),false);
   assert.equal(a.document.activeElement,a.el('dictionaryCardsButton'));assert.deepEqual([...a.storage],saved);
   a.run('openLearnMode("cards");showView("grammar",null)');assert.equal(a.el('cardsLearning').classList.contains('active'),false);assert.equal(a.el('dictionaryPanel').hidden,false);
-  a.run('openLearnMode("sentences")');assert.equal(a.run('currentMainView'),'flashcards');assert.equal(a.el('sentenceBuilder').classList.contains('active'),true);
+  a.run('showView("flashcards",null)');assert.equal(a.run('currentMainView'),'flashcards');assert.equal(a.el('sentenceBuilder').classList.contains('active'),true);
+  assert.equal(a.run('sentenceGameRunning'),true,'the Satzbau navigation opens the game directly');
+  const current=a.json('SentenceGame.engine.state.current');
+  a.run('openTypingFromFloating()');assert.equal(a.run('currentMainView'),'dictionary');assert.equal(a.run('sentenceGameRunning'),false);
+  assert.equal(a.el('typingTrainer').classList.contains('active'),true);assert.equal(a.el('dictionaryPanel').hidden,true);assert.equal(a.el('unlockFloatingButton').hidden,true);
+  a.run('backToLearnHome()');assert.equal(a.el('dictionaryPanel').hidden,false);assert.equal(a.el('typingTrainer').classList.contains('active'),false);assert.equal(a.run('typingGameRunning'),false);
+  a.run('showView("flashcards",null)');assert.deepEqual(a.json('SentenceGame.engine.state.current'),current,'returning resumes the same ungraded task');
+  a.run('leaveSentenceArea()');assert.equal(a.run('currentMainView'),'dictionary');assert.equal(a.run('sentenceGameRunning'),false);assert.equal(a.document.body.classList.contains('game-mode-active'),false);
 });

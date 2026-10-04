@@ -4,7 +4,7 @@ Umsetzung vom 04.10.2026. Ersetzt die frühere Grammatikübersicht mit hunderten
 
 ## Lernfolge
 
-1. Wörterbuch: Wörter einer kleinen vorbereiteten Gruppe in beiden Richtungen lernen. Das gilt auch für Personalpronomen und Funktionswörter.
+1. Wortschatz: Wörter einer kleinen vorbereiteten Gruppe in beiden Richtungen lernen. Das gilt auch für Personalpronomen und Funktionswörter.
 2. Grammatik: Thema und Regel wählen; kurze Erklärung lesen und Wörtergruppen oder Sätze übersetzen. Jede konkrete Form und jede Verwendung braucht drei richtige Antworten pro Richtung. Eine gezeigte Lösung zählt nicht. Zwischenstände und Eingaben bleiben gespeichert.
 3. Satzbau: Gelerntes ohne Hilfe anwenden. Ein neuer Abschnitt öffnet erst nach seinem Vorgänger. Am Ende eines Abschnitts müssen die Pflichtformen gelernt und die Lernziele an jeweils zwei unterschiedlichen türkischen Sätzen direkt gelöst sein. Identische Wiederholungen zählen nicht als zweite Anwendung.
 
@@ -26,7 +26,7 @@ Pro Auswahlrunde gibt es begrenzte Erzeugungsversuche. Neue Kombinationen werden
 
 ## Harte Freigaben
 
-- Alle lexikalischen Bausteine müssen im Wörterbuch bekannt sein.
+- Alle lexikalischen Bausteine müssen im Wortschatz bekannt sein.
 - Jede konkrete Endung besitzt einen Schlüssel aus Funktion, Merkmalen und tatsächlicher Schreibweise. Akkusativ `-i` gibt Besitz `-i` nicht frei.
 - Verwendungen wie Existenz, Ziel einer Bewegung, Infinitivzweck und Begründung werden separat geprüft.
 - Wortabhängige Stammwechsel besitzen eigene Transferfreigaben.
@@ -37,7 +37,7 @@ Eine gerade gelernte Variante gilt auch für weitere bekannte Wörter, wenn die 
 
 ## Speicherung und Migration
 
-Die Grammatikübersicht verwendet farbige Themenkarten und gesperrte Regelzeilen wie das Wörterbuch. Auch spätere Themen sind sichtbar; unbekannte Einträge bleiben gesperrt und nicht anklickbar. Bereits gelernte Varianten werden angezeigt und können wiederholt werden. Neue Formen werden über „Grammatik Freischalten“ gelernt: zuerst die Pflichtformen des offenen Abschnitts, danach freiwillige zusätzliche Varianten. Nach dem Pflichtpaket bleibt der direkte Satzbauzugang verfügbar.
+Die Grammatikübersicht verwendet farbige Themenkarten und gesperrte Regelzeilen wie das Wortschatz. Auch spätere Themen sind sichtbar; unbekannte Einträge bleiben gesperrt und nicht anklickbar. Bereits gelernte Varianten werden angezeigt und können wiederholt werden. Neue Formen werden über „Grammatik Freischalten“ gelernt: zuerst die Pflichtformen des offenen Abschnitts, danach freiwillige zusätzliche Varianten. Nach dem Pflichtpaket bleibt der direkte Satzbauzugang verfügbar.
 
 Die Übersetzungsübung nutzt dieselbe App-Tastatur, Fortschrittsanzeige, Aufgabenkarte und Antwortfläche wie der Worttrainer. Türkische Sonderzeichen gehören zur vollständigen türkischen Belegung; Deutsch hat eine eigene Belegung. Es gibt keine separate Sonderzeichenreihe, kein natives Eingabefeld und keine Lösungsanzeige. „Überspringen“ zeigt keine Antwort und gibt keinen Lernfortschritt. Nach einer richtigen Antwort geht es automatisch weiter; Navigation beendet den Zeitgeber und bewahrt die angefangene Eingabe.
 
@@ -45,7 +45,7 @@ Alles bleibt lokal im Browser. Es gibt keinen neuen Sicherungs-/Exportknopf und 
 
 Die neuen Zustände liegen in `andreTurkishGrammarCourseV2` und `andreTurkishSentenceCourseV3`. Vorhandene konkrete Formfreigaben, Level, höchster Level, Wortstatistiken und laufende Korrekturen werden übernommen. Alte Datensätze bleiben erhalten. Neue Verwendungen werden nicht aus einem alten Wort- oder Levelstand erfunden. Eine angefangene Aufgabe wartet bei fehlender neuer Grammatik, ohne ihre erste Wertung zu verlieren.
 
-Neue Wörter können über die zentralen Daten oder `AndreWords.register` ergänzt werden. IDs dürfen nicht geändert oder wiederverwendet werden. Ohne ausreichendes Sprachprofil bleibt ein Wort im Wörterbuch lernbar; ungeprüfte Satzplätze werden nicht automatisch freigegeben.
+Neue Wörter können über die zentralen Daten oder `AndreWords.register` ergänzt werden. IDs dürfen nicht geändert oder wiederverwendet werden. Ohne ausreichendes Sprachprofil bleibt ein Wort im Wortschatz lernbar; ungeprüfte Satzplätze werden nicht automatisch freigegeben.
 
 ## Prüfumfang
 

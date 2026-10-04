@@ -333,11 +333,6 @@
       overflow:hidden;
     }
 
-    body.learning-games-view #learnHome{
-      height:100%;
-      overflow:hidden;
-    }
-
     body.learning-games-view .learn-mode.active{
       height:100%;
       min-height:0;
@@ -643,7 +638,7 @@
     .legend-verb .dot{background:var(--verb-dark)}
     .legend-adj .dot{background:var(--adj-dark)}
 
-    /* Wörterbuch */
+    /* Wortschatz */
     .dictionary-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
     .dictionary-heading .section-title{margin:0}
     .dictionary-cards-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:13px;background:var(--lavender);color:var(--lavender-dark);font:inherit;font-size:.8rem;font-weight:800;cursor:pointer}
@@ -845,73 +840,8 @@
     .suffix.neutral{background:var(--lavender);color:var(--lavender-dark)}
 
     /* Lernen */
-    .learn-home{
-      display:block;
-    }
-
-    .learn-choice-grid{
-      display:grid;
-      gap:10px;
-    }
-
-    .learn-choice{
-      border:0;
-      text-align:left;
-      padding:18px;
-      border-radius:20px;
-      color:var(--text);
-      cursor:pointer;
-      min-height:88px;
-    }
-
-    .learn-choice.sentences{
-      background:var(--blue);
-    }
-
-    .learn-choice.chat{
-      background:var(--lavender);
-    }
-
-    .learn-choice.typing{
-      background:#f1e8ef;
-    }
-
-    .learn-choice-title{
-      display:block;
-      font-size:1.05rem;
-      font-weight:850;
-      margin-bottom:4px;
-    }
-
-    .learn-choice-sub{
-      display:block;
-      color:#6f6763;
-      font-size:.84rem;
-      line-height:1.35;
-    }
-
     .learn-mode{display:none}
     .learn-mode.active{display:block}
-
-    .chat-placeholder{
-      background:var(--surface);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:34px 20px;
-      box-shadow:var(--shadow);
-      text-align:center;
-    }
-
-    .chat-placeholder h2{
-      margin:0 0 8px;
-      font-size:1.2rem;
-    }
-
-    .chat-placeholder p{
-      margin:0;
-      color:var(--muted);
-      font-weight:800;
-    }
 
     .learn-back{
       border:0;
@@ -1886,9 +1816,6 @@
       .grammar-card.pronoun{background:#26343d;border-color:var(--line)}
       .grammar-card.neutral{background:#2d2734;border-color:var(--line)}
 
-      .learn-choice.sentences{background:var(--blue)}
-      .learn-choice.typing{background:var(--lavender)}
-      .learn-choice-sub,
       .mode-sub{color:var(--muted)}
 
       .learn-back{
@@ -2050,11 +1977,11 @@
     </div>
   </header>
 
-  <!-- Wörterbuch -->
+  <!-- Wortschatz -->
   <section id="dictionary" class="view active">
     <div id="dictionaryPanel" class="panel">
       <div class="dictionary-heading">
-        <h2 class="section-title">Wörterbuch</h2>
+        <h2 class="section-title">Wortschatz</h2>
         <button id="dictionaryCardsButton" class="dictionary-cards-button" type="button" onclick="openFlashcards()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="7" y="7" width="13" height="15" rx="3"/><path d="M16 7V5a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h1"/></svg>
           <span>Karteikarten</span>
@@ -2074,7 +2001,7 @@
       </div>
     </div>
     <div id="cardsLearning" class="learn-mode">
-    <button id="cardsBackButton" class="learn-back" onclick="closeFlashcards()">← Wörterbuch</button>
+    <button id="cardsBackButton" class="learn-back" onclick="closeFlashcards()">← Wortschatz</button>
     <div id="quizLauncher">
       <div class="panel">
         <h2 class="section-title">Karteikarten</h2>
@@ -2140,79 +2067,8 @@
       </div>
     </div>
     </div>
-  </section>
-
-  <!-- Grammatik -->
-  <section id="grammar" class="view">
-    <div id="grammarPanel" class="panel">
-      <h2 class="section-title">Grammatik</h2>
-      <p id="grammarStatus" class="standard" role="status"></p>
-      <div id="grammarList"></div>
-    </div>
-  </section>
-
-  <!-- Lernen -->
-  <section id="flashcards" class="view">
-    <div id="learnHome" class="learn-home">
-      <div class="panel">
-        <h2 class="section-title">Lernspiele</h2>
-  
-        <div class="learn-choice-grid">
-          <button class="learn-choice sentences" onclick="openLearnMode('sentences')">
-            <span class="learn-choice-title">Satzbau</span>
-            <span class="learn-choice-sub">Türkische Sätze aus Bausteinen zusammensetzen.</span>
-          </button>
-
-          <button class="learn-choice chat" onclick="openLearnMode('chat')">
-            <span class="learn-choice-title">Chatten</span>
-            <span class="learn-choice-sub">Türkisch im Chat üben.</span>
-          </button>
-
-        </div>
-      </div>
-    </div>
-
-
-    <div id="sentenceBuilder" class="learn-mode">
-      <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Lernspiele</button>
-      <div class="sentence-game-card">
-        <div id="sentenceGameActive">
-          <div class="sentence-game-hud">
-            <div id="sentenceLevelBadge" class="sentence-level-badge" role="group" aria-label="Level 1">
-              <span class="sentence-level-label" aria-hidden="true">Level</span>
-              <span id="sentenceLevelText" class="sentence-level-number" aria-hidden="true">1</span>
-            </div>
-            <span id="sentenceTaskLabel" class="sentence-task-label">A1</span>
-            <span id="sentenceModeLabel" class="sentence-mode-label"></span>
-          </div>
-          <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
-          <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
-          <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
-          <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wörter, Endungen und Formen"></div></div>
-          <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
-          <div class="sentence-actions">
-            <button id="sentenceUnknownButton" class="sentence-btn secondary">Keine Ahnung</button>
-            <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
-            <button id="sentenceNextButton" class="sentence-btn primary" hidden>Weiter</button>
-          </div>
-        </div>
-        <div id="sentenceComplete" class="sentence-complete completion">
-          <h2>Noch keine Wörter freigeschaltet</h2><p>Schalte zuerst Wörter frei, damit sie hier erscheinen</p>
-          <button id="sentenceUnlockNeededButton" class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="chatLearning" class="learn-mode">
-      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
-      <div class="chat-placeholder">
-        <h2>Chatten</h2>
-        <p>Bald verfügbar</p>
-      </div>
-    </div>
-
     <div id="typingTrainer" class="learn-mode">
-      <button class="learn-back" onclick="backToLearnHome()">← Lernspiele</button>
+      <button class="learn-back" onclick="backToLearnHome()">← Wortschatz</button>
 
       <div class="typing-game-card">
         <div id="typingGameActive">
@@ -2246,6 +2102,50 @@
       <div id="customKeyboard" class="custom-keyboard" aria-label="App-Tastatur"></div>
     </div>
   </section>
+
+  <!-- Grammatik -->
+  <section id="grammar" class="view">
+    <div id="grammarPanel" class="panel">
+      <h2 class="section-title">Grammatik</h2>
+      <p id="grammarStatus" class="standard" role="status"></p>
+      <div id="grammarList"></div>
+    </div>
+  </section>
+
+  <!-- Satzbau (historische View-ID flashcards) -->
+  <section id="flashcards" class="view" aria-label="Satzbau">
+    <div id="sentenceBuilder" class="learn-mode">
+      <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Wortschatz</button>
+      <div class="sentence-game-card">
+        <div id="sentenceGameActive">
+          <div class="sentence-game-hud">
+            <div id="sentenceLevelBadge" class="sentence-level-badge" role="group" aria-label="Level 1">
+              <span class="sentence-level-label" aria-hidden="true">Level</span>
+              <span id="sentenceLevelText" class="sentence-level-number" aria-hidden="true">1</span>
+            </div>
+            <span id="sentenceTaskLabel" class="sentence-task-label">A1</span>
+            <span id="sentenceModeLabel" class="sentence-mode-label"></span>
+          </div>
+          <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
+          <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
+          <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
+          <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wörter, Endungen und Formen"></div></div>
+          <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
+          <div class="sentence-actions">
+            <button id="sentenceUnknownButton" class="sentence-btn secondary">Keine Ahnung</button>
+            <button id="checkSentenceButton" class="sentence-btn primary" onclick="checkSentence()">Prüfen</button>
+            <button id="sentenceNextButton" class="sentence-btn primary" hidden>Weiter</button>
+          </div>
+        </div>
+        <div id="sentenceComplete" class="sentence-complete completion">
+          <h2>Noch keine Wörter freigeschaltet</h2><p>Schalte zuerst Wörter frei, damit sie hier erscheinen</p>
+          <button id="sentenceUnlockNeededButton" class="restart-btn" onclick="openLearnMode('typing')">Benötigte Wörter freischalten</button>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
 </div>
 
 <div class="bottom-nav-wrap">
@@ -2258,13 +2158,13 @@
 
   <nav class="bottom-nav">
     <button class="nav-btn active" onclick="showView('dictionary', this)">
-      <span class="icon">📖</span><span>Wörterbuch</span>
+      <span class="icon">📖</span><span>Wortschatz</span>
     </button>
     <button class="nav-btn" onclick="showView('grammar', this)">
       <span class="icon">✦</span><span>Grammatik</span>
     </button>
     <button class="nav-btn" onclick="showView('flashcards', this)">
-      <span class="icon">◫</span><span>Lernspiele</span>
+      <span class="icon">◫</span><span>Satzbau</span>
     </button>
   </nav>
 </div>
@@ -2450,7 +2350,7 @@
   function updateUnlockButtons(allUnlocked = document.body.classList.contains("unlock-complete")){
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
-    words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || allUnlocked;
+    words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || document.getElementById("typingTrainer").classList.contains("active") || allUnlocked;
     grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || !window.GrammarTrainer?.canUnlock()));
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
@@ -2492,7 +2392,6 @@
   }
 
   function openTypingFromFloating(){
-    showView("flashcards", null);
     openLearnMode("typing");
   }
 
@@ -2514,44 +2413,20 @@
 
   function openLearnMode(mode){
     if(mode === "cards") return openFlashcards();
-    if(currentMainView !== "flashcards") showView("flashcards", null);
-    stopSentenceGame();
-    stopTypingGame();
-    document.body.classList.add("game-mode-active");
-    document.getElementById("learnHome").style.display = "none";
-    document.getElementById("cardsLearning").classList.remove("active");
-    document.getElementById("sentenceBuilder").classList.toggle("active", mode === "sentences");
-    document.getElementById("chatLearning").classList.toggle("active", mode === "chat");
-    document.getElementById("typingTrainer").classList.toggle("active", mode === "typing");
-
-    if(mode === "sentences"){
-      startSentenceGame();
-    }else if(mode === "typing"){
-      startTypingGame();
-    }
-
-    window.scrollTo({top:0, behavior:"smooth"});
+    if(mode === "sentences") return showView("flashcards", null);
+    if(mode !== "typing") return;
+    showView("dictionary", null);
+    document.body.classList.add("learning-games-view", "game-mode-active");
+    document.getElementById("dictionaryPanel").hidden = true;
+    document.getElementById("typingTrainer").classList.add("active");
+    updateUnlockButtons();
+    startTypingGame();
+    window.scrollTo({top:0, behavior:"auto"});
   }
 
   function backToLearnHome(){
     if(document.getElementById("cardsLearning").classList.contains("active")) return closeFlashcards();
-    stopSentenceGame();
-    stopTypingGame();
-    document.body.classList.remove("game-mode-active");
-    document.getElementById("learnHome").style.display = "block";
-    document.getElementById("cardsLearning").classList.remove("active");
-    document.getElementById("sentenceBuilder").classList.remove("active");
-    document.getElementById("chatLearning").classList.remove("active");
-    document.getElementById("typingTrainer").classList.remove("active");
-    document.getElementById("quizSession").classList.remove("active");
-    document.getElementById("quizLauncher").classList.remove("hidden");
-    remaining = [];
-    learnedCount = 0;
-    currentIndex = -1;
-    typingRemaining = [];
-    typingCurrentIndex = -1;
-    typedAnswer = "";
-    window.scrollTo({top:0, behavior:"smooth"});
+    showView("dictionary", null);
   }
 
   const mainNavViews = ["dictionary","grammar","flashcards"];
@@ -2560,6 +2435,10 @@
     stopSentenceGame();
     stopTypingGame();
     leaveQuiz();
+    document.getElementById("sentenceBuilder").classList.remove("active");
+    document.getElementById("typingTrainer").classList.remove("active");
+    document.getElementById("dictionaryPanel").hidden = false;
+    typingRemaining = [];typingCurrentIndex = -1;typedAnswer = "";
     document.body.classList.remove("game-mode-active");
 
     const currentView = document.querySelector(".view.active");
@@ -2605,15 +2484,9 @@
     }
 
     if(id === "flashcards"){
-      document.getElementById("learnHome").style.display = "block";
-      document.getElementById("cardsLearning").classList.remove("active");
-      document.getElementById("sentenceBuilder").classList.remove("active");
-      document.getElementById("chatLearning").classList.remove("active");
-      document.getElementById("typingTrainer").classList.remove("active");
-      typingRemaining = [];
-      typingCurrentIndex = -1;
-      typedAnswer = "";
-
+      document.body.classList.add("game-mode-active");
+      document.getElementById("sentenceBuilder").classList.add("active");
+      startSentenceGame();
     }
 
     if(id !== "flashcards"){
@@ -3454,7 +3327,7 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/dictionary.js?v=20261003-varianten"></script>
-<script src="sentence-game.js?v=20261004-course"></script>
+<script src="sentence-game.js?v=20261004-nav"></script>
 <script src="grammar-ui.js?v=20261004-ui2"></script>
 </body>
 </html>
