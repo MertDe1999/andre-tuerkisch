@@ -91,7 +91,7 @@ test('hardware keys support Turkish uppercase, editing and submission; wrong ans
   a.run('typingWords.splice(0,typingWords.length,{de:"nein",tr:"hayır",deAnswers:["nein"]});startTypingGame();typingDirection="toTurkish";renderTypingWord();');
   for(const letter of 'HAYIX') assert.equal(key(a,letter).prevented,true);
   key(a,'Backspace');key(a,'R');key(a,'Enter');
-  assert.equal(a.run('getUnlockProgress().hayır.toTurkish'),true);
+  assert.equal(a.run('getUnlockProgress()[unlockWordKey("hayır")].toTurkish'),true);
   assert.equal(a.document.activeElement,a.el('typingAnswer'));
   a.advance(750);
   key(a,'x');key(a,'Enter');

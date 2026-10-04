@@ -33,24 +33,16 @@ test('fresh word unlocks do not unlock grammar or leak locked endings into the r
  const t=C.tasks.find(t=>t.id==='object-görmek-sen-w004');a.run('SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(t.id)+'),"older");SentenceGame.render();');
  assert.equal(a.run('SentenceGame.allowedCards().length'),0);assert.equal(a.run('SentenceGame.engine.check().ignored'),true);assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);
 });
-test('ev to eve unlocks only -e, retains level and words, supports undo and resumes after reload',()=>{
- const a=app(),e=entry('Dativ','-e');a.unlock(['ev'],{grammar:false});a.run('openGrammarTraining('+JSON.stringify(e.id)+')');
- assert.equal(a.run('SentenceGame.task.answer'),'eve');const token=a.run('SentenceGame.current.tokens[0].id');
- const card=a.el('wordBank').children.find(b=>b.dataset.turkishBlock==='-e');assert.ok(card);card.click();a.el('wordBank').children.find(b=>b.dataset.modernToken===token).click();
- assert.equal(a.run('TurkishBlocks.surface(SentenceGame.current.tokens[0])'),'eve');assert.equal(a.run('SentenceGame.allowedCards().some(c=>c.text==="-e")'),false);
- a.run('leaveSentenceArea()');assert.equal(a.run('currentMainView'),'grammar');assert.equal(a.el('grammarUnlockFloatingButton').hidden,false);
- const loaded=app({storage:a.storage});loaded.run('openGrammarTraining()');assert.equal(loaded.run('TurkishBlocks.surface(SentenceGame.current.tokens[0])'),'eve');
- loaded.run('SentenceGame.moveToken('+JSON.stringify(token)+',"main");SentenceGame.check()');assert.ok(loaded.run('SentenceGame.engine.grammar.unlocked().has('+JSON.stringify(e.id)+')'));
- assert.equal(loaded.run('SentenceGame.engine.grammar.unlocked().size'),1);assert.equal(loaded.run('SentenceGame.engine.state.level'),1);assert.equal(loaded.run('SentenceGame.engine.unlocked().size'),1);
+test('translation lessons replace the old grammar word-bank exercise and separate lexical knowledge',()=>{
+ const a=app();a.unlock(['ev','var'],{grammar:false});a.run('SentenceGame.engine.state.opened=4;SentenceGame.engine.state.level=16;SentenceGame.engine.save();');
+ const id=a.run('AndreCourseGrammar.entries.find(e=>e.label==="Dativ"&&e.text==="-e").id');
+ a.run('openGrammarTraining('+JSON.stringify(id)+')');assert.equal(a.run('GrammarTrainer.active'),true);
+ assert.equal(a.run('SentenceGame.engine.grammar.state.current.answer'),'eve');assert.equal(a.run('SentenceGame.engine.state.level'),16);
+ assert.equal(a.run('SentenceGame.engine.grammar.unlocked().size'),0);
+ assert.ok(a.run('AndreCourseGrammar.entries.some(e=>e.id==="use:var:existence")'));
+ const loaded=app({storage:a.storage});loaded.run('openGrammarTraining()');assert.equal(loaded.run('SentenceGame.engine.grammar.state.current.entryId'),id);
 });
-test('personal pronouns and existence words mirror dictionary unlocks and have no grammar unlock entries',()=>{
- const a=app();a.unlock(['ben','var'],{grammar:false});
- const rows=a.el('grammarList').querySelectorAll('[data-grammar-word]');
- assert.equal(rows.find(r=>r.dataset.grammarWord===W.byLemma.ben.id).classList.contains('locked'),false);
- assert.equal(rows.find(r=>r.dataset.grammarWord===W.byLemma.sen.id).classList.contains('locked'),true);
- assert.equal(rows.find(r=>r.dataset.grammarWord===W.byLemma.var.id).classList.contains('locked'),false);
- assert.ok(!G.entries.some(e=>e.text==='ben'||e.text==='sen'||e.text==='var'));
-});
+
 test('all 160-level prerequisites can be learned through available exercises using only unlocked words',()=>{
  const {m}=manager();let count=0;
  for(const level of [80,160]){let exercise;while((exercise=m.next(allWords,level))){assert.ok(count++<G.entries.length);assert.ok(exercise.task.requires.every(id=>allWords.has(id)));solve(exercise.task,m.unlocked(),exercise.entryId);assert.equal(m.learn(exercise.entryId),true);}}
