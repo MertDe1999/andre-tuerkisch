@@ -1,24 +1,23 @@
 /* Browser adapter: all scoring and persistence live in lib/learning.js. */
 (function(root){
   'use strict';
-  const W=AndreWords,B=TurkishBlocks,C=AndreCurriculum,L=AndreLearning,G=AndreGrammar;
+  const W=AndreWords,B=TurkishBlocks,C=AndreCourse,L=AndreCourseLearning,G=AndreCourseGrammar;
   const engine=new L.Engine();
   let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0;
-  let training=false,trainingTask=null,trainingCurrent=null;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
-  const task=()=>{if(training)return trainingTask;const cur=engine.state.current,t=C.tasks.find(t=>t.id===cur?.taskId);return t?C.forLevel(t,cur.levelAtStart):null;};
-  const current=()=>training?trainingCurrent:engine.state.current;
+  const task=()=>engine.task();
+  const current=()=>engine.state.current;
   const surface=token=>{try{return B.surface(token);}catch{return W.byId[token.lemma].tr+' · ?';}};
   const message=(text,kind='')=>{el('sentenceFeedback').textContent=text;el('sentenceFeedback').className='sentence-feedback '+kind;};
-  const introduced=()=>new Set([...engine.state.introduced,...(current()?.kind==='intro'?task().skills:[])]);
-  function allowedCards(){const known=engine.grammar.unlocked();return B.availableCards(task(),current(),training?C.skills.map(s=>s.id):[...introduced()],op=>known.has(G.key(op))||(training&&G.key(op)===trainingCurrent.entryId));}
+  const introduced=()=>new Set(['present','past','future','aorist','reported','accusative','dative','locative','ablative','genitive','instrumental',...(engine.state.standard?['otherPeople']:[])]);
+  function allowedCards(){const known=engine.grammar.unlocked();return B.availableCards(task(),current(),[...introduced()],op=>known.has(G.key(op)));}
   const fits=(token,card)=>B.fits(token,card);
   function selectTarget(card){
     const cur=current();
     return cur.tokens.find(t=>t.id===selected&&fits(t,card))||cur.tokens.filter(t=>t.group===activeGroup&&fits(t,card)).at(-1);
   }
-  function save(){if(training){engine.grammar.state.current=trainingCurrent;return engine.grammar.save();}return engine.save();}
+  function save(){return engine.save();}
   function saveAndRender(focusId){save();render();if(focusId)el('sentenceToken-'+focusId)?.focus({preventScroll:true});}
   function apply(card,tokenId){
     if(!running||current()?.finished)return;
@@ -125,10 +124,10 @@
     el('sentenceLevelText').textContent=engine.state.level;
     el('sentenceLevelText').classList.toggle('long-level',engine.state.level>=100);
     el('sentenceLevelBadge').setAttribute('aria-label','Level '+engine.state.level);
-    el('sentenceLevelBadge').hidden=training;
+    el('sentenceLevelBadge').hidden=false;
     el('sentenceTaskLabel').textContent=t.cefr+(t.register==='colloquial'?' · Alltag':'');
     el('sentenceTaskLabel').setAttribute('aria-label','Aufgabe '+t.cefr+', '+(t.register==='colloquial'?'Alltagssprache':'Standard'));
-    el('sentenceModeLabel').textContent=training?'Grammatik freischalten':cur.assisted?'Mit Hilfe':cur.rated?'Korrektur':cur.kind==='intro'?'Einführung':cur.kind!=='current'?'Wiederholung':'';
+    el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated?'Korrektur':cur.kind==='intro'?'Einführung':cur.kind!=='current'?'Wiederholung':'';
     el('sentenceModeLabel').title=cur.rated?'Bereits gewertet; Korrekturen ohne Leveländerung':cur.kind==='current'&&!cur.assisted?'Erster Versuch zählt':'Ohne Levelwertung';
     el('sentencePrompt').textContent=t.de;
     const zone=el('answerZone');zone.replaceChildren();
@@ -172,7 +171,7 @@
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
     el('checkSentenceButton').hidden=cur.finished;el('sentenceUnknownButton').hidden=cur.finished;
     el('sentenceNextButton').hidden=!cur.finished;
-    el('sentenceStorageWarning').textContent=training?engine.grammar.error:engine.storageError;
+    el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
   }
   function start(){
@@ -181,11 +180,11 @@
   }
   function stop(){
     running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
-    if(training){save();training=false;el('sentenceBuilder').classList.remove('active');el('flashcards').append(el('sentenceBuilder'));el('grammarPanel').hidden=false;el('sentenceBackButton').textContent='← Lernspiele';el('sentenceLevelBadge').hidden=false;}
+    if(root.GrammarTrainer?.active)root.GrammarTrainer.close();
   }
   function next(){
     if(!running)return;
-    if(training)return nextTraining();
+
     clearTimeout(advanceTimer);advanceTimer=null;selected=null;pendingCard=null;activeGroup=null;bankPage=0;
     const cur=engine.next();
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
@@ -208,15 +207,6 @@
   }
   function check(unknown=false){
     if(!running||!current()||current().finished)return;
-    if(training){
-      const result=unknown?{correct:false}:L.evaluate(task(),current().tokens);current().attempts++;
-      if(result.correct){
-        if(!engine.grammar.learn(current().entryId)){render();message(engine.grammar.error,'bad');return;}
-        current().finished=true;save();renderGrammar();render();message('Freigeschaltet: '+G.byId[current().entryId].text,'ok');
-        el('sentenceNextButton').focus({preventScroll:true});advanceTimer=setTimeout(()=>{if(running&&training)nextTraining();},1500);
-      }else{save();render();message('Prüfe die Form und versuche es noch einmal.','bad');}
-      return;
-    }
     const result=engine.check({unknown});
     if(result.ignored)return;
     render();
@@ -240,69 +230,14 @@
     if(clearOnly){token.features=B.baseFeatures(token.lemma);delete token.form;delete token.attachments;}else token.group=null;
     saveAndRender(token.id);
   }
-  function grammarWord(word){
-    const row=make('div','word-row '+word.type,'');row.dataset.grammarWord=word.id;
-    row.classList.toggle('locked',!engine.unlocked().has(word.id));
-    const text=make('div','','');text.append(make('div','word-de',word.de),make('div','word-tr',word.tr),make('span','type-badge '+word.type,typeNames[word.type]));row.append(text);return row;
-  }
-  function renderGrammar(){
-    const list=el('grammarList'),known=engine.grammar.unlocked();list.replaceChildren();
-    for(const [title,words] of [['Personalpronomen',W.words.filter(w=>w.type==='pronoun')],['Existenzwörter · var / yok',W.words.filter(w=>w.type==='existential')]]){
-      const block=make('div','grammar-card '+(words[0]?.type==='pronoun'?'pronoun':'neutral'),'');block.append(make('h3','',title));
-      const items=make('div','grammar-list','');words.forEach(w=>items.append(grammarWord(w)));block.append(items);list.append(block);
-    }
-    for(const [id,title] of Object.entries(G.groupNames)){
-      const entries=G.entries.filter(e=>e.group===id).sort((a,b)=>a.min-b.min||a.label.localeCompare(b.label,'de')||a.text.localeCompare(b.text,'tr'));
-      const block=make('details','grammar-card '+(id==='verbs'?'verb':id==='copula'?'adj':id==='cases'||id==='possession'?'noun':'neutral'),'');
-      block.open=id==='cases';const count=entries.filter(e=>known.has(e.id)).length;
-      block.append(make('summary','',title+' · '+count+' / '+entries.length));
-      const items=make('div','grammar-list','');
-      for(const e of entries){
-        const row=make('button','word-row grammar-entry '+e.type,'');row.type='button';row.dataset.grammarEntry=e.id;row.classList.toggle('locked',!known.has(e.id));
-        const text=make('div','','');text.append(make('div','word-de',e.label),make('div','word-tr',e.text));
-        if(known.has(e.id)&&e.rule)text.append(make('div','standard',C.bySkill[e.rule].help));
-        row.append(text);row.setAttribute('aria-label',e.label+' '+e.text+(known.has(e.id)?' · Freigeschaltet':' · Freischalten'));
-        row.addEventListener('click',()=>{if(!known.has(e.id))openGrammarTraining(e.id);});items.append(row);
-      }
-      block.append(items);list.append(block);
-    }
-  }
-  function nextTraining(entryId=null){
-    clearTimeout(advanceTimer);advanceTimer=null;
-    const saved=engine.grammar.state.current,words=engine.unlocked();
-    const restore=!entryId&&saved&&!saved.finished?engine.grammar.exercise(saved.entryId,words,saved.levelAtStart||engine.state.level,saved.exerciseKey):null;
-    const exercise=entryId?engine.grammar.exercise(entryId,words,engine.state.level):restore||engine.grammar.next(words,engine.state.level);
-    if(!exercise){
-      root.showView('grammar',null);renderGrammar();
-      el('grammarStatus').textContent=engine.grammar.unlocked().size===G.entries.length?'Alles freigeschaltet.':'Für diese Variante brauchst du zuerst passende Wörter oder frühere Grammatikformen.';return;
-    }
-    trainingTask=exercise.task;
-    const tokens=exercise.task.groups.flatMap(g=>g.slots).map((s,i)=>({id:'grammar-'+i,lemma:s.lemma,features:B.baseFeatures(s.lemma),nominal:s.nominal===true,group:null}));
-    trainingCurrent={entryId:exercise.entryId,exerciseKey:exercise.key,levelAtStart:engine.state.level,id:1,bankSeed:17,attempts:0,finished:false,tokens};
-    if(restore&&saved.exerciseKey===exercise.key){
-      const loaded=Array.isArray(saved.tokens)?saved.tokens.map(L.cleanToken).filter(Boolean):[];
-      if(loaded.length===tokens.length&&loaded.every((t,i)=>t.lemma===tokens[i].lemma&&[null,...exercise.task.groups.map(g=>g.id)].includes(t.group))){trainingCurrent={...trainingCurrent,levelAtStart:saved.levelAtStart,tokens:loaded};}
-    }
-    selected=null;pendingCard=null;activeGroup=null;bankPage=0;
-    el('sentenceGameActive').style.display='';el('sentenceComplete').classList.remove('show');save();render();message('');el('sentencePrompt').focus({preventScroll:true});
-  }
-  function openGrammarTraining(entryId=null){
-    root.showView('grammar',null);training=true;running=true;sentenceGameRunning=true;
-    document.body.classList.add('learning-games-view','game-mode-active');el('grammarPanel').hidden=true;
-    el('grammar').append(el('sentenceBuilder'));el('sentenceBuilder').classList.add('active');el('sentenceBackButton').textContent='← Grammatik';
-    el('grammarUnlockFloatingButton').hidden=true;document.body.classList.add('without-unlock-button');nextTraining(entryId);
-  }
-  root.openGrammarTraining=openGrammarTraining;root.refreshGrammarUI=renderGrammar;
-  root.leaveSentenceArea=()=>training?root.showView('grammar',null):root.backToLearnHome();
+  root.leaveSentenceArea=()=>root.backToLearnHome();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
-  root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return training;},get current(){return current();},get task(){return task();}};
+  root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return false;},get current(){return current();},get task(){return task();}};
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
   el('sentenceNextButton').addEventListener('click',next);
   root.addEventListener('resize',()=>{if(running){clearDrag();render();}});
   // Opening the game and switching sentence parts can change the available
   // bank height after render; fit its pages to the settled layout as well.
   if(root.ResizeObserver)new root.ResizeObserver(()=>{if(running&&!drag)render();}).observe(el('wordBank'));
-  el('grammarUnlockFloatingButton').addEventListener('click',()=>openGrammarTraining());
-  renderGrammar();
   root.addEventListener('pagehide',()=>{stop();engine.save();});
 })(window);

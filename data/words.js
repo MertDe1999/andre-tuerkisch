@@ -925,10 +925,17 @@
     ]
   }
 ];
+ (typeof module==='object'&&module.exports?require('./lexicon.js'):root.AndreLexicon).enrich(words);
  const byId = Object.assign(Object.create(null),Object.fromEntries(words.map(w=>[w.id,w])));
  const byLemma = Object.assign(Object.create(null),Object.fromEntries(words.map(w=>[w.tr.toLocaleLowerCase('tr-TR'),w])));
  const cards = [...words.map(w=>({de:w.de,tr:w.tr,type:w.type,tipDe:w.tipDe||w.de,tipTr:w.tipTr||w.tr,requires:[w.tr]})),...derivedCards];
  const api = {words,byId,byLemma,cards};
+ api.register=function(entry){
+   const key=typeof entry.tr==='string'?entry.tr.normalize('NFC').trim().toLocaleLowerCase('tr-TR'):'';
+   if(!entry.id||!key||!entry.type||!entry.de||byId[entry.id]||byLemma[key])throw new Error('Wort-ID oder Grundform ungültig/doppelt');
+   entry.deAnswers||=[entry.de];words.push(entry);byId[entry.id]=entry;byLemma[key]=entry;
+   cards.push({de:entry.de,tr:entry.tr,type:entry.type,requires:[entry.tr]});return entry;
+ };
  if(typeof module==='object' && module.exports) module.exports=api;
  else root.AndreWords=api;
 })(typeof globalThis==='object'?globalThis:this);

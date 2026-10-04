@@ -1,0 +1,27 @@
+/* Uses the application's existing light/dark palette. */
+.grammar-topic{margin:22px 0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface)}
+.grammar-topic h3{margin:0;padding:15px 18px;background:var(--surface-soft);font-size:15px;color:var(--muted)}
+.grammar-topic-rules{display:grid}
+.grammar-rule{display:flex;justify-content:space-between;gap:16px;width:100%;padding:16px 18px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--text);text-align:left;font-weight:600;cursor:pointer}
+.grammar-rule:disabled{color:var(--muted);cursor:default;opacity:.65}
+.grammar-rule-status,.grammar-preview,.grammar-progress,.grammar-direction{color:var(--muted);font-size:13px;font-weight:500}
+.grammar-rule-status{flex-shrink:0}
+.grammar-next-words{font-size:14px;color:var(--muted)}
+.grammar-next-words button{padding:10px 0;color:var(--lavender-dark)}
+.grammar-trainer{max-width:600px;margin:0 auto;padding:12px 18px 28px}
+.grammar-trainer[hidden]{display:none}
+.grammar-trainer h2{font-size:22px;margin:18px 0 12px}
+.grammar-rule-help{font-size:14px;line-height:1.55;color:var(--muted)}
+.grammar-prompt{font-size:clamp(20px,4.5vw,27px);font-weight:650;line-height:1.4;margin:8px 0 20px}
+.grammar-answer-form{display:grid;gap:12px}
+.grammar-answer{width:100%;min-height:52px;padding:12px 14px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:15px;font-size:18px;user-select:text;-webkit-user-select:text}
+.grammar-primary{min-height:50px;padding:12px 18px;border:0;border-radius:16px;background:var(--lavender);color:var(--text);font-weight:700;cursor:pointer}
+.grammar-back{border:0;background:none;color:var(--muted);padding:10px 0;text-align:left;cursor:pointer}
+.grammar-keys{display:flex;gap:7px}
+.grammar-key{flex:1;min-height:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface-soft);color:var(--text)}
+.grammar-feedback{margin:0;line-height:1.5;min-height:24px;color:var(--text)}
+:root{--determiner:#b9d4ef;--determiner-soft:#e9f2fc;--determiner-dark:#315d8b}
+.word-row.determiner,.quiz-card.determiner{background:var(--determiner-soft);border-color:var(--determiner)}
+.type-badge.determiner,.quiz-type.determiner,.sentence-token.word-type-determiner{background:var(--determiner);color:var(--determiner-dark)}
+.quiz-card.determiner .answer-text{color:var(--determiner-dark)}
+@media(prefers-color-scheme:dark){:root{--determiner:#354f69;--determiner-soft:#26394d;--determiner-dark:#b3d6fb}}

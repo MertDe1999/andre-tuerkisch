@@ -1,3 +1,5 @@
+> Historischer Stand vom 03.10.2026. Die Einzelkarten-Freischaltung wurde durch den [Lernpfad mit Übersetzungsübungen](grammatik-lernpfad-generator.md) ersetzt.
+
 # Einzelne Grammatikformen freischalten
 
 Stand: 03.10.2026. Neuer Nutzerauftrag ersetzt den früheren Grammatikbutton als

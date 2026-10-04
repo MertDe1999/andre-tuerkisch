@@ -2025,6 +2025,7 @@
   </style>
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
   <link rel="stylesheet" href="grammar.css?v=20261003-varianten">
+  <link rel="stylesheet" href="grammar-course.css?v=20261004-course">
 </head>
 
 <body>
@@ -2236,7 +2237,7 @@
         <div id="typingComplete" class="typing-complete">
           <div class="big">✓</div>
           <h2>Runde geschafft</h2>
-          <p class="section-sub">Du hast alle Wörter freigeschaltet.</p>
+          <p class="section-sub">Die Wörter dieser Runde sind freigeschaltet.</p>
           <button class="restart-btn" onclick="startTypingGame()">Nochmal starten</button>
         </div>
       </div>
@@ -2267,12 +2268,17 @@
   </nav>
 </div>
 
-<script src="data/words.js?v=20261003-varianten"></script>
-<script src="lib/turkish.js?v=20261003-vereinfachen"></script>
+<script src="data/lexicon.js?v=20261004-course"></script>
+<script src="data/words.js?v=20261004-course"></script>
+<script src="lib/turkish.js?v=20261004-course"></script>
 <script src="lib/building-blocks.js?v=20261003-varianten"></script>
 <script src="lib/curriculum.js?v=20261003-vereinfachen"></script>
 <script src="lib/grammar.js?v=20261003-varianten"></script>
-<script src="lib/learning.js?v=20261003-varianten"></script>
+<script src="lib/learning.js?v=20261004-course"></script>
+<script src="data/course-data.js?v=20261004-course"></script>
+<script src="lib/course.js?v=20261004-course"></script>
+<script src="lib/course-grammar.js?v=20261004-course"></script>
+<script src="lib/course-learning.js?v=20261004-course"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2294,6 +2300,7 @@
     adverb:"Adverb",
     postposition:"Postposition",
     negation:"Negationspartikel",
+    determiner:"Begleiter",
     other:"Sonstige",
     neutral:"Grammatik"
   };
@@ -2316,7 +2323,8 @@
   const unlockProgressStorageKey = "andreTurkishUnlockProgressV1";
 
   function unlockWordKey(turkishWord){
-    return (turkishWord || "").trim().toLocaleLowerCase("tr-TR");
+    const text=(turkishWord || "").normalize("NFC").trim().toLocaleLowerCase("tr-TR");
+    return AndreWords.byId[text]?.id || AndreWords.byLemma[text]?.id || text;
   }
 
   function getUnlockProgress(){
@@ -2325,9 +2333,10 @@
       if(!saved || typeof saved !== "object" || Array.isArray(saved)) return {};
       return Object.fromEntries(Object.entries(saved)
         .filter(([key]) => !["__proto__","constructor","prototype"].includes(key))
+        .sort(([a],[b])=>Number(!!AndreWords.byId[a])-Number(!!AndreWords.byId[b]))
         .map(([key, value]) => {
           const state = value && typeof value === "object" && !Array.isArray(value) ? value : {};
-          return [key, {toTurkish:state.toTurkish === true, toGerman:state.toGerman === true}];
+          return [unlockWordKey(key), {toTurkish:state.toTurkish === true, toGerman:state.toGerman === true}];
         }));
     }catch{
       return {};
@@ -2441,7 +2450,7 @@
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
     words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || allUnlocked;
-    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (SentenceGame.training || SentenceGame.engine.grammar.unlocked().size === AndreGrammar.entries.length));
+    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || SentenceGame.engine.grammar.ready(SentenceGame.engine.unlocked(), SentenceGame.engine.state.opened).length === 0));
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
@@ -2658,6 +2667,10 @@
       .map((word, index) => ({...word, originalIndex:index}))
       .filter(word => !isWordUnlocked(word.tr));
 
+    const packageWords=window.SentenceGame?.engine.missingWords().map(w=>w.tr)||[];
+    const packageRound=typingRemaining.filter(w=>packageWords.includes(w.tr));
+    if(packageRound.length) typingRemaining=packageRound;
+
     typingCurrentIndex = -1;
     typingLearnedCount = 0;
     typingLastIndex = -1;
@@ -2693,6 +2706,9 @@
       if(filtered.length) candidates = filtered;
     }
 
+    const needed = window.SentenceGame?.engine.missingWords().map(w=>w.tr) || [];
+    const recommended = candidates.filter(i=>needed.includes(typingRemaining[i].tr));
+    if(recommended.length) candidates=recommended;
     typingCurrentIndex = candidates[Math.floor(Math.random() * candidates.length)];
     typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
 
@@ -3170,10 +3186,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","other"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
@@ -3487,6 +3503,7 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/dictionary.js?v=20261003-varianten"></script>
-<script src="sentence-game.js?v=20261003-varianten"></script>
+<script src="sentence-game.js?v=20261004-course"></script>
+<script src="grammar-ui.js?v=20261004-course"></script>
 </body>
 </html>

@@ -140,13 +140,13 @@ test('immediate correction keeps the later error review and corrected scoring fe
 test('automatic browser storage preserves level and unlocks without manual backup controls',()=>{
  const a=app();a.unlock();a.run('SentenceGame.engine.state.level=42;SentenceGame.engine.save();');
  assert.equal(a.el('learnHome').querySelectorAll('.sentence-storage').length,0);
- const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),42);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),51);
+ const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),42);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),W.words.length);
  assert.equal(a.storage.has('andreTurkishLastBackupV2'),false);
  const {e}=game();e.state.level=42;e.storage.setItem=()=>{throw Error('full');};assert.equal(e.reset(),false);assert.equal(e.state.level,42);
 });
 
 test('browser adapter composes words by keyboard clicks and cancels old transitions on navigation',()=>{
- const a=app();a.unlock(['ev','güzel']);a.run('startSentenceGame()');for(const word of [...a.el('wordBank').children])word.click();a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.ok(a.timers.size);a.run('backToLearnHome()');a.advance(5000);assert.equal(a.timers.size,0);
+ const a=app();a.unlock(['ev','güzel']);a.run('startSentenceGame()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),2);assert.ok(a.timers.size);a.run('backToLearnHome()');a.advance(5000);assert.equal(a.timers.size,0);
 });
 
 test('browser adapter builds nominalized verb suffix chains through Turkish cards',()=>{
@@ -231,7 +231,7 @@ test('empty sentence game points to unlocking and keeps browser progress across 
  a.run('openLearnMode("typing")');assert.equal(a.run('typingGameRunning'),true);
  a.unlock(['ev','güzel']);a.run('openLearnMode("sentences")');
  assert.equal(a.el('sentenceComplete').classList.contains('show'),false);assert.ok(a.run('SentenceGame.engine.state.current'));
- const before=a.json('AndreLearning.cleanState(SentenceGame.engine.state).current');const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');
+ const before=a.json('SentenceGame.engine.state.current');const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');
  assert.deepEqual(reopened.json('SentenceGame.engine.state.current'),before);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),2);
 });
 
