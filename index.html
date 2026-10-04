@@ -401,7 +401,8 @@
       flex-direction:column;
     }
 
-    body.learning-games-view #typingTrainer .custom-keyboard{
+    body.learning-games-view #typingTrainer .custom-keyboard,
+    body.grammar-training-view #grammarTrainer .custom-keyboard{
       position:fixed;
       z-index:20000;
       left:50%;
@@ -2025,7 +2026,7 @@
   </style>
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
   <link rel="stylesheet" href="grammar.css?v=20261003-varianten">
-  <link rel="stylesheet" href="grammar-course.css?v=20261004-course">
+  <link rel="stylesheet" href="grammar-course.css?v=20261004-ui2">
 </head>
 
 <body>
@@ -2450,7 +2451,7 @@
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
     words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || allUnlocked;
-    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || SentenceGame.engine.grammar.requiredReady(SentenceGame.engine.unlocked(), SentenceGame.engine.state.opened).length === 0));
+    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || !window.GrammarTrainer?.canUnlock()));
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
@@ -2750,75 +2751,25 @@
     answerEl.focus({preventScroll:true});
   }
 
-  function renderCustomKeyboard(language){
-    const keyboard = document.getElementById("customKeyboard");
-
+  function renderAppKeyboard(language, {keyboard, onType, onCheck, onSkip, skipLabel = "Keine Ahnung", checkLabel = "Antwort prüfen", disabled = false}){
     const rows = language === "tr"
-      ? [
-          ["q","w","e","r","t","y","u","ı","o","p","ğ","ü"],
-          ["a","s","d","f","g","h","j","k","l","ş","i"],
-          ["z","x","c","v","b","n","m","ö","ç"]
-        ]
-      : [
-          ["q","w","e","r","t","z","u","i","o","p","ü"],
-          ["a","s","d","f","g","h","j","k","l","ö","ä"],
-          ["y","x","c","v","b","n","m","ß"]
-        ];
+      ? [["q","w","e","r","t","y","u","ı","o","p","ğ","ü"], ["a","s","d","f","g","h","j","k","l","ş","i"], ["z","x","c","v","b","n","m","ö","ç"]]
+      : [["q","w","e","r","t","z","u","i","o","p","ü"], ["a","s","d","f","g","h","j","k","l","ö","ä"], ["y","x","c","v","b","n","m","ß"]];
+    keyboard.replaceChildren();
+    function key(text, action, className = "key", label){
+      const button = document.createElement("button");
+      button.type = "button";button.className = className;button.textContent = text;button.disabled = disabled;
+      if(label) button.setAttribute("aria-label", label);
+      button.addEventListener("click", action);return button;
+    }
+    function row(keys){const row = document.createElement("div");row.className = "keyboard-row";row.append(...keys);keyboard.append(row);}
+    if(onSkip) row([key(skipLabel, onSkip, "key unknown")]);
+    rows.forEach(letters => row(letters.map(letter => key(letter, () => onType(letter)))));
+    row([key("⌫", () => onType("BACKSPACE"), "key special", "Zeichen löschen"),key("Leertaste", () => onType(" "), "key special space"),key("✓", onCheck, "key special check", checkLabel)]);
+  }
 
-    keyboard.innerHTML = "";
-
-    const unknownRow = document.createElement("div");
-    unknownRow.className = "keyboard-row";
-
-    const unknown = document.createElement("button");
-    unknown.type = "button";
-    unknown.className = "key unknown";
-    unknown.textContent = "Keine Ahnung";
-    unknown.onclick = handleDontKnow;
-
-    unknownRow.appendChild(unknown);
-    keyboard.appendChild(unknownRow);
-
-    rows.forEach(row => {
-      const rowEl = document.createElement("div");
-      rowEl.className = "keyboard-row";
-
-      row.forEach(letter => {
-        const key = document.createElement("button");
-        key.type = "button";
-        key.className = "key";
-        key.textContent = letter;
-        key.onclick = () => typeCustomKey(letter);
-        rowEl.appendChild(key);
-      });
-
-      keyboard.appendChild(rowEl);
-    });
-
-    const actions = document.createElement("div");
-    actions.className = "keyboard-row";
-
-    const backspace = document.createElement("button");
-    backspace.type = "button";
-    backspace.className = "key special";
-    backspace.textContent = "⌫";
-    backspace.onclick = () => typeCustomKey("BACKSPACE");
-
-    const space = document.createElement("button");
-    space.type = "button";
-    space.className = "key special space";
-    space.textContent = "Leertaste";
-    space.onclick = () => typeCustomKey(" ");
-
-    const check = document.createElement("button");
-    check.type = "button";
-    check.className = "key special check";
-    check.textContent = "✓";
-    check.setAttribute("aria-label", "Antwort prüfen");
-    check.onclick = checkTypedAnswer;
-
-    actions.append(backspace, space, check);
-    keyboard.appendChild(actions);
+  function renderCustomKeyboard(language){
+    renderAppKeyboard(language, {keyboard:document.getElementById("customKeyboard"),onType:typeCustomKey,onCheck:checkTypedAnswer,onSkip:handleDontKnow});
   }
 
   function typeCustomKey(key){
@@ -3504,6 +3455,6 @@
 </script>
 <script src="lib/dictionary.js?v=20261003-varianten"></script>
 <script src="sentence-game.js?v=20261004-course"></script>
-<script src="grammar-ui.js?v=20261004-course"></script>
+<script src="grammar-ui.js?v=20261004-ui2"></script>
 </body>
 </html>

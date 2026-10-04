@@ -1,28 +1,33 @@
 (function(root){
  'use strict';const C=AndreCourse,G=AndreCourseGrammar,engine=SentenceGame.engine;
  const el=id=>document.getElementById(id),make=(tag,cls,text)=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;return e;};
- let active=false,selection=null;
+ let active=false,selection=null,advanceTimer=null;
+ const skipped=new Set();
  const trainer=make('section','grammar-trainer','');trainer.id='grammarTrainer';trainer.hidden=true;el('grammar').append(trainer);
- function button(text,action,cls='grammar-rule'){const b=make('button',cls,text);b.type='button';b.addEventListener('click',action);return b;}
+ function button(text,action,cls='grammar-rule'){const b=make('button',cls,text);b.type='button';b.addEventListener('click',()=>{if(!b.disabled)action();});return b;}
+ const colors={basics:'blue',existence:'lavender',cases:'noun',possession:'noun',copula:'adj',questions:'questionword',infinitive:'verb',verbs:'verb',modal:'polite',comparison:'adj',connections:'conjunction',time:'response',nominal:'noun',relative:'demonstrative',voice:'verb',report:'phrase',transfer:'lavender'};
+ function available(){return engine.grammar.ready(engine.unlocked(),engine.state.opened).filter(e=>engine.grammar.exercise(e.id,engine.unlocked(),engine.state.opened));}
+ function canUnlock(){return engine.grammar.ready(engine.unlocked(),engine.state.opened).some(e=>engine.grammar.exercise(e.id,engine.unlocked(),engine.state.opened));}
  function overview(){if(active)return;engine.refreshPool();const list=el('grammarList');list.replaceChildren();
-  const opened=engine.state.opened,band=C.bands[opened-1],words=engine.unlocked(),known=engine.grammar.unlocked();
+  const opened=engine.state.opened,band=C.bands[opened-1],known=engine.grammar.unlocked();
   el('grammarStatus').textContent=band.cefr+' · '+band.title;
   const missing=engine.missingWords();
-  if(missing.length){const note=make('div','grammar-next-words','');note.append(make('p','','Für den nächsten Schritt: '+missing.map(w=>w.tr).join(', ')),button('Wörter freischalten',()=>openTypingFromFloating()));list.append(note);}
+  if(missing.length){const note=make('div','grammar-next-words','');note.append(make('p','','Für den nächsten Schritt: '+missing.map(w=>w.tr).join(', ')),button('Wörter freischalten',()=>openTypingFromFloating(),'dictionary-cards-button'));list.append(note);}
   if(!missing.length&&G.core[band.index].every(id=>known.has(id)))list.append(button('Im Satzbau anwenden',()=>openLearnMode('sentences'),'grammar-primary'));
   for(const [group,title] of Object.entries(G.groupNames)){
-   const entries=G.entries.filter(e=>e.group===group&&e.min<=band.end);if(!entries.length)continue;
-   const card=make('section','grammar-topic','');card.append(make('h3','',title));const rows=make('div','grammar-topic-rules','');
-   for(const label of new Set(entries.map(e=>e.label))){const matching=entries.filter(e=>e.label===label),count=matching.filter(e=>known.has(e.id)).length;
-    const ready=matching.find(e=>!known.has(e.id)&&engine.grammar.exercise(e.id,words,opened));
-    const row=button(label,()=>open(ready?.id||matching.find(e=>known.has(e.id))?.id));
-    row.append(make('span','grammar-rule-status',count===matching.length?'✓':count?count+' / '+matching.length:'›'));
-    row.disabled=!ready&&!count;row.setAttribute('aria-label',label+(ready?' · Üben':count?' · Wiederholen':' · Zuerst Wörter oder frühere Formen lernen'));
+   const entries=G.entries.filter(e=>e.group===group);if(!entries.length)continue;
+   const card=make('section','grammar-topic','');card.dataset.grammarGroup=group;card.append(make('h3','',title));const rows=make('div','grammar-topic-rules','');
+   for(const label of new Set(entries.map(e=>e.label))){const matching=entries.filter(e=>e.label===label),learned=matching.filter(e=>known.has(e.id)),locked=learned.length===0;
+    const row=button('',()=>open(learned[0].id),'grammar-rule '+colors[group]+(locked?' locked':''));
+    row.dataset.grammarRule=label;row.disabled=locked;
+    const content=make('div','grammar-rule-content','');content.append(make('span','grammar-rule-title',label));
+    if(!locked){const forms=[...new Set(learned.filter(e=>e.op).map(e=>e.text))];if(forms.length)content.append(make('span','grammar-rule-forms',forms.join(' · ')));}
+    row.append(content,make('span','grammar-rule-status',locked?'':'✓'));
+    row.setAttribute('aria-label',label+(locked?' · Gesperrt. Über Grammatik Freischalten lernen.':' · Freigeschaltet. Wiederholen.'));
     rows.append(row);
    }
    card.append(rows);list.append(card);
   }
-  if(opened<32)list.append(make('p','grammar-preview','Danach: '+C.bands[opened].title));
  }
  function rule(e){const f=e.op?.after||{},text=e.text;
   if(e.op?.stage==='case')return ({dative:'Richtung oder Ziel: -e / -a. Nach einem Vokal steht y dazwischen.',locative:'Ort: -de / -da; nach ç, f, h, k, p, s, ş, t steht t statt d.',ablative:'Herkunft: -den / -dan; nach ç, f, h, k, p, s, ş, t steht t statt d.',accusative:'Ein bestimmtes Objekt erhält -ı, -i, -u oder -ü. Nach einem Vokal steht y dazwischen.',genitive:'Besitzer: -(n)ın / -(n)in / -(n)un / -(n)ün. Das besessene Nomen bekommt zusätzlich eine Besitzendung.',instrumental:'Begleitung oder Mittel: -la / -le; nach einem Vokal -yla / -yle.'})[f.case]+' Hier übst du '+text+'.';
@@ -42,29 +47,60 @@
   return ({statement:'Im Türkischen steht die Aussage am Satzende. Bei „ist“ in der dritten Person ist oft keine eigene Endung nötig.',demonstrative:'bu bedeutet „dies / das“. Es steht vor dem, was du näher beschreibst.','negative-nominal':'değil verneint Eigenschaften und Nomen. Für ein verneintes Verb brauchst du dagegen die Verbendung.','question-ne':'ne fragt nach „was“.','icin:purpose':'Infinitiv + için nennt einen Zweck: etwas tun, um etwas zu erreichen.','icin:beneficiary':'Nomen + için bedeutet „für jemanden / etwas“.','icin:reason':'-DIK + Besitzendung + için nennt den Grund für die andere Handlung.','relative-subject':'Die Form auf -(y)An beschreibt das folgende Nomen: die Person oder Sache, die etwas tut.','relative-object':'Der beschreibende Satzteil steht vor dem Nomen. Seine Besitzendung nennt die handelnde Person.','content':'Der Inhalt wird zu einem Satzteil: -DIK oder -AcAK + Besitzendung, danach bei Bedarf die Fallendung.'})[use]||(/^(var|yok):/.test(use)?'var bedeutet „es gibt / vorhanden“, yok „es gibt nicht / fehlt“. Ort oder Besitzer stehen davor.':'Übersetze den ganzen Satz. Achte darauf, wie die bekannten Wörter die beiden Satzteile verbinden.');
  }
  function draw(){trainer.replaceChildren();const cur=engine.grammar.state.current;if(!cur)return;
-  const e=G.byId[cur.entryId],count=engine.grammar.count(cur.entryId);
-  trainer.append(button('← Grammatik',close,'grammar-back'),make('h2','',e.label),make('p','grammar-rule-help',rule(e)),make('p','grammar-progress','Türkisch '+count.tr+' / 3 · Deutsch '+count.de+' / 3'));
-  if(cur.targets?.length>1)trainer.append(make('p','grammar-direction','Neue Formen: '+cur.targets.map(id=>G.byId[id]?.text).filter(Boolean).join(' · ')));
-  const prompt=make('div','grammar-prompt',cur.prompt);prompt.setAttribute('lang',cur.direction==='tr'?'de':'tr');trainer.append(make('p','grammar-direction',(cur.direction==='tr'?'Ins Türkische':'Ins Deutsche')+(cur.context?' · '+cur.context:'')),prompt);
-  const form=make('form','grammar-answer-form',''),input=make('input','grammar-answer','');input.id='grammarAnswer';input.type='text';input.autocomplete='off';input.spellcheck=false;input.value=cur.draft||'';input.setAttribute('aria-label','Deine Übersetzung');input.setAttribute('lang',cur.direction==='tr'?'tr':'de');input.disabled=cur.answered;input.addEventListener('input',()=>{cur.draft=input.value;engine.grammar.save();});form.append(input);
-  if(cur.direction==='tr'){const keys=make('div','grammar-keys','');for(const letter of ['ç','ğ','ı','ö','ş','ü']){const key=button(letter,()=>{const from=input.selectionStart??(input.value||'').length,to=input.selectionEnd??from;input.value=(input.value||'').slice(0,from)+letter+(input.value||'').slice(to);cur.draft=input.value;engine.grammar.save();input.focus();input.setSelectionRange?.(from+1,from+1);},'grammar-key');key.disabled=cur.answered;keys.append(key);}form.append(keys);}
-  const feedback=make('p','grammar-feedback','');feedback.setAttribute('role','status');
-  const submit=()=>{cur.draft=input.value;const result=engine.grammar.check(input.value);if(result.ignored)return;draw();const f=el('grammarFeedback');f.textContent=(result.correct?(result.unlocked?'Freigeschaltet.':cur.assisted?'Richtig korrigiert. Übe diese Form gleich noch einmal.':'Richtig.'):'Noch nicht richtig. Versuche es noch einmal.')+(engine.grammar.error?' '+engine.grammar.error:'');if(!result.correct)el('grammarAnswer').focus();};
-  form.addEventListener('submit',event=>{event.preventDefault();submit();});
-  if(!cur.answered){form.append(button('Prüfen',submit,'grammar-primary'),button('Lösung zeigen',()=>{feedback.textContent=engine.grammar.reveal();},'grammar-back'));}
-  else form.append(button('Weiter',next,'grammar-primary'));
-  feedback.id='grammarFeedback';if(engine.grammar.error)feedback.textContent=engine.grammar.error;form.append(feedback);trainer.append(form);
+  const e=G.byId[cur.entryId],count=engine.grammar.count(cur.entryId),total=G.THRESHOLD*2;
+  trainer.append(button('← Grammatik',close,'learn-back'));
+  const card=make('div','typing-game-card grammar-exercise',''),top=make('div','typing-top',''),progress=make('div','typing-progress',''),info=make('div','typing-progress-info','');
+  info.append(make('span','','Grammatik Freischalten'),make('span','',(count.tr+count.de)+' / '+total));progress.append(info);
+  const bar=make('div','bar',''),fill=make('div','bar-fill','');fill.style.width=((count.tr+count.de)/total*100)+'%';bar.append(fill);progress.append(bar);top.append(progress);card.append(top);
+  card.append(make('h2','grammar-exercise-title',e.label),make('p','grammar-rule-help',rule(e)));
+  const prompt=make('div','typing-prompt','');prompt.append(make('div','typing-direction',(cur.direction==='tr'?'Deutsch → Türkisch':'Türkisch → Deutsch')+(cur.context?' · '+cur.context:'')));
+  const sentence=make('div','typing-word grammar-prompt-text',cur.prompt);sentence.setAttribute('lang',cur.direction==='tr'?'de':'tr');prompt.append(sentence);card.append(prompt);
+  const answer=make('div','typing-answer'+(cur.draft?'':' empty')+(cur.answered&&cur.correct?' correct':''),cur.draft||'Antwort tippen …');answer.id='grammarAnswer';answer.tabIndex=0;answer.setAttribute('role','textbox');answer.setAttribute('aria-label','Deine Übersetzung');answer.setAttribute('aria-readonly','true');answer.setAttribute('lang',cur.direction==='tr'?'tr':'de');card.append(answer);
+  const feedback=make('div','typing-feedback','');feedback.id='grammarFeedback';feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');feedback.textContent=engine.grammar.error;card.append(feedback);trainer.append(card);
+  const keyboard=make('div','custom-keyboard','');keyboard.id='grammarKeyboard';keyboard.setAttribute('aria-label','App-Tastatur');trainer.append(keyboard);
+  renderAppKeyboard(cur.direction==='tr'?'tr':'de',{keyboard,onType:type,onCheck:cur.answered?next:check,onSkip:skip,skipLabel:'Überspringen',checkLabel:cur.answered?'Nächste Aufgabe':'Antwort prüfen',disabled:advanceTimer!==null});
  }
- function open(id){root.showView('grammar',null);active=true;selection=id?{group:G.byId[id].group,label:G.byId[id].label}:null;
-  el('grammarPanel').hidden=true;trainer.hidden=false;el('grammarUnlockFloatingButton').hidden=true;document.body.classList.add('without-unlock-button');
-  const cur=engine.grammar.next(engine.unlocked(),engine.state.opened,id);if(!cur){close();el('grammarStatus').textContent='Schalte zuerst die passenden Wörter oder die vorherige Form frei.';return;}draw();
+ function type(key){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null)return;
+  cur.draft=key==='BACKSPACE'?Array.from(cur.draft||'').slice(0,-1).join(''):(cur.draft||'').length<400?(cur.draft||'')+key:cur.draft;
+  engine.grammar.save();const answer=el('grammarAnswer');answer.className='typing-answer'+(cur.draft?'':' empty');answer.textContent=cur.draft||'Antwort tippen …';el('grammarFeedback').textContent=engine.grammar.error;
  }
- function next(){const previous=engine.grammar.state.current;let id=previous&&!engine.grammar.state.unlocked[previous.entryId]?previous.entryId:null;
-  if(!id&&selection)id=engine.grammar.ready(engine.unlocked(),engine.state.opened).find(e=>e.group===selection.group&&e.label===selection.label)?.id;
-  if(!id&&selection){close();return;}
-  const cur=engine.grammar.next(engine.unlocked(),engine.state.opened,id);if(cur)draw();else close();
+ function check(){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null||!cur.draft?.trim())return;
+  const result=engine.grammar.check(cur.draft);if(result.ignored)return;
+  if(result.correct)advanceTimer=setTimeout(()=>{advanceTimer=null;if(active)next();},750);
+  draw();el('grammarAnswer').classList.add(result.correct?'correct':'wrong');
+  el('grammarFeedback').textContent=(result.correct?(result.unlocked?'Freigeschaltet.':cur.assisted?'Richtig korrigiert.':'Richtig.'):'Noch nicht richtig.')+(engine.grammar.error?' '+engine.grammar.error:'');el('grammarAnswer').focus();
  }
- function close(){active=false;trainer.hidden=true;el('grammarPanel').hidden=false;overview();updateUnlockButtons();}
- root.GrammarTrainer={open,close,next,get active(){return active;}};root.openGrammarTraining=open;root.refreshGrammarUI=overview;
- el('grammarUnlockFloatingButton').addEventListener('click',()=>open());overview();
+ function skip(){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null)return;
+  if(selection){close();return;}skipped.add(cur.entryId);engine.grammar.state.current=null;engine.grammar.save();next();
+ }
+ function choose(){
+  const cur=engine.grammar.state.current;
+  if(cur&&!cur.answered&&!skipped.has(cur.entryId)){const resumed=engine.grammar.next(engine.unlocked(),engine.state.opened);if(resumed)return resumed;}
+  const ready=available(),required=new Set(G.core.slice(0,engine.state.opened).flat()),ordered=[...ready.filter(e=>required.has(e.id)),...ready.filter(e=>!required.has(e.id))];
+  if(ordered.length&&ordered.every(e=>skipped.has(e.id)))skipped.clear();
+  const target=ordered.find(e=>!skipped.has(e.id));return target?engine.grammar.next(engine.unlocked(),engine.state.opened,target.id):null;
+ }
+ function open(id){root.showView('grammar',null);selection=id||null;skipped.clear();
+  const cur=id?engine.grammar.next(engine.unlocked(),engine.state.opened,id):choose();
+  if(!cur){el('grammarStatus').textContent='Schalte zuerst die passenden Wörter oder die vorherige Form frei.';return;}
+  active=true;el('grammarPanel').hidden=true;trainer.hidden=false;el('grammarUnlockFloatingButton').hidden=true;
+  document.body.classList.add('without-unlock-button','learning-games-view','game-mode-active','grammar-training-view');root.scrollTo({top:0,behavior:'auto'});draw();el('grammarAnswer').focus();
+ }
+ function next(){if(!active||advanceTimer!==null)return;
+  if(selection){close();return;}
+  const previous=engine.grammar.state.current;
+  const cur=previous&&!engine.grammar.state.unlocked[previous.entryId]&&!skipped.has(previous.entryId)?engine.grammar.next(engine.unlocked(),engine.state.opened,previous.entryId):choose();
+  if(cur){draw();el('grammarAnswer').focus();}else close();
+ }
+ function close(){clearTimeout(advanceTimer);advanceTimer=null;active=false;trainer.hidden=true;el('grammarPanel').hidden=false;
+  document.body.classList.remove('learning-games-view','game-mode-active','grammar-training-view');overview();updateUnlockButtons();}
+ document.addEventListener('keydown',event=>{
+  if(!active||event.isComposing||event.ctrlKey||event.metaKey||event.altKey||event.target.closest?.('input,textarea,select,[contenteditable="true"]'))return;
+  if(['Enter',' '].includes(event.key)&&event.target.closest?.('button,[role="button"]'))return;
+  if(event.key==='Enter'){event.preventDefault();if(!event.repeat){if(engine.grammar.state.current?.answered)next();else check();}}
+  else if(event.key==='Backspace'){event.preventDefault();type('BACKSPACE');}
+  else if(/^[\p{L} '’.,?!-]$/u.test(event.key)){event.preventDefault();type(event.key);}
+ });
+ root.GrammarTrainer={open,close,next,type,check,canUnlock,get active(){return active;}};root.openGrammarTraining=open;root.refreshGrammarUI=overview;
+ el('grammarUnlockFloatingButton').addEventListener('click',()=>open());overview();updateUnlockButtons();
 })(window);

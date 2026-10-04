@@ -64,7 +64,7 @@ test('grammar has a separate minimal translation view and navigation preserves t
  a.run('GrammarTrainer.close()');a.unlock(undefined,{grammar:false});
  a.run('SentenceGame.engine.state.opened=4;SentenceGame.engine.state.level=20;SentenceGame.engine.refreshPool();SentenceGame.engine.grammar.state.current=null;SentenceGame.engine.grammar.state.unlocked=Object.fromEntries(AndreCourseGrammar.core.slice(0,4).flat().map(id=>[id,true]));refreshGrammarUI();updateUnlockButtons()');
  assert.ok(a.run('SentenceGame.engine.grammar.ready(SentenceGame.engine.unlocked(),4).length>0'),'optional forms remain available through their rule');
- assert.equal(a.el('grammarUnlockFloatingButton').hidden,true,'automatic unlock button finishes with the core package');
+ assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'optional forms also use the shared unlock button');
  assert.ok(a.el('grammarList').children.some(c=>c.textContent==='Im Satzbau anwenden'));
 });
 test('all 188 new reference tasks can be solved using the visible paged word and suffix controls',()=>{

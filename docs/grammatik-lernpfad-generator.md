@@ -37,6 +37,10 @@ Eine gerade gelernte Variante gilt auch für weitere bekannte Wörter, wenn die 
 
 ## Speicherung und Migration
 
+Die Grammatikübersicht verwendet farbige Themenkarten und gesperrte Regelzeilen wie das Wörterbuch. Auch spätere Themen sind sichtbar; unbekannte Einträge bleiben gesperrt und nicht anklickbar. Bereits gelernte Varianten werden angezeigt und können wiederholt werden. Neue Formen werden über „Grammatik Freischalten“ gelernt: zuerst die Pflichtformen des offenen Abschnitts, danach freiwillige zusätzliche Varianten. Nach dem Pflichtpaket bleibt der direkte Satzbauzugang verfügbar.
+
+Die Übersetzungsübung nutzt dieselbe App-Tastatur, Fortschrittsanzeige, Aufgabenkarte und Antwortfläche wie der Worttrainer. Türkische Sonderzeichen gehören zur vollständigen türkischen Belegung; Deutsch hat eine eigene Belegung. Es gibt keine separate Sonderzeichenreihe, kein natives Eingabefeld und keine Lösungsanzeige. „Überspringen“ zeigt keine Antwort und gibt keinen Lernfortschritt. Nach einer richtigen Antwort geht es automatisch weiter; Navigation beendet den Zeitgeber und bewahrt die angefangene Eingabe.
+
 Alles bleibt lokal im Browser. Es gibt keinen neuen Sicherungs-/Exportknopf und keinen Server für persönliche Lernstände. Wortfortschritt verwendet stabile Wort-IDs und liest die bisherigen türkischen Textschlüssel weiterhin. Bei gemischten Daten hat der stabile ID-Eintrag Vorrang.
 
 Die neuen Zustände liegen in `andreTurkishGrammarCourseV2` und `andreTurkishSentenceCourseV3`. Vorhandene konkrete Formfreigaben, Level, höchster Level, Wortstatistiken und laufende Korrekturen werden übernommen. Alte Datensätze bleiben erhalten. Neue Verwendungen werden nicht aus einem alten Wort- oder Levelstand erfunden. Eine angefangene Aufgabe wartet bei fehlender neuer Grammatik, ohne ihre erste Wertung zu verlieren.

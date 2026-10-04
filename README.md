@@ -44,6 +44,8 @@ Der Aufgabenplan verbindet aktuelle Übungen, fällige Wiederholungen und älter
 
 ## Tests
 
+Grammatik zeigt farbige Themenkarten und gesperrte unbekannte Regeln. Freischalten erfolgt über den zentralen Button; gelernte Regeln können wiederholt werden. Die Übersetzungsübung verwendet dieselbe vollständige App-Tastatur wie „Wörter Freischalten“, ohne Lösungsanzeige. Überspringen vergibt keinen Fortschritt.
+
 Node.js 22 oder neuer:
 
 ```sh
