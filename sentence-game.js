@@ -230,7 +230,7 @@
     if(clearOnly){token.features=B.baseFeatures(token.lemma);delete token.form;delete token.attachments;}else token.group=null;
     saveAndRender(token.id);
   }
-  root.leaveSentenceArea=()=>root.backToLearnHome();
+  root.leaveSentenceArea=()=>root.closeSentenceTest();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
   root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return false;},get current(){return current();},get task(){return task();}};
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
