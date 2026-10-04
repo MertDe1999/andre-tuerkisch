@@ -3,7 +3,7 @@
   'use strict';
   const W=AndreWords,B=TurkishBlocks,C=AndreCourse,L=AndreCourseLearning,G=AndreCourseGrammar;
   const engine=new L.Engine();
-  let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0;
+  let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0,renderedTask=null,landingToken=null;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
   const task=()=>engine.task();
@@ -19,14 +19,17 @@
   }
   function save(){return engine.save();}
   function saveAndRender(focusId){save();render();if(focusId)el('sentenceToken-'+focusId)?.focus({preventScroll:true});}
-  function apply(card,tokenId){
+  function apply(card,tokenId,animateJoin=true){
     if(!running||current()?.finished)return;
     card=allowedCards().find(c=>c.text===card.text);
     if(!card){pendingCard=null;render();return;}
     const token=tokenId?current().tokens.find(t=>t.id===tokenId):selectTarget(card);
     if(!token){pendingCard=card;render();message('Tippe auf das passende Wort.');return;}
-    if(!fits(token,card)||!B.apply(token,card)){message('Diese Endung passt hier nicht.');return;}
+    if(!fits(token,card)){message('Diese Endung passt hier nicht.');return;}
+    const joining=animateJoin?AndreMotion.snapshot([...el('wordBank').children].find(n=>n.dataset.turkishBlock===card.text)):null;
+    if(!B.apply(token,card)){joining?.remove();message('Diese Endung passt hier nicht.');return;}
     pendingCard=null;selected=token.id;if(token.group)activeGroup=token.group;saveAndRender(token.id);message('');
+    AndreMotion.land(joining,el('sentenceToken-'+token.id));
   }
   function moveToken(id,groupId,beforeId=null){
     if(!running||current()?.finished)return;
@@ -68,9 +71,9 @@
       zone.querySelectorAll('.case-drop-over').forEach(e=>e.classList.remove('case-drop-over'));zone.classList.remove('drag-over');
     }
   }
-  function clearDrag(){
+  function clearDrag(keepGhost=false){
     const old=drag;drag=null;
-    if(old){old.button.classList.remove('dragging');old.ghost?.remove();try{old.button.releasePointerCapture?.(old.pointer);}catch{}}
+    if(old){old.button.classList.remove('dragging');if(!keepGhost)old.ghost?.remove();try{old.button.releasePointerCapture?.(old.pointer);}catch{}}
     clearDropTargets();
   }
   function dragDestination(event,payload){
@@ -90,36 +93,46 @@
   function attachDrag(button,payload){
     button.addEventListener('pointerdown',event=>{
       if((event.button!==undefined&&event.button!==0)||!running||current()?.finished)return;
+      AndreMotion.cancel();
       clearDrag();
       suppressUntil=0;
-      drag={payload,button,x:event.clientX,y:event.clientY,moved:false,pointer:event.pointerId};button.setPointerCapture?.(event.pointerId);
+      const home=button.getBoundingClientRect();
+      drag={payload,button,x:event.clientX,y:event.clientY,home,offsetX:event.clientX-home.left,offsetY:event.clientY-home.top,moved:false,pointer:event.pointerId};button.setPointerCapture?.(event.pointerId);
     });
     button.addEventListener('pointermove',event=>{
       if(!drag||drag.button!==button)return;
       if(!drag.moved&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>8){
         drag.moved=true;button.classList.add('dragging');
         const ghost=make('div',button.className.replace('dragging','')+' drag-ghost',button.textContent);
-        ghost.setAttribute('aria-hidden','true');ghost.style.width=button.getBoundingClientRect().width+'px';document.body.append(ghost);drag.ghost=ghost;
+        ghost.setAttribute('aria-hidden','true');ghost.style.width=drag.home.width+'px';ghost.style.height=drag.home.height+'px';ghost.style.left='0';ghost.style.top='0';ghost.style.transformOrigin=drag.offsetX+'px '+drag.offsetY+'px';document.body.append(ghost);drag.ghost=ghost;
       }
       if(!drag.moved)return;
-      event.preventDefault?.();drag.ghost.style.left=event.clientX+'px';drag.ghost.style.top=event.clientY+'px';
+      event.preventDefault?.();drag.ghost.style.transform='translate3d('+(event.clientX-drag.offsetX)+'px,'+(event.clientY-drag.offsetY)+'px,0) scale(1.02)';
       clearDropTargets();
       const target=dragDestination(event,payload);
       if(target?.word)target.word.classList.add('case-drop-over');else if(target?.group)target.group.classList.add('drag-over');else if(target?.bank)el('wordBank').classList.add('drag-over');
     });
     const end=event=>{
       if(!drag||drag.button!==button)return;
-      const old=drag,target=event.type==='pointercancel'?null:dragDestination(event,payload);clearDrag();
+      const old=drag,target=event.type==='pointercancel'?null:dragDestination(event,payload);clearDrag(true);
       if(!old.moved)return;
       suppressUntil=Date.now()+350;
-      if(target?.token)apply(target.card,target.token.id);
+      landingToken=target?.token?.id||payload.token;
+      if(target?.token)apply(target.card,target.token.id,false);
       else if(target?.group)moveToken(payload.token,target.group.dataset.sentenceGroup,target.beforeId);
       else if(target?.bank)moveToken(payload.token,null);
+      const destination=target?el('sentenceToken-'+(target.token?.id||payload.token)):null;
+      landingToken=null;
+      AndreMotion.land(old.ghost,destination,old.home,{hideTarget:!!destination});
     };
     button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
   function render(){
     const cur=current(),t=task();if(!cur||!t)return;
+    const sameTask=renderedTask===cur.id;
+    const oldPrompt=!sameTask?AndreMotion.snapshot(el('sentencePrompt')):null;
+    const before=sameTask?AndreMotion.captureCards([...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')]):new Map();
+    renderedTask=cur.id;
     if(!t.groups.some(g=>g.id===activeGroup))activeGroup=t.groups[0].id;
     el('sentenceLevelText').textContent=engine.state.level;
     el('sentenceLevelText').classList.toggle('long-level',engine.state.level>=100);
@@ -173,6 +186,11 @@
     el('sentenceNextButton').hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
+    AndreMotion.cards(before,[...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')].filter(node=>node.dataset.modernToken!==landingToken));
+    if(!sameTask){
+      AndreMotion.enter(el('sentencePrompt'));
+      if(oldPrompt)AndreMotion.play(oldPrompt,[{opacity:1},{opacity:0}],{duration:160,cleanup:()=>oldPrompt.remove()});
+    }
   }
   function start(){
     stop();running=true;sentenceGameRunning=true;
@@ -180,7 +198,7 @@
   }
   function stop(){
     running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
-    if(root.GrammarTrainer?.active)root.GrammarTrainer.close();
+    if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
     if(!running)return;
@@ -207,18 +225,23 @@
   }
   function check(unknown=false){
     if(!running||!current()||current().finished)return;
+    const previousSection=engine.state.opened;
     const result=engine.check({unknown});
     if(result.ignored)return;
     render();
     if(result.correct){
       message('Richtig!'+(result.delta>0?' Level '+result.level+'.':' Weiter ohne Leveländerung.'),'ok');
-      const duration=celebrateCorrectAnswer();
+      AndreMotion.feedback(el('answerZone'),true);
+      if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
+      const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0);
+      const duration=milestone?celebrateCorrectAnswer():800;
       advanceTimer=setTimeout(()=>{if(running)next();},Math.max(1000,duration));
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
       const issue=result.issue;
       const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:'Prüfe die Endungen.'};
       message((hints[issue.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
+      AndreMotion.feedback(el('answerZone'),false);
     }
   }
   function reset(){

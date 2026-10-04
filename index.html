@@ -1981,6 +1981,7 @@
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
   <link rel="stylesheet" href="grammar.css?v=20261003-varianten">
   <link rel="stylesheet" href="grammar-course.css?v=20261004-ui2">
+  <link rel="stylesheet" href="motion.css?v=20261005-motion">
 </head>
 
 <body>
@@ -2235,6 +2236,7 @@
 <script src="lib/course.js?v=20261004-course"></script>
 <script src="lib/course-grammar.js?v=20261004-course"></script>
 <script src="lib/course-learning.js?v=20261004-course"></script>
+<script src="lib/motion.js?v=20261005-motion"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2452,11 +2454,14 @@
 
   function openFlashcards(){
     showView("dictionary", null);
+    AndreMotion.cancel();
+    AndreMotion.depart(document.getElementById("dictionaryPanel"));
     document.body.classList.add("learning-games-view", "game-mode-active");
     document.getElementById("dictionaryPanel").hidden = true;
     document.getElementById("cardsLearning").classList.add("active");
     updateUnlockButtons();
     startQuiz("toTurkish");
+    AndreMotion.enter(document.getElementById("cardsLearning"));
     document.getElementById(remaining.length ? "quizCard" : "cardsBackButton").focus({preventScroll:true});
     window.scrollTo({top:0, behavior:"auto"});
   }
@@ -2471,20 +2476,26 @@
     if(mode === "sentences") return openSentenceTest();
     if(mode !== "typing") return;
     showView("dictionary", null);
+    AndreMotion.cancel();
+    AndreMotion.depart(document.getElementById("dictionaryPanel"));
     document.body.classList.add("learning-games-view", "game-mode-active");
     document.getElementById("dictionaryPanel").hidden = true;
     document.getElementById("typingTrainer").classList.add("active");
     updateUnlockButtons();
     startTypingGame();
+    AndreMotion.enter(document.getElementById("typingGameActive"));
     window.scrollTo({top:0, behavior:"auto"});
   }
 
   function openSentenceTest(){
     showView("flashcards", null);
+    AndreMotion.cancel();
+    AndreMotion.depart(document.getElementById("sentenceTopics"));
     document.getElementById("sentenceTopics").hidden = true;
     document.body.classList.add("learning-games-view", "game-mode-active");
     document.getElementById("sentenceBuilder").classList.add("active");
     startSentenceGame();
+    AndreMotion.enter(document.getElementById("sentenceBuilder"));
     document.getElementById("sentenceBackButton").focus({preventScroll:true});
     window.scrollTo({top:0, behavior:"auto"});
   }
@@ -2501,7 +2512,17 @@
 
   const mainNavViews = ["dictionary","grammar","flashcards"];
 
-  function showView(id, btn, swipeDirection = null){
+  function showView(id, btn, swipeDirection = null, motionSwipe = null){
+    AndreMotion.cancel();
+    const exitingView = document.querySelector(".view.active");
+    const exitingBox = {box:exitingView?.getBoundingClientRect(),parent:exitingView?.parentElement?.getBoundingClientRect()};
+    const wasGame = document.body.classList.contains("game-mode-active");
+    if(wasGame){
+      const exercise = window.GrammarTrainer?.active ? document.querySelector(".grammar-exercise") :
+        document.getElementById(document.getElementById("sentenceBuilder").classList.contains("active") ? "sentenceGameActive" :
+          document.getElementById("cardsLearning").classList.contains("active") ? "quizCard" : "typingGameActive");
+      AndreMotion.depart(exercise);
+    }
     stopSentenceGame();
     stopTypingGame();
     leaveQuiz();
@@ -2553,8 +2574,9 @@
     }
 
     if(id !== "flashcards"){
-      window.scrollTo({top:0, behavior:"smooth"});
+      window.scrollTo({top:0, behavior:AndreMotion.reduced() ? "auto" : "smooth"});
     }
+    AndreMotion.navigation(wasGame ? null : exitingView, targetView, {direction:swipeDirection === "right" ? -1 : 1,swipe:motionSwipe,previousBox:exitingBox});
   }
 
   function filterWords(){
@@ -2666,6 +2688,10 @@
   }
 
   function renderTypingWord(){
+    return AndreMotion.change(document.getElementById("typingWord"), renderTypingWordNow);
+  }
+
+  function renderTypingWordNow(){
     const item = typingRemaining[typingCurrentIndex];
     if(!item) return;
 
@@ -2677,7 +2703,7 @@
 
     const answerEl = document.getElementById("typingAnswer");
     answerEl.className = "typing-answer empty";
-    answerEl.textContent = "Antwort tippen …";
+    AndreMotion.write(answerEl, "", {animate:false});
 
     const feedback = document.getElementById("typingFeedback");
     feedback.textContent = "";
@@ -2690,18 +2716,35 @@
   function renderAppKeyboard(language, {keyboard, onType, onCheck, onSkip, skipLabel = "Keine Ahnung", checkLabel = "Antwort prüfen", disabled = false}){
     const rows = language === "tr"
       ? [["q","w","e","r","t","y","u","ı","o","p","ğ","ü"], ["a","s","d","f","g","h","j","k","l","ş","i"], ["z","x","c","v","b","n","m","ö","ç"]]
-      : [["q","w","e","r","t","z","u","i","o","p","ü"], ["a","s","d","f","g","h","j","k","l","ö","ä"], ["y","x","c","v","b","n","m","ß"]];
+      : [["q","w","e","r","t","z","u","i","o","p","ü"], ["a","s","d","f","g","h","j","k","l","ö","ä","ß"], ["y","x","c","v","b","n","m"]];
+    keyboard._actions = {onType,onCheck,onSkip};
+    const layout = language + ":" + Boolean(onSkip);
+    if(keyboard.dataset.layout === layout){
+      keyboard.querySelectorAll(".key").forEach(button => {
+        button.disabled = disabled;
+        if(button.dataset.action === "check") button.setAttribute("aria-label", checkLabel);
+        if(button.dataset.action === "skip") button.textContent = skipLabel;
+      });
+      return;
+    }
+    keyboard.dataset.layout = layout;
+    keyboard.setAttribute("lang", language);
     keyboard.replaceChildren();
-    function key(text, action, className = "key", label){
+    function key(text, action, className = "key", label, value){
       const button = document.createElement("button");
       button.type = "button";button.className = className;button.textContent = text;button.disabled = disabled;
+      button.dataset.action = value || "letter";
       if(label) button.setAttribute("aria-label", label);
-      button.addEventListener("click", action);return button;
+      button.addEventListener("click", () => {if(!button.disabled) action();});return button;
     }
     function row(keys){const row = document.createElement("div");row.className = "keyboard-row";row.append(...keys);keyboard.append(row);}
-    if(onSkip) row([key(skipLabel, onSkip, "key unknown")]);
-    rows.forEach(letters => row(letters.map(letter => key(letter, () => onType(letter)))));
-    row([key("⌫", () => onType("BACKSPACE"), "key special", "Zeichen löschen"),key("Leertaste", () => onType(" "), "key special space"),key("✓", onCheck, "key special check", checkLabel)]);
+    if(onSkip) row([key(skipLabel, () => keyboard._actions.onSkip(), "key unknown", skipLabel, "skip")]);
+    rows.forEach((letters,index) => {
+      const keys = letters.map(letter => key(letter, () => keyboard._actions.onType(letter)));
+      if(index === 2) keys.push(key("⌫", () => keyboard._actions.onType("BACKSPACE"), "key special delete", "Zeichen löschen", "delete"));
+      row(keys);
+    });
+    row([key("Leertaste", () => keyboard._actions.onType(" "), "key special space", "Leertaste", "space"),key("✓", () => keyboard._actions.onCheck(), "key special check", checkLabel, "check")]);
   }
 
   function renderCustomKeyboard(language){
@@ -2723,10 +2766,10 @@
 
     if(typedAnswer.length === 0){
       answerEl.className = "typing-answer empty";
-      answerEl.textContent = "Antwort tippen …";
+      AndreMotion.write(answerEl, "");
     }else{
       answerEl.className = "typing-answer";
-      answerEl.textContent = typedAnswer;
+      AndreMotion.write(answerEl, typedAnswer);
     }
 
     const feedback = document.getElementById("typingFeedback");
@@ -2796,6 +2839,8 @@
 
       feedback.style.color = "var(--verb-dark)";
       updateTypingProgress();
+      AndreMotion.feedback(answerEl, true);
+      if(unlockedNow) celebrateCorrectAnswer();
 
       scheduleTypingTransition(unlockedNow ? 650 : 750);
     }else{
@@ -2803,6 +2848,7 @@
       answerEl.classList.add("wrong");
       feedback.textContent = "Noch nicht richtig.";
       feedback.style.color = "var(--rose-dark)";
+      AndreMotion.feedback(answerEl, false);
     }
   }
 
@@ -2842,7 +2888,7 @@
     }
 
     answerEl.className = "typing-answer empty";
-    answerEl.textContent = "Antwort tippen …";
+    AndreMotion.write(answerEl, "", {animate:false});
     feedback.textContent = "";
     feedback.style.color = "";
 
@@ -2890,7 +2936,7 @@
       fromLeft, originX, originY, targetX, horizontalDrag, verticalDrag,
       initialVy, terminalVy, apexTime,
       width:cut.width * size, height:cut.height * size, radius:cut.radius,
-      duration:2150 + random() * 240, delay:random() * 70,
+      duration:1200 + random() * 180, delay:random() * 50,
       flutterX:Math.min(12, width * .025) * (.45 + random() * .55),
       flutterY:1.2 + random() * 2.2,
       flutterFrequency:3.2 + random() * 2.8, phase:random() * Math.PI * 2,
@@ -2964,7 +3010,7 @@
     document.body.appendChild(layer);
     const colors = ["#d9eadb","#e6dff1","#dfeaf2","#f6d7bf","#f4e6a9","#f2dddd"];
     const animations = [];
-    const count = viewport.width < 600 ? 56 : 72;
+    const count = viewport.width < 600 ? 24 : 32;
     const startTime = document.timeline?.currentTime;
     let longestAnimation = 0;
     for(let i = 0; i < count; i++){
@@ -3033,7 +3079,7 @@
     remaining = [];
     learnedCount = 0;
     currentIndex = -1;
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({top:0, behavior:AndreMotion.reduced() ? "auto" : "smooth"});
   }
 
   function updateModeSwitch(){
@@ -3083,6 +3129,10 @@
   }
 
   function nextCard(){
+    return AndreMotion.change(document.getElementById("quizCard"), nextCardNow);
+  }
+
+  function nextCardNow(){
     if(remaining.length === 0){
       finishQuiz();
       return;
@@ -3146,6 +3196,7 @@
 
     cardEl.classList.add("revealed");
     cardEl.setAttribute("aria-expanded", "true");
+    AndreMotion.enter(cardEl.querySelector(".quiz-answer"));
   }
 
   function updateProgress(){
@@ -3272,6 +3323,7 @@
 
   document.addEventListener("touchstart", event => {
     if(event.touches.length !== 1 || document.body.classList.contains("game-mode-active")){
+      AndreMotion.finishSwipe(false);
       horizontalSwipeStartX = null;
       horizontalSwipeStartY = null;
       horizontalSwipeLastX = null;
@@ -3290,7 +3342,8 @@
   }, {passive:true});
 
   document.addEventListener("touchmove", event => {
-    if(horizontalSwipeBlocked || horizontalSwipeStartX === null || horizontalSwipeStartY === null || event.touches.length !== 1) return;
+    if(event.touches.length !== 1){AndreMotion.finishSwipe(false);horizontalSwipeBlocked=true;return;}
+    if(horizontalSwipeBlocked || horizontalSwipeStartX === null || horizontalSwipeStartY === null) return;
 
     horizontalSwipeLastX = event.touches[0].clientX;
     horizontalSwipeLastY = event.touches[0].clientY;
@@ -3300,6 +3353,11 @@
 
     if(Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)){
       event.preventDefault();
+      const current = document.querySelector(".view.active"), index = mainNavViews.indexOf(current?.id);
+      const targetIndex = index + (dx < 0 ? 1 : -1);
+      if(index >= 0 && targetIndex >= 0 && targetIndex < mainNavViews.length){
+        AndreMotion.follow(current, document.getElementById(mainNavViews[targetIndex]), dx, index, document.querySelector(".bottom-nav"));
+      }else AndreMotion.finishSwipe(false);
     }
   }, {passive:false});
 
@@ -3318,7 +3376,8 @@
           if(targetIndex >= 0 && targetIndex < mainNavViews.length){
             const targetId = mainNavViews[targetIndex];
             const targetButton = document.querySelectorAll(".nav-btn")[targetIndex];
-            showView(targetId, targetButton, dx < 0 ? "left" : "right");
+            const motionSwipe = AndreMotion.finishSwipe(true);
+            showView(targetId, targetButton, dx < 0 ? "left" : "right", motionSwipe);
 
             if(typeof navigator.vibrate === "function"){
               navigator.vibrate(14);
@@ -3328,6 +3387,8 @@
       }
     }
 
+    AndreMotion.finishSwipe(false);
+
     horizontalSwipeStartX = null;
     horizontalSwipeStartY = null;
     horizontalSwipeLastX = null;
@@ -3336,6 +3397,7 @@
   }, {passive:true});
 
   document.addEventListener("touchcancel", () => {
+    AndreMotion.finishSwipe(false);
     horizontalSwipeStartX = null;
     horizontalSwipeStartY = null;
     horizontalSwipeLastX = null;
@@ -3348,7 +3410,7 @@
     if(!button || button.disabled) return;
 
     if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(24);
+      navigator.vibrate(button.classList.contains("key") ? 8 : 14);
     }
   }
 
@@ -3390,7 +3452,7 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/dictionary.js?v=20261003-varianten"></script>
-<script src="sentence-game.js?v=20261005-themen"></script>
-<script src="grammar-ui.js?v=20261004-ui2"></script>
+<script src="sentence-game.js?v=20261005-motion"></script>
+<script src="grammar-ui.js?v=20261005-motion"></script>
 </body>
 </html>

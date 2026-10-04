@@ -5,6 +5,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  const animations=[],ids=new Map(),listeners=new Map();let document;
  const match=(element,selector)=>{
    selector=selector.trim();
+   if(selector==='*')return true;
    if(selector.startsWith('#'))return element.id===selector.slice(1);
    if(selector.startsWith('.'))return element.classList.contains(selector.slice(1));
    if(selector.startsWith('[data-'))return Object.hasOwn(element.dataset,selector.slice(6,-1).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()));
@@ -29,10 +30,12 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
   dispatchEvent(event){event.currentTarget=this;event.target||=this;for(const f of this.listeners.get(event.type)||[])f(event);}
   click(){this.dispatchEvent({type:'click',detail:0});}
   setAttribute(name,value){this.attributes.set(name,String(value));}getAttribute(name){return this.attributes.get(name)??null;}
+  removeAttribute(name){this.attributes.delete(name);if(name==='id')this._id=undefined;}
+  cloneNode(deep=false){const copy=new Element(this._text);copy.tagName=this.tagName;copy._id=this._id;copy.className=this.className;copy.dataset={...this.dataset};copy.attributes=new Map(this.attributes);copy.hidden=this.hidden;if(deep)for(const child of this.children)copy.append(child.cloneNode(true));return copy;}
   setPointerCapture(){}
   releasePointerCapture(){}
   getBoundingClientRect(){return {left:0,top:0,width:90,height:this.id==='wordBank'?bankHeight:40};}
-  animate(keyframes,options){const a={keyframes,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(a);return a;}
+  animate(keyframes,options){const a={target:this,keyframes,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(a);return a;}
  }
  const el=id=>{if(!ids.has(id)){const e=new Element();e.id=id;}return ids.get(id);};
  el('sentenceBankArea').append(el('wordBank'));

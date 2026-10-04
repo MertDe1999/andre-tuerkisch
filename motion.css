@@ -1,0 +1,33 @@
+:root{--motion-ease:cubic-bezier(.2,.8,.2,1);--app-keyboard-height:max(44dvh,calc(154px + max(10px,env(safe-area-inset-bottom))))}
+.app{position:relative;overflow-x:clip}
+.view.motion-leaving,.view.motion-swipe-preview{display:block;position:absolute;pointer-events:none;z-index:2}
+.view.motion-swipe-preview{z-index:1}
+.view.nav-slide-from-left,.view.nav-slide-from-right{animation:none}
+.bottom-nav::before{transition:transform 220ms var(--motion-ease)}
+.bottom-nav.motion-following::before{transition:none}
+header{transition:transform 240ms var(--motion-ease),opacity 180ms var(--motion-ease)}
+.bottom-nav-wrap{transition:transform 240ms var(--motion-ease),opacity 180ms var(--motion-ease)}
+button,.quiz-card{transition:transform 160ms var(--motion-ease),background-color 140ms ease,border-color 140ms ease}
+button:not(:disabled):active,.quiz-card:active{transform:scale(.98);transition-duration:80ms}
+button:disabled{transform:none}
+.answer-letter{display:inline-block;white-space:pre}
+.motion-snapshot{overflow:hidden;user-select:none}
+.drag-ghost{transform:none;transform-origin:center;will-change:transform;transition:none}
+.sentence-token,.sentence-grammar-card{will-change:auto}
+.key:active{background:var(--surface-soft)}
+.bar-fill{transition:width 220ms var(--motion-ease)}
+body.learning-games-view #typingTrainer .custom-keyboard,
+body.grammar-training-view #grammarTrainer .custom-keyboard{height:var(--app-keyboard-height);min-height:var(--app-keyboard-height);max-height:none}
+body.learning-games-view #typingTrainer #typingGameActive{padding-bottom:var(--app-keyboard-height)}
+body.grammar-training-view .app{padding-bottom:calc(var(--app-keyboard-height) + 12px + env(safe-area-inset-bottom))}
+.keyboard-row .key.delete{flex:1.2 1 0}
+@media(max-width:360px){
+  body.learning-games-view #typingTrainer .custom-keyboard,
+  body.grammar-training-view #grammarTrainer .custom-keyboard{padding-left:4px;padding-right:4px}
+  body.learning-games-view .keyboard-row{gap:2px}
+  .keyboard-row .key.delete{flex:1 1 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .view.motion-leaving,.view.motion-swipe-preview{display:none}
+}
