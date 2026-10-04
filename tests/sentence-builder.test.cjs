@@ -139,7 +139,7 @@ test('immediate correction keeps the later error review and corrected scoring fe
 
 test('automatic browser storage preserves level and unlocks without manual backup controls',()=>{
  const a=app();a.unlock();a.run('SentenceGame.engine.state.level=42;SentenceGame.engine.save();');
- assert.equal(a.el('learnHome').querySelectorAll('.sentence-storage').length,0);
+ assert.equal(a.el('sentenceBuilder').querySelectorAll('.sentence-storage').length,0);
  const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),42);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),W.words.length);
  assert.equal(a.storage.has('andreTurkishLastBackupV2'),false);
  const {e}=game();e.state.level=42;e.storage.setItem=()=>{throw Error('full');};assert.equal(e.reset(),false);assert.equal(e.state.level,42);
