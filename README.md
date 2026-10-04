@@ -16,7 +16,7 @@ Dann `http://127.0.0.1:8000/` öffnen. Der Lernstand wird lokal im jeweiligen Br
 
 ## Bedienung
 
-Die Navigation bietet **Wortschatz**, **Grammatik** und **Satzbau**. Satzbau öffnet direkt die Spielfläche; eine Spielauswahl und Chatten gibt es nicht mehr. Wörterfreischaltung und Karteikarten gehören zum Wortschatz. Die Einträge stehen nach Wortart zusammen: zuerst Nomen, Verben und Adjektive, anschließend die weiteren vorhandenen Kategorien. Innerhalb einer Wortart sind die türkischen Wörter alphabetisch sortiert.
+Die Navigation bietet **Wortschatz**, **Grammatik** und **Satzbau**. Satzbau zeigt farbige Themenkarten: **Alltag**, **Urlaub** und **Schule** sind vorerst Platzhalter ohne Funktion. **Test** öffnet das bisherige Satzbauspiel; Zurück führt zur Themenübersicht. Eine angefangene Aufgabe wird beim erneuten Öffnen fortgesetzt. Wörterfreischaltung und Karteikarten gehören zum Wortschatz. Die Einträge stehen nach Wortart zusammen: zuerst Nomen, Verben und Adjektive, anschließend die weiteren vorhandenen Kategorien. Innerhalb einer Wortart sind die türkischen Wörter alphabetisch sortiert.
 
 **Karteikarten** öffnet die Abfrage über den kompakten Button neben dem Wortschatz-Titel. Zurück führt ins Wortschatz; Karteikarten bleiben im Wortschatz. Freischaltungen, Abfragerichtungen und Tastaturbedienung bleiben erhalten.
 

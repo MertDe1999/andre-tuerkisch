@@ -146,7 +146,8 @@ test('automatic browser storage preserves level and unlocks without manual backu
 });
 
 test('browser adapter composes words by keyboard clicks and cancels old transitions on navigation',()=>{
- const a=app();a.unlock(['ev','güzel']);a.run('startSentenceGame()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),2);assert.ok(a.timers.size);a.run('backToLearnHome()');a.advance(5000);assert.equal(a.timers.size,0);
+ const a=app();a.unlock(['ev','güzel']);a.run('openSentenceTest()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),2);assert.ok(a.timers.size);
+ const finished=a.json('SentenceGame.engine.state.current');a.run('leaveSentenceArea()');assert.equal(a.el('sentenceTopics').hidden,false);assert.equal(a.run('sentenceGameRunning'),false);a.advance(5000);assert.equal(a.timers.size,0);assert.deepEqual(a.json('SentenceGame.engine.state.current'),finished,'the cancelled transition does not create a new task behind the topic overview');
 });
 
 test('browser adapter builds nominalized verb suffix chains through Turkish cards',()=>{

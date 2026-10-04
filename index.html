@@ -273,6 +273,33 @@
     .view{display:none}
     .view.active{display:block}
 
+    .sentence-topics{display:grid;gap:10px}
+
+    .sentence-topic{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      width:100%;
+      min-height:64px;
+      padding:14px 16px;
+      border:1px solid transparent;
+      border-radius:18px;
+      color:var(--text);
+      text-align:left;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .sentence-topic.test{background:var(--verb-soft)}
+    .sentence-topic.everyday{background:var(--noun-soft)}
+    .sentence-topic.holiday{background:var(--adj-soft)}
+    .sentence-topic.school{background:var(--lavender)}
+    .sentence-topic:disabled{opacity:1;cursor:default}
+    .sentence-topic-note{color:var(--muted);font-size:.76rem;font-weight:650}
+    .sentence-topic-arrow{color:var(--verb-dark);font-size:1.5rem;line-height:1}
+    .sentence-topic.test:active{border-color:var(--verb-dark)}
+
     .view.nav-slide-from-right{
       animation:navSlideFromRight .30s cubic-bezier(.22,.8,.28,1);
     }
@@ -2114,8 +2141,25 @@
 
   <!-- Satzbau (historische View-ID flashcards) -->
   <section id="flashcards" class="view" aria-label="Satzbau">
+    <div id="sentenceTopics" class="panel">
+      <h2 class="section-title">Satzbau</h2>
+      <div class="sentence-topics">
+        <button id="sentenceTestButton" class="sentence-topic test" type="button" onclick="openSentenceTest()">
+          <span>Test</span><span class="sentence-topic-arrow" aria-hidden="true">›</span>
+        </button>
+        <button class="sentence-topic everyday" type="button" disabled>
+          <span>Alltag</span><span class="sentence-topic-note">Später</span>
+        </button>
+        <button class="sentence-topic holiday" type="button" disabled>
+          <span>Urlaub</span><span class="sentence-topic-note">Später</span>
+        </button>
+        <button class="sentence-topic school" type="button" disabled>
+          <span>Schule</span><span class="sentence-topic-note">Später</span>
+        </button>
+      </div>
+    </div>
     <div id="sentenceBuilder" class="learn-mode">
-      <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Wortschatz</button>
+      <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Satzbau</button>
       <div class="sentence-game-card">
         <div id="sentenceGameActive">
           <div class="sentence-game-hud">
@@ -2413,7 +2457,7 @@
 
   function openLearnMode(mode){
     if(mode === "cards") return openFlashcards();
-    if(mode === "sentences") return showView("flashcards", null);
+    if(mode === "sentences") return openSentenceTest();
     if(mode !== "typing") return;
     showView("dictionary", null);
     document.body.classList.add("learning-games-view", "game-mode-active");
@@ -2422,6 +2466,21 @@
     updateUnlockButtons();
     startTypingGame();
     window.scrollTo({top:0, behavior:"auto"});
+  }
+
+  function openSentenceTest(){
+    showView("flashcards", null);
+    document.getElementById("sentenceTopics").hidden = true;
+    document.body.classList.add("learning-games-view", "game-mode-active");
+    document.getElementById("sentenceBuilder").classList.add("active");
+    startSentenceGame();
+    document.getElementById("sentenceBackButton").focus({preventScroll:true});
+    window.scrollTo({top:0, behavior:"auto"});
+  }
+
+  function closeSentenceTest(){
+    showView("flashcards", null);
+    document.getElementById("sentenceTestButton").focus({preventScroll:true});
   }
 
   function backToLearnHome(){
@@ -2436,10 +2495,11 @@
     stopTypingGame();
     leaveQuiz();
     document.getElementById("sentenceBuilder").classList.remove("active");
+    document.getElementById("sentenceTopics").hidden = false;
     document.getElementById("typingTrainer").classList.remove("active");
     document.getElementById("dictionaryPanel").hidden = false;
     typingRemaining = [];typingCurrentIndex = -1;typedAnswer = "";
-    document.body.classList.remove("game-mode-active");
+    document.body.classList.remove("learning-games-view", "game-mode-active");
 
     const currentView = document.querySelector(".view.active");
     const currentId = currentView?.id || "dictionary";
@@ -2453,8 +2513,6 @@
     if(id === "flashcards"){
       window.scrollTo({top:0, behavior:"auto"});
     }
-
-    document.body.classList.toggle("learning-games-view", id === "flashcards");
 
     document.querySelectorAll(".view").forEach(v => {
       v.classList.remove("active","nav-slide-from-left","nav-slide-from-right");
@@ -2481,12 +2539,6 @@
     const nav = document.querySelector(".bottom-nav");
     if(nav && targetNavIndex >= 0){
       nav.style.setProperty("--nav-index", targetNavIndex);
-    }
-
-    if(id === "flashcards"){
-      document.body.classList.add("game-mode-active");
-      document.getElementById("sentenceBuilder").classList.add("active");
-      startSentenceGame();
     }
 
     if(id !== "flashcards"){
@@ -3327,7 +3379,7 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/dictionary.js?v=20261003-varianten"></script>
-<script src="sentence-game.js?v=20261004-nav"></script>
+<script src="sentence-game.js?v=20261005-themen"></script>
 <script src="grammar-ui.js?v=20261004-ui2"></script>
 </body>
 </html>
