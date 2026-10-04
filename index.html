@@ -2450,7 +2450,7 @@
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
     words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || allUnlocked;
-    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || SentenceGame.engine.grammar.ready(SentenceGame.engine.unlocked(), SentenceGame.engine.state.opened).length === 0));
+    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || SentenceGame.engine.grammar.requiredReady(SentenceGame.engine.unlocked(), SentenceGame.engine.state.opened).length === 0));
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
