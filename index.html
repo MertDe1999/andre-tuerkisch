@@ -187,7 +187,7 @@
 
     .profile-island{
       display:grid;
-      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      grid-template-columns:auto minmax(0,1fr) auto;
       align-items:center;
       gap:8px;
       padding:12px 14px;
@@ -270,6 +270,22 @@
       font-size:.92rem;
       line-height:1;
       font-weight:900;
+    }
+
+    .profile-level{min-width:0;display:grid;gap:5px}
+    .profile-level-stages{display:flex;align-items:center;justify-content:space-between;gap:4px;color:var(--lavender-dark);font-size:.62rem;line-height:1;font-weight:850}
+    .profile-level-next{opacity:.8}
+    .profile-level-track{position:relative;isolation:isolate;overflow:hidden;height:27px;border:1px solid var(--line);border-radius:10px;background:var(--surface-soft);display:grid;place-items:center}
+    .profile-level-fill{position:absolute;z-index:-1;inset:0 auto 0 0;width:0;background:var(--lavender);border-radius:inherit;transition:width 180ms var(--motion-ease)}
+    .profile-level-label{color:var(--text);font-size:.7rem;line-height:1;font-weight:900;white-space:nowrap}
+    .profile-level[data-complete='true'] .profile-level-fill{background:var(--verb)}
+    .profile-level[data-complete='true'] .profile-level-stages{color:var(--verb-dark)}
+    @media(max-width:360px){
+      .profile-island{gap:6px;padding:11px 10px}
+      .profile-avatar{width:30px;height:30px;border-radius:11px}
+      .profile-name{font-size:.88rem}
+      .profile-chip{padding:8px;min-width:44px}
+      .profile-level-stages{font-size:.6rem}
     }
 
     .view{display:none}
@@ -1999,7 +2015,7 @@
   <link rel="stylesheet" href="grammar.css?v=20261005-einstieg">
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
-  <link rel="stylesheet" href="keyboard.css?v=20261005-reference-keyboard">
+  <link rel="stylesheet" href="keyboard.css?v=20261005-pastel-progress">
 </head>
 
 <body>
@@ -2014,9 +2030,15 @@
         </div>
       </div>
 
-      <div id="profileLevelChip" class="profile-chip level" aria-label="Level 1">
-        <span class="profile-chip-label">Level</span>
-        <span id="profileLevelValue" class="profile-chip-value">1</span>
+      <div id="profileLevelChip" class="profile-level" aria-label="Level 1">
+        <div class="profile-level-stages" aria-hidden="true">
+          <span id="profileLevelStage">A1</span>
+          <span id="profileLevelNext" class="profile-level-next">→ A2</span>
+        </div>
+        <div id="profileLevelBar" class="profile-level-track" role="progressbar" aria-label="Fortschritt zur nächsten Sprachstufe" aria-valuemin="1" aria-valuemax="40" aria-valuenow="1" aria-valuetext="Level 1 · A1 · nächstes Ziel A2">
+          <div id="profileLevelFill" class="profile-level-fill" aria-hidden="true"></div>
+          <span class="profile-level-label" aria-hidden="true">Level <span id="profileLevelValue">1</span></span>
+        </div>
       </div>
 
       <div class="profile-stats">
@@ -2262,7 +2284,7 @@
 <script src="lib/course-grammar.js?v=20261004-course"></script>
 <script src="lib/course-learning.js?v=20261004-course"></script>
 <script src="lib/motion.js?v=20261005-motion"></script>
-<script src="lib/app-keyboard.js?v=20261005-hold-level"></script>
+<script src="lib/app-keyboard.js?v=20261005-pastel-progress"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2412,8 +2434,26 @@
 
   function updateProfileLevel(){
     const level = window.SentenceGame?.engine.state.level ?? 1;
+    const course = window.AndreCourse;
+    const cefr = course?.bandAt(level).cefr ?? "A1";
+    const bands = course?.bands.filter(band => band.cefr === cefr);
+    const start = bands?.[0]?.start ?? 1;
+    const end = bands?.at(-1)?.end ?? 40;
+    const next = course?.bands.find(band => band.start > end)?.cefr ?? (course ? null : "A2");
+    const percent = Math.max(0, Math.min(100, (level - start) / (end - start) * 100));
+    const complete = !next && level === end;
     document.getElementById("profileLevelValue").textContent = level;
-    document.getElementById("profileLevelChip").setAttribute("aria-label", "Level " + level);
+    const chip = document.getElementById("profileLevelChip");
+    chip.setAttribute("aria-label", "Level " + level);
+    chip.dataset.complete = String(complete);
+    document.getElementById("profileLevelStage").textContent = cefr;
+    document.getElementById("profileLevelNext").textContent = next ? "→ " + next : complete ? "B2 ✓" : "B2-Ziel";
+    document.getElementById("profileLevelFill").style.width = percent + "%";
+    const bar = document.getElementById("profileLevelBar");
+    bar.setAttribute("aria-valuemin", start);
+    bar.setAttribute("aria-valuemax", end);
+    bar.setAttribute("aria-valuenow", level);
+    bar.setAttribute("aria-valuetext", "Level " + level + " · " + cefr + " · " + (next ? "nächstes Ziel " + next : complete ? "B2-Ziel erreicht" : "Ziel Level " + end));
   }
 
   function updateLearnedWordsDisplay(){

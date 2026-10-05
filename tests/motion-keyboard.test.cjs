@@ -17,9 +17,9 @@ test('both shared layouts put Delete after m or ç without losing language lette
 test('a stable keyboard uses new actions and disabled keys cannot submit or type',()=>{
  const a=app(),keyboard=a.el('testKeyboard'),calls=[];
  a.run('renderAppKeyboard')('tr',{keyboard,onType:x=>calls.push('old:'+x),onCheck(){calls.push('old check');}});
- const first=keyboard.children[1].children[0],check=keyboard.children.at(-1).children.at(-1);
+ const first=keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q'),check=keyboard.querySelectorAll('.key').find(k=>k.dataset.action==='check');
  a.run('renderAppKeyboard')('tr',{keyboard,onType:x=>calls.push('new:'+x),onCheck(){calls.push('new check');},checkLabel:'Weiter'});
- assert.equal(keyboard.children[1].children[0],first);assert.equal(check.getAttribute('aria-label'),'Weiter');first.click();check.click();
+ assert.equal(keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q'),first);assert.equal(check.getAttribute('aria-label'),'Weiter');first.click();check.click();
  assert.deepEqual(calls,['new:q','new check']);
  a.run('renderAppKeyboard')('tr',{keyboard,onType(){calls.push('disabled');},onCheck(){calls.push('disabled');},disabled:true});first.click();check.click();assert.equal(calls.length,2);
 });
@@ -61,9 +61,9 @@ test('swipe follows the finger and cancellation restores preview and navigation 
 
 test('grammar typing animates the real draft while preserving keyboard and input guards',()=>{
  const a=app({reducedMotion:false});a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
- const keyboard=a.el('grammarKeyboard'),key=keyboard.children[1].children[0];a.run('GrammarTrainer.type("ş");GrammarTrainer.type("ü")');
+ const keyboard=a.el('grammarKeyboard'),key=keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q');a.run('GrammarTrainer.type("ş");GrammarTrainer.type("ü")');
  assert.equal(a.el('grammarAnswer').textContent,'şü');assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),'şü');
- a.run('GrammarTrainer.type("BACKSPACE")');assert.equal(a.el('grammarAnswer').textContent,'ş');assert.equal(a.el('grammarKeyboard'),keyboard);assert.equal(keyboard.children[1].children[0],key);
+ a.run('GrammarTrainer.type("BACKSPACE")');assert.equal(a.el('grammarAnswer').textContent,'ş');assert.equal(a.el('grammarKeyboard'),keyboard);assert.equal(keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q'),key);
  a.run('showView("dictionary",null)');const draft=a.run('SentenceGame.engine.grammar.state.current.draft');a.run('GrammarTrainer.type("x")');assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),draft);
 });
 

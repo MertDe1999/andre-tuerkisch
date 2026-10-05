@@ -59,10 +59,10 @@ Reduzierte Bewegung deaktiviert die Animation. `lib/dictionary-search.js` verwal
 nur diese Eingabe und Darstellung, ohne Lernstände zu speichern.
 
 Alle App-Tastaturen folgen den deutschen/türkischen Bildvorlagen: Zahlenreihe,
-QWERTZ oder Türkisch-Q, Shift links, Löschen rechts und unten drei breite Tasten.
-Die Leertaste zeigt Deutsch/Türkisch; in den Übungen stehen links „Keine Ahnung“
-und rechts der grüne Haken. Dunkler Hintergrund, graue Tasten und weiße Schrift
-gelten auch bei hellem App-Theme. Shift gilt für einen Buchstaben und beachtet
+QWERTZ oder Türkisch-Q, Shift links und Löschen rechts. Die breite Leertaste
+zeigt Deutsch/Türkisch. Darüber schweben die Aktionen „Keine Ahnung“ und Haken
+als pastellfarbene Schaltflächen; in der Suche ersetzt der Sprachwechsel „Keine
+Ahnung“. Farben folgen dem hellen/dunklen App-Theme. Shift gilt für einen Buchstaben und beachtet
 `ı → I` sowie `i → İ`. `s` gedrückt halten bietet `ß`, mit Shift `ẞ`; Abbruch
 oder Navigation übernimmt kein Zeichen. `lib/app-keyboard.js` und `keyboard.css`
 teilen Darstellung/Bedienung; Freischaltungen und Bewertungsregeln bleiben getrennt.
@@ -72,6 +72,10 @@ Die Löschtaste löscht beim Drücken ein Zeichen und wiederholt nach 350 ms all
 der nachfolgende Klick löscht kein zusätzliches Zeichen. Dies gilt für Worttrainer,
 Grammatik und Suche. In der Topleiste steht der aktuelle Satzbau-Level mittig
 zwischen André und „Gelernt“, einschließlich Abstieg und Laden des Browserstands.
+Der Balken enthält die Levelzahl und füllt sich innerhalb der aktuellen Sprachstufe:
+A1 1–40, A2 41–80, B1 81–120, B2 121–160. Links steht die aktuelle Stufe,
+rechts das nächste Ziel. Am ersten Level jeder Stufe ist er leer, am letzten voll;
+der nächste Abschnitt beginnt neu. Bei 160 wird das B2-Ziel markiert, ohne C1.
 
 ## Tests
 

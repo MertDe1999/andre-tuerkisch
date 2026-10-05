@@ -31,12 +31,14 @@ test('search opens the shared keyboard, searches instantly and keeps the word-ty
 
 test('DE/TR layouts preserve search text, language-specific letters and Delete placement',()=>{
  const a=app();a.el('search').click();const rows=a.el('searchKeyboard').children;
- assert.equal(rows.length,5);assert.equal(rows[3].children.filter(e=>e.tagName==='BUTTON').at(-2).textContent,'m');
- assert.equal(rows[3].children.at(-1).dataset.action,'delete');
+ assert.equal(rows.length,6);assert.equal(rows[4].children.filter(e=>e.tagName==='BUTTON').at(-2).textContent,'m');
+ assert.equal(rows[4].children.at(-1).dataset.action,'delete');
+ assert.deepEqual(rows[0].children.map(k=>k.dataset.action),['language','check']);
+ assert.deepEqual(rows[5].children.map(k=>k.dataset.action),['space']);
  enter(a,'äöüß');key(a,'language').click();assert.equal(a.el('search').value,'äöüß');
  assert.equal(a.el('searchKeyboard').getAttribute('lang'),'tr');
- assert.equal(a.el('searchKeyboard').children[3].children.at(-2).textContent,'ç');
- assert.equal(a.el('searchKeyboard').children[3].children.at(-1).dataset.action,'delete');
+ assert.equal(a.el('searchKeyboard').children[4].children.at(-2).textContent,'ç');
+ assert.equal(a.el('searchKeyboard').children[4].children.at(-1).dataset.action,'delete');
  enter(a,'çğıöşü');key(a,'space').click();assert.equal(a.el('search').value,'äöüßçğıöşü ');
  key(a,'language').click();assert.equal(a.el('searchKeyboard').getAttribute('lang'),'de');
  assert.equal(a.el('search').value,'äöüßçğıöşü ');

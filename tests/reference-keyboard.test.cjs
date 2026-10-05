@@ -10,22 +10,23 @@ function fixture(language='de'){
  a.run('renderAppKeyboard')(language,options);return {a,keyboard,typed,options};
 }
 
-test('both reference layouts have a number row, their exact letter rows and the three bottom actions',()=>{
+test('both layouts retain exact letters and numbers, with floating actions above and only Space below',()=>{
  for(const [language,rows,name] of [['de',['qwertzuiopü','asdfghjklöä','yxcvbnm'],'Deutsch'],['tr',['qwertyuıopğü','asdfghjklşi','zxcvbnmöç'],'Türkisch']]){
-  const {keyboard,typed}=fixture(language);assert.equal(keyboard.children.length,5);
-  assert.equal(keyboard.children[0].children.map(k=>k.textContent).join(''),'1234567890');
-  rows.forEach((letters,index)=>assert.equal(keyboard.children[index+1].children.filter(k=>k.dataset.action==='letter').map(k=>k.textContent).join(''),letters));
-  const bottom=keyboard.children[3].children.filter(k=>k.tagName==='BUTTON');
+  const {keyboard,typed}=fixture(language);assert.equal(keyboard.children.length,6);
+  assert.deepEqual(keyboard.children[0].children.map(k=>k.dataset.action),['skip','check']);
+  assert.equal(keyboard.children[1].children.map(k=>k.textContent).join(''),'1234567890');
+  rows.forEach((letters,index)=>assert.equal(keyboard.children[index+2].children.filter(k=>k.dataset.action==='letter').map(k=>k.textContent).join(''),letters));
+  const bottom=keyboard.children[4].children.filter(k=>k.tagName==='BUTTON');
   assert.equal(bottom[0].dataset.action,'shift');assert.equal(bottom.at(-1).dataset.action,'delete');
   assert.equal(bottom.at(-2).textContent,language==='de'?'m':'ç');
-  assert.deepEqual(keyboard.children[4].children.map(k=>k.dataset.action),['skip','space','check']);
+  assert.deepEqual(keyboard.children[5].children.map(k=>k.dataset.action),['space']);
   assert.equal(action(keyboard,'skip').textContent,'Keine Ahnung');assert.equal(action(keyboard,'space').textContent,name);
   assert.match(action(keyboard,'space').getAttribute('aria-label'),/^Leertaste/);
   for(const kind of ['shift','delete','check']){
    const svg=action(keyboard,kind).children[0];assert.equal(svg.tagName,'SVG');assert.equal(svg.getAttribute('aria-hidden'),'true');
    assert.ok(action(keyboard,kind).getAttribute('aria-label'));
   }
-  keyboard.children[0].children.forEach(k=>k.click());action(keyboard,'space').click();action(keyboard,'delete').click();
+  keyboard.children[1].children.forEach(k=>k.click());action(keyboard,'space').click();action(keyboard,'delete').click();
   assert.deepEqual(typed,[...'1234567890',' ','BACKSPACE']);
  }
 });
@@ -82,7 +83,7 @@ test('cancelled, moved, hidden or replaced holds never emit a character or leave
 test('the reference keyboard completes both word directions and numbers use the same editable draft',()=>{
  const a=app();a.run('openLearnMode("typing");typingRemaining=[typingRemaining.find(w=>w.tr==="ev")];typingCurrentIndex=0;typingDirection="toTurkish";renderTypingWord()');const keyboard=a.el('customKeyboard');
  assert.equal(a.run('typingRemaining[typingCurrentIndex].tr'),'ev');
- assert.equal(keyboard.style.display,'grid','trainer activation must preserve the five-row grid proportions');
+ assert.equal(keyboard.style.display,'grid','trainer activation must preserve the shared grid proportions');
  action(keyboard,'number').click();assert.equal(a.run('typedAnswer'),'1');action(keyboard,'delete').click();
  action(keyboard,'shift').click();letter(keyboard,'e').click();letter(keyboard,'v').click();assert.equal(a.run('typedAnswer'),'Ev');
  action(keyboard,'check').click();a.advance(750);assert.equal(keyboard.getAttribute('lang'),'de');
