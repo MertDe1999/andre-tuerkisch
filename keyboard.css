@@ -1,0 +1,65 @@
+/* Proportions, colours and rows follow the user's DE/TR keyboard references. */
+:root{
+  --app-keyboard-height:calc(min(100vw,520px) * .7 + max(6px,env(safe-area-inset-bottom)));
+  --search-keyboard-height:var(--app-keyboard-height);
+  --keyboard-gap:clamp(4px,1.35vw,7px);
+  --keyboard-row-gap:clamp(8px,3vw,16px);
+  --keyboard-letter-size:clamp(1.08rem,5.4vw,1.76rem);
+}
+body .custom-keyboard{
+  --keyboard-columns:11;
+  --keyboard-letter-width:calc((100% - (var(--keyboard-columns) - 1) * var(--keyboard-gap)) / var(--keyboard-columns));
+  display:grid;grid-template-rows:.84fr 1fr 1fr 1fr 1fr;
+  gap:var(--keyboard-row-gap);padding:4px 4px max(6px,env(safe-area-inset-bottom));
+  background:#0a0a0a;border:0;border-radius:0;box-shadow:none;color:#fcfcfc;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+body .custom-keyboard[lang='tr']{--keyboard-columns:12}
+body.learning-games-view #typingTrainer .custom-keyboard,
+body.grammar-training-view #grammarTrainer .custom-keyboard,
+body .search-keyboard{
+  height:var(--app-keyboard-height);min-height:var(--app-keyboard-height);max-height:var(--app-keyboard-height);
+  gap:var(--keyboard-row-gap);padding:4px 4px max(6px,env(safe-area-inset-bottom));border:0;border-radius:0;box-shadow:none;
+}
+body .custom-keyboard .keyboard-row{
+  display:flex;justify-content:center;gap:var(--keyboard-gap);min-height:0;flex:none;
+}
+body .custom-keyboard .key,
+body.learning-games-view .custom-keyboard .key{
+  height:100%;min-height:0;min-width:0;flex:1 1 0;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border:0;border-radius:clamp(5px,1.4vw,8px);box-shadow:none;
+  background:#303030;color:#fcfcfc;font-family:inherit;font-weight:400;
+  font-size:var(--keyboard-letter-size);line-height:1;
+  transition:transform 60ms linear,background-color 50ms linear;
+}
+body .custom-keyboard .key.letter{flex:0 0 var(--keyboard-letter-width)}
+body .custom-keyboard .key.number{font-size:calc(var(--keyboard-letter-size) * .95)}
+body .custom-keyboard .key.shift,body .custom-keyboard .key.delete{background:#1b1b1b;flex:1 1 0}
+body .custom-keyboard[lang='de'] .last-letters .shift,
+body .custom-keyboard[lang='de'] .last-letters .delete{flex:0 0 calc(var(--keyboard-letter-width) * 1.5)}
+.keyboard-spacer{flex:1 1 0;min-width:0;pointer-events:none}
+body .custom-keyboard .keyboard-row.controls{
+  display:grid;grid-template-columns:1.05fr 1.65fr 1fr;gap:var(--keyboard-row-gap);
+  padding:0 clamp(8px,2.3vw,12px);
+}
+body .custom-keyboard .key.utility,body .custom-keyboard .key.space{
+  font-size:clamp(.66rem,3vw,1rem);line-height:1.1;font-weight:400;
+}
+body .custom-keyboard .key.utility{background:#fe0024;color:#fcfcfc}
+body .custom-keyboard .key.space{background:#303030;color:#fcfcfc}
+body .custom-keyboard .key.check{background:#48b400;color:#fcfcfc;font-size:var(--keyboard-letter-size)}
+.key-icon{width:1.35em;height:1.35em;pointer-events:none}
+body .custom-keyboard .key:focus-visible{outline:2px solid #fff;outline-offset:2px}
+body .custom-keyboard .key.shift[aria-pressed='true']{background:#4b4b4b}
+.key.shift[aria-pressed='true'] .key-icon{fill:currentColor}
+body .custom-keyboard .key:not(:disabled):active{transform:translateY(1px);background:#454545;transition-duration:35ms}
+body .custom-keyboard .key.utility:not(:disabled):active{background:#d60020}
+body .custom-keyboard .key.check:not(:disabled):active{background:#3e9800}
+body .custom-keyboard .key:disabled{opacity:.5}
+@media(orientation:landscape) and (max-height:500px){
+  :root{
+    --app-keyboard-height:calc(50dvh + max(6px,env(safe-area-inset-bottom)));
+    --keyboard-row-gap:4px;--keyboard-letter-size:clamp(1rem,5dvh,1.4rem);
+  }
+}

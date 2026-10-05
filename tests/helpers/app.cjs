@@ -43,6 +43,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  const el=id=>{if(!ids.has(id)){const e=new Element();e.id=id;}return ids.get(id);};
  el('sentenceBankArea').append(el('wordBank'));
  document={body:new Element(),documentElement:new Element(),getElementById:el,createElement:tag=>{const e=new Element();e.tagName=tag.toUpperCase();return e;},
+   createElementNS(ns,tag){return this.createElement(tag);},
    addEventListener(type,f){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(f);},dispatchEvent(event){for(const f of listeners.get(event.type)||[])f(event);},
    elementFromPoint:()=>document.pointerTarget||null,
    querySelector(selector){if(selector==='.confetti-layer')return this.body.querySelector(selector);return el(selector);},

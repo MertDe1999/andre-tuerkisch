@@ -62,7 +62,7 @@
   AndreMotion.write(answer,cur.draft,{animate:false});
   const feedback=make('div','typing-feedback','');feedback.id='grammarFeedback';feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');feedback.textContent=engine.grammar.error;card.append(feedback);trainer.append(card);
   if(!keyboard){keyboard=make('div','custom-keyboard','');keyboard.id='grammarKeyboard';keyboard.setAttribute('aria-label','App-Tastatur');}trainer.append(keyboard);
-  renderAppKeyboard(cur.direction==='tr'?'tr':'de',{keyboard,onType:type,onCheck:cur.answered?next:check,onSkip:skip,skipLabel:'Überspringen',checkLabel:cur.answered?'Nächste Aufgabe':'Antwort prüfen',disabled:advanceTimer!==null});
+  renderAppKeyboard(cur.direction==='tr'?'tr':'de',{keyboard,onType:type,onCheck:cur.answered?next:check,onSkip:skip,checkLabel:cur.answered?'Nächste Aufgabe':'Antwort prüfen',disabled:advanceTimer!==null,reset:changed});
   if(changed)AndreMotion.enter(card);if(old)AndreMotion.play(old,[{opacity:1},{opacity:0}],{duration:160,cleanup:()=>old.remove()});
  }
  function type(key){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null)return;
@@ -101,6 +101,7 @@
   if(cur){draw();el('grammarAnswer').focus();}else close();
  }
  function close(animate=true){
+  AndreKeyboard.cancel(keyboard);
   if(active&&animate){AndreMotion.cancel();AndreMotion.depart(trainer.querySelector('.grammar-exercise'));}
   const wasActive=active;clearTimeout(advanceTimer);advanceTimer=null;active=false;trainer.hidden=true;el('grammarPanel').hidden=false;
   document.body.classList.remove('learning-games-view','game-mode-active','grammar-training-view');overview();updateUnlockButtons();
@@ -111,7 +112,7 @@
   if(['Enter',' '].includes(event.key)&&event.target.closest?.('button,[role="button"]'))return;
   if(event.key==='Enter'){event.preventDefault();if(!event.repeat){if(engine.grammar.state.current?.answered)next();else check();}}
   else if(event.key==='Backspace'){event.preventDefault();type('BACKSPACE');}
-  else if(/^[\p{L} '’.,?!-]$/u.test(event.key)){event.preventDefault();type(event.key);}
+  else if(/^[\p{L}\p{N} '’.,?!-]$/u.test(event.key)){event.preventDefault();type(event.key);}
  });
  root.GrammarTrainer={open,close,next,type,check,canUnlock,get active(){return active;}};root.openGrammarTraining=open;root.refreshGrammarUI=overview;
  el('grammarUnlockFloatingButton').addEventListener('click',()=>{if(!el('grammarUnlockFloatingButton').disabled)open();});overview();updateUnlockButtons();

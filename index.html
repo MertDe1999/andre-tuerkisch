@@ -1996,7 +1996,8 @@
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
   <link rel="stylesheet" href="grammar.css?v=20261005-einstieg">
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
-  <link rel="stylesheet" href="motion.css?v=20261005-search-keyboard">
+  <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
+  <link rel="stylesheet" href="keyboard.css?v=20261005-reference-keyboard">
 </head>
 
 <body>
@@ -2254,6 +2255,7 @@
 <script src="lib/course-grammar.js?v=20261004-course"></script>
 <script src="lib/course-learning.js?v=20261004-course"></script>
 <script src="lib/motion.js?v=20261005-motion"></script>
+<script src="lib/app-keyboard.js?v=20261005-reference-keyboard"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2532,6 +2534,7 @@
   const mainNavViews = ["dictionary","grammar","flashcards"];
 
   function showView(id, btn, swipeDirection = null, motionSwipe = null){
+    window.AndreKeyboard?.cancelAll();
     window.AndreDictionarySearch?.close({immediate:true});
     AndreMotion.cancel();
     const exitingView = document.querySelector(".view.active");
@@ -2614,6 +2617,7 @@
   }
 
   function stopTypingGame(){
+    AndreKeyboard.cancel(document.getElementById("customKeyboard"));
     typingGameRunning = false;
     clearTimeout(typingTransitionTimer);
     typingTransitionTimer = null;
@@ -2623,6 +2627,7 @@
 
   function scheduleTypingTransition(delay){
     if(!typingGameRunning || typingTransitionPending) return;
+    AndreKeyboard.cancel(document.getElementById("customKeyboard"));
     typingTransitionPending = true;
     document.querySelectorAll("#customKeyboard .key").forEach(key => {key.disabled = true;});
     typingTransitionTimer = setTimeout(() => {
@@ -2651,7 +2656,7 @@
 
     document.getElementById("typingGameActive").style.display = "block";
     document.getElementById("typingComplete").classList.remove("show");
-    document.getElementById("customKeyboard").style.display = "flex";
+    document.getElementById("customKeyboard").style.display = "grid";
 
     updateTypingProgress();
     nextTypingWord();
@@ -2725,46 +2730,12 @@
     answerEl.focus({preventScroll:true});
   }
 
-  function renderAppKeyboard(language, {keyboard, onType, onCheck, onSkip, onLanguage, languageLabel = language.toUpperCase(), skipLabel = "Keine Ahnung", checkLabel = "Antwort prüfen", disabled = false}){
-    const rows = language === "tr"
-      ? [["q","w","e","r","t","y","u","ı","o","p","ğ","ü"], ["a","s","d","f","g","h","j","k","l","ş","i"], ["z","x","c","v","b","n","m","ö","ç"]]
-      : [["q","w","e","r","t","z","u","i","o","p","ü"], ["a","s","d","f","g","h","j","k","l","ö","ä","ß"], ["y","x","c","v","b","n","m"]];
-    keyboard._actions = {onType,onCheck,onSkip,onLanguage};
-    const layout = language + ":" + Boolean(onSkip) + ":" + Boolean(onLanguage);
-    if(keyboard.dataset.layout === layout){
-      keyboard.querySelectorAll(".key").forEach(button => {
-        button.disabled = disabled;
-        if(button.dataset.action === "check") button.setAttribute("aria-label", checkLabel);
-        if(button.dataset.action === "skip") button.textContent = skipLabel;
-        if(button.dataset.action === "language") button.setAttribute("aria-label", languageLabel);
-      });
-      return;
-    }
-    keyboard.dataset.layout = layout;
-    keyboard.setAttribute("lang", language);
-    keyboard.replaceChildren();
-    function key(text, action, className = "key", label, value){
-      const button = document.createElement("button");
-      button.type = "button";button.className = className;button.textContent = text;button.disabled = disabled;
-      button.dataset.action = value || "letter";
-      if(label) button.setAttribute("aria-label", label);
-      button.addEventListener("click", () => {if(!button.disabled) action();});return button;
-    }
-    function row(keys){const row = document.createElement("div");row.className = "keyboard-row";row.append(...keys);keyboard.append(row);}
-    if(onSkip) row([key(skipLabel, () => keyboard._actions.onSkip(), "key unknown", skipLabel, "skip")]);
-    rows.forEach((letters,index) => {
-      const keys = letters.map(letter => key(letter, () => keyboard._actions.onType(letter)));
-      if(index === 2) keys.push(key("⌫", () => keyboard._actions.onType("BACKSPACE"), "key special delete", "Zeichen löschen", "delete"));
-      row(keys);
-    });
-    const controls = [];
-    if(onLanguage) controls.push(key(language.toUpperCase()+" ⇄", () => keyboard._actions.onLanguage(), "key special language", languageLabel, "language"));
-    controls.push(key("Leertaste", () => keyboard._actions.onType(" "), "key special space", "Leertaste", "space"),key("✓", () => keyboard._actions.onCheck(), "key special check", checkLabel, "check"));
-    row(controls);
+  function renderAppKeyboard(language, options){
+    AndreKeyboard.render(language, options);
   }
 
   function renderCustomKeyboard(language){
-    renderAppKeyboard(language, {keyboard:document.getElementById("customKeyboard"),onType:typeCustomKey,onCheck:checkTypedAnswer,onSkip:handleDontKnow});
+    renderAppKeyboard(language, {keyboard:document.getElementById("customKeyboard"),onType:typeCustomKey,onCheck:checkTypedAnswer,onSkip:handleDontKnow,reset:true});
   }
 
   function typeCustomKey(key){
@@ -2804,7 +2775,7 @@
     }else if(event.key === "Backspace"){
       event.preventDefault();
       typeCustomKey("BACKSPACE");
-    }else if(/^[\p{L} ]$/u.test(event.key)){
+    }else if(/^[\p{L}\p{N} ]$/u.test(event.key)){
       event.preventDefault();
       typeCustomKey(event.key);
     }
@@ -3469,8 +3440,8 @@
 </script>
 <script src="lib/filter-layout.js?v=20261005-kompakt"></script>
 <script src="lib/dictionary.js?v=20261005-kompakt"></script>
-<script src="lib/dictionary-search.js?v=20261005-search-keyboard"></script>
+<script src="lib/dictionary-search.js?v=20261005-reference-keyboard"></script>
 <script src="sentence-game.js?v=20261005-milestones"></script>
-<script src="grammar-ui.js?v=20261005-einstieg"></script>
+<script src="grammar-ui.js?v=20261005-reference-keyboard"></script>
 </body>
 </html>

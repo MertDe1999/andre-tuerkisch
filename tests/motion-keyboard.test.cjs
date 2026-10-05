@@ -3,11 +3,11 @@ const {app}=require('./helpers/app.cjs');
 
 test('both shared layouts put Delete after m or ç without losing language letters',()=>{
  const a=app();
- for(const [language,last,letters] of [['de','m','abcdefghijklmnopqrstuvwxyzäöüß'],['tr','ç','qwertyuıopğüasdfghjklşizxcvbnmöç']]){
+ for(const [language,last,letters] of [['de','m','abcdefghijklmnopqrstuvwxyzäöü'],['tr','ç','qwertyuıopğüasdfghjklşizxcvbnmöç']]){
   const keyboard=a.el('testKeyboard');const typed=[];
   a.run('renderAppKeyboard') (language,{keyboard,onType:x=>typed.push(x),onCheck(){}});
-  const rows=keyboard.children,wordRow=rows.at(-2).children;
-  assert.equal(wordRow.at(-2).textContent,last);assert.equal(wordRow.at(-1).textContent,'⌫');
+  const rows=keyboard.children,wordRow=rows.at(-2).children.filter(e=>e.tagName==='BUTTON');
+  assert.equal(wordRow.at(-2).textContent,last);assert.equal(wordRow.at(-1).getAttribute('aria-label'),'Zeichen löschen');
   const keys=rows.flatMap(row=>row.children);assert.equal(keys.filter(k=>k.dataset.action==='delete').length,1);
   for(const letter of letters)assert.ok(keys.some(k=>k.textContent===letter),language+' missing '+letter);
   wordRow.at(-1).click();assert.deepEqual(typed,['BACKSPACE']);
@@ -17,9 +17,9 @@ test('both shared layouts put Delete after m or ç without losing language lette
 test('a stable keyboard uses new actions and disabled keys cannot submit or type',()=>{
  const a=app(),keyboard=a.el('testKeyboard'),calls=[];
  a.run('renderAppKeyboard')('tr',{keyboard,onType:x=>calls.push('old:'+x),onCheck(){calls.push('old check');}});
- const first=keyboard.children[0].children[0],check=keyboard.children.at(-1).children.at(-1);
+ const first=keyboard.children[1].children[0],check=keyboard.children.at(-1).children.at(-1);
  a.run('renderAppKeyboard')('tr',{keyboard,onType:x=>calls.push('new:'+x),onCheck(){calls.push('new check');},checkLabel:'Weiter'});
- assert.equal(keyboard.children[0].children[0],first);assert.equal(check.getAttribute('aria-label'),'Weiter');first.click();check.click();
+ assert.equal(keyboard.children[1].children[0],first);assert.equal(check.getAttribute('aria-label'),'Weiter');first.click();check.click();
  assert.deepEqual(calls,['new:q','new check']);
  a.run('renderAppKeyboard')('tr',{keyboard,onType(){calls.push('disabled');},onCheck(){calls.push('disabled');},disabled:true});first.click();check.click();assert.equal(calls.length,2);
 });
