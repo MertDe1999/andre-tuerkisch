@@ -186,10 +186,10 @@
     }
 
     .profile-island{
-      display:flex;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
       align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      gap:8px;
       padding:12px 14px;
       border:1px solid rgba(233,225,219,.92);
       border-radius:28px;
@@ -202,12 +202,12 @@
       min-width:0;
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:clamp(6px,2vw,10px);
     }
 
     .profile-avatar{
-      width:40px;
-      height:40px;
+      width:clamp(32px,10vw,40px);
+      height:clamp(32px,10vw,40px);
       border-radius:14px;
       display:block;
       flex:0 0 auto;
@@ -235,6 +235,7 @@
       align-items:center;
       gap:7px;
       flex:0 0 auto;
+      justify-self:end;
     }
 
     .profile-chip{
@@ -242,6 +243,7 @@
       padding:8px 10px;
       border-radius:14px;
       text-align:center;
+      white-space:nowrap;
       background:var(--surface-soft);
       border:1px solid var(--line);
     }
@@ -2012,6 +2014,11 @@
         </div>
       </div>
 
+      <div id="profileLevelChip" class="profile-chip level" aria-label="Level 1">
+        <span class="profile-chip-label">Level</span>
+        <span id="profileLevelValue" class="profile-chip-value">1</span>
+      </div>
+
       <div class="profile-stats">
         <div class="profile-chip level">
           <span class="profile-chip-label">Gelernt</span>
@@ -2255,7 +2262,7 @@
 <script src="lib/course-grammar.js?v=20261004-course"></script>
 <script src="lib/course-learning.js?v=20261004-course"></script>
 <script src="lib/motion.js?v=20261005-motion"></script>
-<script src="lib/app-keyboard.js?v=20261005-reference-keyboard"></script>
+<script src="lib/app-keyboard.js?v=20261005-hold-level"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2403,7 +2410,14 @@
     });
   }
 
+  function updateProfileLevel(){
+    const level = window.SentenceGame?.engine.state.level ?? 1;
+    document.getElementById("profileLevelValue").textContent = level;
+    document.getElementById("profileLevelChip").setAttribute("aria-label", "Level " + level);
+  }
+
   function updateLearnedWordsDisplay(){
+    updateProfileLevel();
     const rows = getDictionaryRows();
     const progress = getUnlockProgress();
 
@@ -3441,7 +3455,7 @@
 <script src="lib/filter-layout.js?v=20261005-kompakt"></script>
 <script src="lib/dictionary.js?v=20261005-kompakt"></script>
 <script src="lib/dictionary-search.js?v=20261005-reference-keyboard"></script>
-<script src="sentence-game.js?v=20261005-milestones"></script>
+<script src="sentence-game.js?v=20261005-hold-level"></script>
 <script src="grammar-ui.js?v=20261005-reference-keyboard"></script>
 </body>
 </html>

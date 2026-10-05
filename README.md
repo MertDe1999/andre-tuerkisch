@@ -67,6 +67,12 @@ gelten auch bei hellem App-Theme. Shift gilt für einen Buchstaben und beachtet
 oder Navigation übernimmt kein Zeichen. `lib/app-keyboard.js` und `keyboard.css`
 teilen Darstellung/Bedienung; Freischaltungen und Bewertungsregeln bleiben getrennt.
 
+Die Löschtaste löscht beim Drücken ein Zeichen und wiederholt nach 350 ms alle
+70 ms. Loslassen, Wegbewegen, Abbruch oder Verlassen der Tastatur stoppt sofort;
+der nachfolgende Klick löscht kein zusätzliches Zeichen. Dies gilt für Worttrainer,
+Grammatik und Suche. In der Topleiste steht der aktuelle Satzbau-Level mittig
+zwischen André und „Gelernt“, einschließlich Abstieg und Laden des Browserstands.
+
 ## Tests
 
 Grammatik zeigt farbige Themenkarten und gesperrte unbekannte Regeln. Freischalten erfolgt über den zentralen Button; gelernte Regeln können wiederholt werden. Die Übersetzungsübung verwendet dieselbe vollständige App-Tastatur wie „Wörter Freischalten“, ohne Lösungsanzeige. Überspringen vergibt keinen Fortschritt.
