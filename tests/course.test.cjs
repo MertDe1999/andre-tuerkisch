@@ -17,17 +17,15 @@ test('all authored references preserve their intended grammatical interpretation
  assert.equal(C.tasks.find(t=>t.id==='S10c').groups[0].slots.at(-1).features.tense,'future');
  assert.equal(C.tasks.find(t=>t.id==='S05b').groups[0].slots[1].features.case,'accusative');
 });
-test('a real learner can progress from 1 to 160 using each small word package, lessons and direct applications',()=>{
- const {e,data}=engine(),words=new Set();let rounds=0,lessons=0,last=0;
- while((e.state.level<160||!e.bandReady(C.bands[31]))&&rounds++<3500){
-  const band=C.bands[e.state.opened-1];for(const s of C.bands.slice(0,e.state.opened))for(const tr of s.words)words.add(W.byLemma[tr].id);unlock(data,words);e.refreshPool();
-  if(last!==e.state.opened){last=e.state.opened;let ex;for(let n=0;n<1500&&(ex=e.grammar.next(words,last));n++){assert.ok(++lessons<2000);assert.ok(G.byId[ex.entryId].min<=band.end);assert.ok(e.grammar.check(ex.answer).correct);}}
-  const current=e.next();assert.ok(current,'No task at level '+e.state.level);
-  assert.ok(current.task.requires.every(id=>words.has(id)));assert.ok(G.canTask(current.task,e.grammar.unlocked()));
-  const result=solve(e);assert.equal(result.correct,true);assert.ok(result.delta>=0);
+test('word and grammar unlocks alone complete all 32 packages and reach 160',()=>{
+ const P=require('../lib/course-progress'),{e,data}=engine(),words=new Set();let lessons=0;
+ for(const p of P.packages){p.words.forEach(id=>words.add(id));unlock(data,words);e.refreshPool();
+  while(!p.grammar.every(id=>e.grammar.unlocked().has(id))){
+   const ex=e.grammar.next(words,p.index+1);assert.ok(ex,'Missing lesson in section '+(p.index+1));assert.ok(++lessons<3000);assert.ok(e.grammar.check(ex.answer).correct);
+  }
+  e.syncProgress();assert.equal(e.state.opened,Math.min(32,p.index+2));
  }
- assert.equal(e.state.level,160);assert.ok(e.bandReady(C.bands[31]),'Course stuck after '+rounds+' tasks at '+e.state.level+'; missing '+e.missingSkills().map(x=>x.id));
- assert.equal(e.state.opened,32);assert.equal(e.state.standard,true);
+ assert.equal(e.state.level,160);assert.equal(e.state.completed,0);assert.equal(e.state.opened,32);assert.equal(e.state.standard,true);
 });
 test('lessons count three answers in each direction, retain partial progress and never count help twice',()=>{
  const {e,data,storage}=engine(),words=new Set([W.byLemma.ev.id]);unlock(data,words);e.state.opened=4;
@@ -41,20 +39,20 @@ test('lessons count three answers in each direction, retain partial progress and
 test('new feminine nouns and regular verbs enter structures without editing sentence lists or old core packages',()=>{
  const before=JSON.stringify(G.core);
  W.register({id:'test-kedi',tr:'kedi',de:'Katze',type:'noun',semantic:'animal',deGrammar:{gender:'f',singular:'Katze',plural:'Katzen',to:'zur Katze',at:'bei der Katze',from:'von der Katze'}});
- W.register({id:'test-bakmak',tr:'bakmak',de:'schauen',type:'verb',stem:'bak',progressiveStem:'bak',aorist:'bakar',deGrammar:{infinitive:'schauen',present:['schaue','schaust','schaut','schauen','schaut','schauen'],participle:'geschaut',auxiliary:'haben',frame:'simple'}});
+ W.register({id:'test-ucmak',tr:'uçmak',de:'schauen',type:'verb',stem:'uç',progressiveStem:'uç',aorist:'uçar',deGrammar:{infinitive:'schauen',present:['schaue','schaust','schaut','schauen','schaut','schauen'],participle:'geschaut',auxiliary:'haben',frame:'simple'}});
  const words=new Set(W.words.map(w=>w.id)),generated=C.generate({words,section:9,seed:7,limit:200});
- assert.ok(generated.some(t=>t.de==='Meine Katze ist schön.'));assert.ok(generated.some(t=>t.requires.includes('test-bakmak')));
+ assert.ok(generated.some(t=>t.de==='Meine Katze ist schön.'));assert.ok(generated.some(t=>t.requires.includes('test-ucmak')));
  generated.forEach(t=>G.register(t));assert.equal(JSON.stringify(G.core),before);
  for(const t of generated)assert.ok(t.requires.every(id=>words.has(id)));
  const e=engine();unlock(e.data,words);assert.equal(e.e.available().length,0,'new vocabulary never grants grammar');
- W.register({id:'test-aramak',tr:'aramak',de:'suchen',type:'verb',stem:'ara',progressiveStem:'ar',aorist:'arar',deGrammar:{infinitive:'suchen',present:['suche','suchst','sucht','suchen','sucht','suchen'],participle:'gesucht',auxiliary:'haben',frame:'object'}});
- words.add('test-aramak');const complex=C.variants(C.tasks.find(t=>t.id==='S20b'),words).find(t=>t.requires.includes('test-aramak'));
- assert.ok(complex);assert.equal(complex.answer,'senin evi aradığını biliyorum');assert.equal(complex.de,'Ich weiß, dass du das Haus gesucht hast.');
+ W.register({id:'test-incelemek',tr:'incelemek',de:'suchen',type:'verb',stem:'incele',progressiveStem:'incel',aorist:'inceler',deGrammar:{infinitive:'suchen',present:['suche','suchst','sucht','suchen','sucht','suchen'],participle:'gesucht',auxiliary:'haben',frame:'object'}});
+ words.add('test-incelemek');const complex=C.variants(C.tasks.find(t=>t.id==='S20b'),words).find(t=>t.requires.includes('test-incelemek'));
+ assert.ok(complex);assert.equal(complex.answer,'senin evi incelediğini biliyorum');assert.equal(complex.de,'Ich weiß, dass du das Haus gesucht hast.');
 });
-test('B1 register persists after a level loss, and saved generated tasks resume unchanged',()=>{
- const {e,data,storage}=engine();const words=new Set(W.words.map(w=>w.id));unlock(data,words);e.state.level=81;e.state.highestLevel=81;e.state.opened=17;e.state.standard=true;e.refreshPool();e.grammar.state.unlocked=Object.fromEntries(G.entries.map(x=>[x.id,true]));e.grammar.save();
- const t=e.available().find(t=>t.ast&&t.groups[0].slots.at(-1).features.tense==='present');assert.ok(t);e.begin(t,'current');e.check({unknown:true});assert.equal(e.state.level,80);assert.equal(e.state.standard,true);assert.equal(e.state.opened,17);
- const loaded=new L.Engine({storage});assert.deepEqual(loaded.task(),e.task());assert.equal(loaded.state.current.rated,true);assert.equal(solve(loaded).delta,0);
+test('learned B1 register and saved generated tasks survive mistakes and reload',()=>{
+ const {e,data,storage}=engine(),words=new Set(W.words.map(w=>w.id));unlock(data,words);e.grammar.state.unlocked=Object.fromEntries(G.entries.map(x=>[x.id,true]));e.grammar.save();e.refreshPool();
+ const t=e.available().find(t=>t.ast&&t.groups[0].slots.at(-1).features.tense==='present');assert.ok(t);e.begin(t,'current');assert.equal(e.check({unknown:true}).delta,0);assert.equal(e.state.level,160);
+ const loaded=new L.Engine({storage});assert.deepEqual(loaded.task(),e.task());assert.equal(loaded.state.current.rated,true);assert.equal(solve(loaded).delta,0);assert.equal(loaded.state.level,160);
  loaded.next();assert.ok(!loaded.task().groups.flatMap(g=>g.slots).some(s=>s.features.register==='colloquial'));
 });
 test('grammar has a separate minimal translation view and navigation preserves the exercise',()=>{
@@ -90,10 +88,10 @@ test('old saves keep words, level, rated corrections and learned allomorphs thro
  const {data,storage}=engine();data.delete(L.KEY);const old=new Legacy.Engine({storage});
  const task=LegacyC.tasks.find(t=>t.id==='object-görmek-sen-w004');
  data.set(Legacy.UNLOCK,JSON.stringify(Object.fromEntries(W.words.map(w=>[w.tr,{toTurkish:true,toGerman:true}]))));old.grammar.state.unlocked=Object.fromEntries(LegacyG.entries.map(e=>[e.id,true]));old.grammar.save();old.state.level=26;old.state.highestLevel=30;old.begin(task,'current');old.check();old.save();
- const raw=data.get(Legacy.KEY),migrated=new L.Engine({storage});assert.equal(migrated.state.level,25);assert.equal(migrated.state.highestLevel,30);assert.equal(migrated.state.current.rated,true);assert.equal(migrated.state.current.taskId,task.id);assert.equal(data.get(Legacy.KEY),raw);
+ const raw=data.get(Legacy.KEY),migrated=new L.Engine({storage});assert.ok(migrated.state.level<25);assert.equal(migrated.state.previousSentenceLevel.level,25);assert.equal(migrated.state.previousSentenceLevel.highestLevel,30);assert.equal(migrated.state.current.rated,true);assert.equal(migrated.state.current.taskId,task.id);assert.equal(data.get(Legacy.KEY),raw);
  const before=migrated.state.current;migrated.next();assert.equal(migrated.state.current,before,'unlearned new construction waits without losing the correction');
  for(const id of G.required(migrated.task()))migrated.grammar.state.unlocked[id]=true;
- assert.equal(solve(migrated).delta,0);assert.equal(migrated.state.level,25);
+ const level=migrated.state.level;assert.equal(solve(migrated).delta,0);assert.equal(migrated.state.level,level);
 });
 test('grammar answer normalization accepts genuine variants but retains Turkish vowel distinctions',()=>{
  assert.ok(G.alternatives('Mama kommt.','de').includes(G.norm('Die Mutter kommt','de')));
@@ -101,5 +99,5 @@ test('grammar answer normalization accepts genuine variants but retains Turkish 
  assert.ok(!G.alternatives('geldin','tr').includes(G.norm('geldım','tr')));
  assert.ok(!G.alternatives('Du kommst.','de').includes(G.norm('Du kommst nicht.','de')));
  const {e,data}=engine();unlock(data,new Set([W.byLemma.ev.id,W.byLemma.güzel.id]));e.state.level=5;e.grammar.state.unlocked['use:statement']=true;
- assert.equal(e.next(),null,'unfinished core package prompts the next unlock instead of looping');
+ assert.ok(e.next(),'practice with learned material remains available while the next package is incomplete');assert.equal(e.state.level,1);
 });

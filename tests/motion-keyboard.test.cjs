@@ -134,12 +134,7 @@ test('grammar celebrates a new unlock once and a learned-rule review only gets l
  }
 });
 
-test('level 160 is celebrated on its first arrival and stays quiet after a level loss',()=>{
- for(const highest of [159,160]){
-  const a=app();a.unlock();a.run('startSentenceGame();window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};'+
-   'const gameEngine=SentenceGame.engine;gameEngine.state.level=159;gameEngine.state.highestLevel='+highest+';gameEngine.state.opened=32;'+
-   'gameEngine.begin(AndreCourse.tasks[0],"current");gameEngine.state.current.tokens=gameEngine.task().groups.flatMap(g=>g.slots.map((slot,i)=>({...AndreCourse.copy(slot),id:g.id+i,group:g.id})));'+
-   'checkSentence();checkSentence()');
-  assert.equal(a.run('SentenceGame.engine.state.level'),160);assert.equal(a.run('window.celebrations'),highest===159?1:0);
- }
+test('sentence practice stays neutral and never celebrates a course-level change',()=>{
+ const a=app();a.unlock();a.run('startSentenceGame();window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};SentenceGame.engine.begin(AndreCourse.tasks[0],"current");SentenceGame.engine.state.current.tokens=SentenceGame.engine.task().groups.flatMap(g=>g.slots.map((slot,i)=>({...AndreCourse.copy(slot),id:g.id+i,group:g.id})));checkSentence();checkSentence()');
+ assert.equal(a.run('SentenceGame.engine.state.level'),160);assert.equal(a.run('window.celebrations'),0);
 });

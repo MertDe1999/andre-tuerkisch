@@ -3,6 +3,7 @@
   --adverb:#b8e5f3;--adverb-soft:#e9f7fc;--adverb-dark:#246477;
   --postposition:#edce90;--postposition-soft:#faf2df;--postposition-dark:#76551e;
   --negation:#bed4af;--negation-soft:#eef5e8;--negation-dark:#4c6639;
+  --interjection:#ddbda6;--interjection-soft:#f8eee6;--interjection-dark:#745440;
 }
 .word-row.adverb,.quiz-card.adverb{background:var(--adverb-soft);border-color:var(--adverb)}
 .type-badge.adverb,.quiz-type.adverb,.sentence-token.word-type-adverb{background:var(--adverb);color:var(--adverb-dark)}
@@ -13,6 +14,9 @@
 .word-row.negation,.quiz-card.negation{background:var(--negation-soft);border-color:var(--negation)}
 .type-badge.negation,.quiz-type.negation,.sentence-token.word-type-negation{background:var(--negation);color:var(--negation-dark)}
 .quiz-card.negation .answer-text{color:var(--negation-dark)}
+.word-row.interjection,.quiz-card.interjection{background:var(--interjection-soft);border-color:var(--interjection)}
+.type-badge.interjection,.quiz-type.interjection,.sentence-token.word-type-interjection{background:var(--interjection);color:var(--interjection-dark)}
+.quiz-card.interjection .answer-text{color:var(--interjection-dark)}
 .grammar-card summary{font-weight:800;cursor:pointer;line-height:1.4}
 .type-badge+.type-badge{margin-left:5px}
 .grammar-card[open] summary{margin-bottom:12px}
@@ -25,6 +29,7 @@
     --adverb:#235a6c;--adverb-soft:#142e37;--adverb-dark:#a7deef;
     --postposition:#6e5325;--postposition-soft:#332918;--postposition-dark:#e7c886;
     --negation:#445e35;--negation-soft:#222f1a;--negation-dark:#c1dcae;
+    --interjection:#694b37;--interjection-soft:#30251e;--interjection-dark:#e6c9b4;
   }
   .grammar-entry.neutral{background:var(--surface-soft);border-color:var(--line)}
 }

@@ -272,10 +272,10 @@
       font-weight:900;
     }
 
-    .profile-level{min-width:0;display:grid;gap:5px}
-    .profile-level-stages{display:flex;align-items:center;justify-content:space-between;gap:4px;color:var(--lavender-dark);font-size:.62rem;line-height:1;font-weight:850}
+    .profile-level{min-width:0}
+    .profile-level-stages{display:inline;color:var(--text);font-size:.62rem;line-height:1;font-weight:850}
     .profile-level-next{opacity:.8}
-    .profile-level-track{position:relative;isolation:isolate;overflow:hidden;height:27px;border:1px solid var(--line);border-radius:10px;background:var(--surface-soft);display:grid;place-items:center}
+    .profile-level-track{position:relative;isolation:isolate;overflow:hidden;height:32px;padding:0 7px;border:1px solid var(--line);border-radius:10px;background:var(--surface-soft);display:flex;align-items:center;justify-content:space-between;gap:5px}
     .profile-level-fill{position:absolute;z-index:-1;inset:0 auto 0 0;width:0;background:var(--lavender);border-radius:inherit;transition:width 180ms var(--motion-ease)}
     .profile-level-label{color:var(--text);font-size:.7rem;line-height:1;font-weight:900;white-space:nowrap}
     .profile-level[data-complete='true'] .profile-level-fill{background:var(--verb)}
@@ -2011,8 +2011,8 @@
     }
 
   </style>
-<link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
-  <link rel="stylesheet" href="grammar.css?v=20261005-einstieg">
+<link rel="stylesheet" href="sentence-game.css?v=20261005-interests">
+  <link rel="stylesheet" href="grammar.css?v=20261005-interests">
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
   <link rel="stylesheet" href="keyboard.css?v=20261005-pastel-progress">
@@ -2031,13 +2031,11 @@
       </div>
 
       <div id="profileLevelChip" class="profile-level" aria-label="Level 1">
-        <div class="profile-level-stages" aria-hidden="true">
-          <span id="profileLevelStage">A1</span>
-          <span id="profileLevelNext" class="profile-level-next">→ A2</span>
-        </div>
         <div id="profileLevelBar" class="profile-level-track" role="progressbar" aria-label="Fortschritt zur nächsten Sprachstufe" aria-valuemin="1" aria-valuemax="40" aria-valuenow="1" aria-valuetext="Level 1 · A1 · nächstes Ziel A2">
           <div id="profileLevelFill" class="profile-level-fill" aria-hidden="true"></div>
+          <span id="profileLevelStage" class="profile-level-stages" aria-hidden="true">A1</span>
           <span class="profile-level-label" aria-hidden="true">Level <span id="profileLevelValue">1</span></span>
+          <span id="profileLevelNext" class="profile-level-stages profile-level-next" aria-hidden="true">A2</span>
         </div>
       </div>
 
@@ -2189,20 +2187,7 @@
   <section id="flashcards" class="view" aria-label="Satzbau">
     <div id="sentenceTopics" class="panel">
       <h2 class="section-title">Satzbau</h2>
-      <div class="sentence-topics">
-        <button id="sentenceTestButton" class="sentence-topic test" type="button" onclick="openSentenceTest()">
-          <span>Test</span><span class="sentence-topic-arrow" aria-hidden="true">›</span>
-        </button>
-        <button class="sentence-topic everyday" type="button" disabled>
-          <span>Alltag</span><span class="sentence-topic-note">Später</span>
-        </button>
-        <button class="sentence-topic holiday" type="button" disabled>
-          <span>Urlaub</span><span class="sentence-topic-note">Später</span>
-        </button>
-        <button class="sentence-topic school" type="button" disabled>
-          <span>Schule</span><span class="sentence-topic-note">Später</span>
-        </button>
-      </div>
+      <div id="sentenceTopicList" class="sentence-topics"></div>
     </div>
     <div id="sentenceBuilder" class="learn-mode">
       <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Satzbau</button>
@@ -2272,19 +2257,24 @@
 
 <div id="searchKeyboard" class="custom-keyboard search-keyboard" role="group" aria-label="App-Tastatur für die Wortschatzsuche" hidden inert></div>
 
-<script src="data/lexicon.js?v=20261004-course"></script>
-<script src="data/words.js?v=20261004-course"></script>
-<script src="lib/turkish.js?v=20261004-course"></script>
-<script src="lib/building-blocks.js?v=20261003-varianten"></script>
-<script src="lib/curriculum.js?v=20261003-vereinfachen"></script>
-<script src="lib/grammar.js?v=20261003-varianten"></script>
-<script src="lib/learning.js?v=20261004-course"></script>
-<script src="data/course-data.js?v=20261004-course"></script>
-<script src="lib/course.js?v=20261004-course"></script>
-<script src="lib/course-grammar.js?v=20261004-course"></script>
-<script src="lib/course-learning.js?v=20261004-course"></script>
-<script src="lib/motion.js?v=20261005-motion"></script>
-<script src="lib/app-keyboard.js?v=20261005-pastel-progress"></script>
+<script src="data/lexicon.js?v=20261005-interests"></script>
+<script src="data/interests.js?v=20261005-interests"></script>
+<script src="data/words.js?v=20261005-interests"></script>
+<script src="lib/turkish.js?v=20261005-interests"></script>
+<script src="lib/building-blocks.js?v=20261005-interests"></script>
+<script src="lib/curriculum.js?v=20261005-interests"></script>
+<script src="lib/grammar.js?v=20261005-interests"></script>
+<script src="lib/learning.js?v=20261005-interests"></script>
+<script src="data/course-data.js?v=20261005-interests"></script>
+<script src="lib/course.js?v=20261005-interests"></script>
+<script src="data/interest-references.js?v=20261005-interests"></script>
+<script src="lib/interest-generator.js?v=20261005-interests"></script>
+<script src="lib/course-grammar.js?v=20261005-interests"></script>
+<script src="data/learning-packages.js?v=20261005-interests"></script>
+<script src="lib/course-progress.js?v=20261005-interests"></script>
+<script src="lib/course-learning.js?v=20261005-interests"></script>
+<script src="lib/motion.js?v=20261005-interests"></script>
+<script src="lib/app-keyboard.js?v=20261005-interests"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2307,6 +2297,7 @@
     postposition:"Postposition",
     negation:"Negationspartikel",
     determiner:"Begleiter",
+    interjection:"Interjektion",
     other:"Sonstige",
     neutral:"Grammatik"
   };
@@ -2415,12 +2406,12 @@
   }
 
   function getTypingDirections(item){
-    const unknown = getUnknownState(item.tr);
+    const unknown = getUnknownState(item.id || item.tr);
 
     if(unknown.toTurkish && !unknown.toGerman) return ["toGerman"];
     if(unknown.toGerman && !unknown.toTurkish) return ["toTurkish"];
 
-    return getMissingUnlockDirections(item.tr);
+    return getMissingUnlockDirections(item.id || item.tr);
   }
 
   function updateWordLocks(){
@@ -2428,11 +2419,12 @@
 
     getDictionaryRows().forEach(row => {
       const turkishWord = row.querySelector(".word-tr")?.textContent?.trim() || "";
-      row.classList.toggle("locked", !isWordUnlocked(turkishWord, progress));
+      row.classList.toggle("locked", !isWordUnlocked(row.dataset.wordId || turkishWord, progress));
     });
   }
 
   function updateProfileLevel(){
+    window.SentenceGame?.engine.syncProgress();
     const level = window.SentenceGame?.engine.state.level ?? 1;
     const course = window.AndreCourse;
     const cefr = course?.bandAt(level).cefr ?? "A1";
@@ -2447,7 +2439,7 @@
     chip.setAttribute("aria-label", "Level " + level);
     chip.dataset.complete = String(complete);
     document.getElementById("profileLevelStage").textContent = cefr;
-    document.getElementById("profileLevelNext").textContent = next ? "→ " + next : complete ? "B2 ✓" : "B2-Ziel";
+    document.getElementById("profileLevelNext").textContent = next || (complete ? "B2 ✓" : "B2");
     document.getElementById("profileLevelFill").style.width = percent + "%";
     const bar = document.getElementById("profileLevelBar");
     bar.setAttribute("aria-valuemin", start);
@@ -2463,7 +2455,7 @@
 
     const unlockedCount = rows.filter(row => {
       const turkishWord = row.querySelector(".word-tr")?.textContent?.trim() || "";
-      return isWordUnlocked(turkishWord, progress);
+      return isWordUnlocked(row.dataset.wordId || turkishWord, progress);
     }).length;
 
     const value = document.getElementById("learnedWordsValue");
@@ -2562,7 +2554,8 @@
     window.scrollTo({top:0, behavior:"auto"});
   }
 
-  function openSentenceTest(){
+  function openSentenceTest(theme){
+    if(theme !== undefined) window.SentenceGame?.engine.selectTheme(theme);
     showView("flashcards", null);
     AndreMotion.cancel();
     AndreMotion.depart(document.getElementById("sentenceTopics"));
@@ -2695,10 +2688,10 @@
     typingGameRunning = true;
     typingRemaining = typingWords
       .map((word, index) => ({...word, originalIndex:index}))
-      .filter(word => !isWordUnlocked(word.tr));
+      .filter(word => !isWordUnlocked(word.id || word.tr));
 
-    const packageWords=window.SentenceGame?.engine.missingWords().map(w=>w.tr)||[];
-    const packageRound=typingRemaining.filter(w=>packageWords.includes(w.tr));
+    const packageWords=window.SentenceGame?.engine.missingWords().map(w=>w.id)||[];
+    const packageRound=typingRemaining.filter(w=>packageWords.includes(w.id)).slice(0,7);
     if(packageRound.length) typingRemaining=packageRound;
 
     typingCurrentIndex = -1;
@@ -2736,8 +2729,8 @@
       if(filtered.length) candidates = filtered;
     }
 
-    const needed = window.SentenceGame?.engine.missingWords().map(w=>w.tr) || [];
-    const recommended = candidates.filter(i=>needed.includes(typingRemaining[i].tr));
+    const needed = window.SentenceGame?.engine.missingWords().map(w=>w.id) || [];
+    const recommended = candidates.filter(i=>needed.includes(typingRemaining[i].id));
     if(recommended.length) candidates=recommended;
     typingCurrentIndex = candidates[Math.floor(Math.random() * candidates.length)];
     typingLastIndex = typingRemaining[typingCurrentIndex].originalIndex;
@@ -2858,20 +2851,20 @@
       answerEl.classList.remove("wrong","empty");
       answerEl.classList.add("correct");
 
-      const unknown = getUnknownState(item.tr);
+      const unknown = getUnknownState(item.id || item.tr);
       const oppositeDirection = typingDirection === "toTurkish" ? "toGerman" : "toTurkish";
       const recoveringFromUnknown = unknown[oppositeDirection];
 
-      const unlockedNow = markUnlockDirection(item.tr, typingDirection);
+      const unlockedNow = markUnlockDirection(item.id || item.tr, typingDirection);
 
       if(recoveringFromUnknown){
-        clearUnknownState(item.tr);
+        clearUnknownState(item.id || item.tr);
       }
 
       if(unlockedNow){
         feedback.textContent = "Freigeschaltet!";
         typingRemaining.splice(typingCurrentIndex, 1);
-        clearUnknownState(item.tr);
+        clearUnknownState(item.id || item.tr);
       }else if(recoveringFromUnknown){
         feedback.textContent = "Richtig! Die andere Richtung kommt später wieder.";
       }else{
@@ -2901,7 +2894,7 @@
 
     typedAnswer = "";
 
-    const unknown = getUnknownState(item.tr);
+    const unknown = getUnknownState(item.id || item.tr);
     unknown[typingDirection] = true;
 
     const oppositeDirection = typingDirection === "toTurkish" ? "toGerman" : "toTurkish";
@@ -2911,8 +2904,8 @@
     if(unknown[oppositeDirection]){
       typingRevealPending = true;
 
-      resetUnlockDirections(item.tr);
-      clearUnknownState(item.tr);
+      resetUnlockDirections(item.id || item.tr);
+      clearUnknownState(item.id || item.tr);
 
       answerEl.className = "typing-answer reveal";
       answerEl.textContent = item.de + " ↔ " + item.tr;
@@ -2938,7 +2931,7 @@
 
   function updateTypingProgress(){
     const total = typingWords.length;
-    const unlockedCount = typingWords.filter(word => isWordUnlocked(word.tr)).length;
+    const unlockedCount = typingWords.filter(word => isWordUnlocked(word.id || word.tr)).length;
 
     document.getElementById("typingProgressText").textContent =
       unlockedCount + " / " + total + " freigeschaltet";
@@ -3160,10 +3153,10 @@
     const card = document.getElementById("quizCard");
     const typeEl = document.getElementById("quizType");
 
-    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other","neutral");
-    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other","neutral");
+    card.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","interjection","other","neutral");
+    typeEl.classList.remove("noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","interjection","other","neutral");
 
-    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","other"].includes(type) ? type : "neutral";
+    const safeType = ["noun","verb","adj","pronoun","existential","colloquial","response","conjunction","demonstrative","questionword","greeting","polite","phrase","adverb","postposition","negation","determiner","interjection","other"].includes(type) ? type : "neutral";
     card.classList.add(safeType);
     typeEl.classList.add(safeType);
     typeEl.textContent = typeNames[safeType];
@@ -3492,10 +3485,10 @@
   document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
-<script src="lib/filter-layout.js?v=20261005-kompakt"></script>
-<script src="lib/dictionary.js?v=20261005-kompakt"></script>
-<script src="lib/dictionary-search.js?v=20261005-reference-keyboard"></script>
-<script src="sentence-game.js?v=20261005-hold-level"></script>
-<script src="grammar-ui.js?v=20261005-reference-keyboard"></script>
+<script src="lib/filter-layout.js?v=20261005-interests"></script>
+<script src="lib/dictionary.js?v=20261005-interests"></script>
+<script src="lib/dictionary-search.js?v=20261005-interests"></script>
+<script src="sentence-game.js?v=20261005-interests"></script>
+<script src="grammar-ui.js?v=20261005-interests"></script>
 </body>
 </html>
