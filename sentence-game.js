@@ -142,7 +142,7 @@
     el('sentenceTaskLabel').textContent=t.cefr+(t.register==='colloquial'?' · Alltag':'');
     el('sentenceTaskLabel').setAttribute('aria-label','Aufgabe '+t.cefr+', '+(t.register==='colloquial'?'Alltagssprache':'Standard'));
     el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated?'Korrektur':cur.kind==='intro'?'Einführung':cur.kind!=='current'?'Wiederholung':'';
-    el('sentenceModeLabel').title=cur.rated?'Bereits gewertet; Korrekturen ohne Leveländerung':cur.kind==='current'&&!cur.assisted?'Erster Versuch zählt':'Ohne Levelwertung';
+    el('sentenceModeLabel').title='Satzbau übt dein gelerntes Sprachlevel.';
     el('sentencePrompt').textContent=t.de;
     const zone=el('answerZone');zone.replaceChildren();
     const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
@@ -232,7 +232,7 @@
     if(result.ignored)return;
     render();
     if(result.correct){
-      message('Richtig!'+(result.delta>0?' Level '+result.level+'.':' Weiter ohne Leveländerung.'),'ok');
+      message('Richtig!','ok');
       AndreMotion.feedback(el('answerZone'),true);
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
@@ -258,6 +258,16 @@
   root.leaveSentenceArea=()=>root.closeSentenceTest();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
   root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return false;},get current(){return current();},get task(){return task();}};
+  const topicList=el('sentenceTopicList');
+  const mixed=make('button','sentence-topic test','');mixed.id='sentenceTestButton';mixed.type='button';
+  mixed.append(make('span','','Alles gemischt'),make('span','sentence-topic-arrow','›'));
+  mixed.addEventListener('click',()=>root.openSentenceTest(null));topicList.append(mixed);
+  for(const topic of root.AndreInterestGenerator.themes){
+    const button=make('button','sentence-topic','');button.type='button';button.dataset.sentenceTopic=topic.id;
+    button.style.background='var(--'+(topic.color==='lavender'?'lavender':topic.color+'-soft')+')';
+    button.append(make('span','',topic.title),make('span','sentence-topic-arrow','›'));
+    button.addEventListener('click',()=>root.openSentenceTest(topic.id));topicList.append(button);
+  }
   root.updateProfileLevel();
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
   el('sentenceNextButton').addEventListener('click',next);

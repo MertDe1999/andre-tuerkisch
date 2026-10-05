@@ -9,9 +9,9 @@
  function available(){return engine.grammar.ready(engine.unlocked(),engine.state.opened).filter(e=>engine.grammar.exercise(e.id,engine.unlocked(),engine.state.opened));}
  function canUnlock(){return engine.grammar.ready(engine.unlocked(),engine.state.opened).some(e=>engine.grammar.exercise(e.id,engine.unlocked(),engine.state.opened));}
  function overview(){if(active)return;engine.refreshPool();const list=el('grammarList');list.replaceChildren();
-  const opened=engine.state.opened,band=C.bands[opened-1],known=engine.grammar.unlocked();
+  engine.syncProgress();const opened=engine.state.opened,band=C.bands[opened-1],known=engine.grammar.unlocked();
   const missing=engine.missingWords();
-  if(!missing.length&&G.core[band.index].every(id=>known.has(id)))list.append(button('Im Satzbau anwenden',()=>openLearnMode('sentences'),'grammar-primary'));
+  if(engine.available().length)list.append(button('Im Satzbau anwenden',()=>openLearnMode('sentences'),'grammar-primary'));
   for(const [group,title] of Object.entries(G.groupNames)){
    const entries=G.entries.filter(e=>e.group===group);if(!entries.length)continue;
    const card=make('section','grammar-topic','');card.dataset.grammarGroup=group;card.append(make('h3','',title));const rows=make('div','grammar-topic-rules','');
@@ -28,6 +28,7 @@
   }
  }
  function rule(e){const f=e.op?.after||{},text=e.text;
+  if(e.op?.stage==='derivation')return (f.derivation==='with'?'Mit / ausgestattet mit: -lı, -li, -lu, -lü. Der letzte Vokal des Stamms entscheidet.':f.derivation==='without'?'Ohne: -sız, -siz, -suz, -süz. Der letzte Vokal des Stamms entscheidet.':'Nomen + (y)ken bedeutet „als / während“. Nach einem Vokal kommt y dazwischen.')+' Hier übst du '+text+'.';
   if(e.op?.stage==='case')return ({dative:'Richtung oder Ziel: -e / -a. Nach einem Vokal steht y dazwischen.',locative:'Ort: -de / -da; nach ç, f, h, k, p, s, ş, t steht t statt d.',ablative:'Herkunft: -den / -dan; nach ç, f, h, k, p, s, ş, t steht t statt d.',accusative:'Ein bestimmtes Objekt erhält -ı, -i, -u oder -ü. Nach einem Vokal steht y dazwischen.',genitive:'Besitzer: -(n)ın / -(n)in / -(n)un / -(n)ün. Das besessene Nomen bekommt zusätzlich eine Besitzendung.',instrumental:'Begleitung oder Mittel: -la / -le; nach einem Vokal -yla / -yle.'})[f.case]+' Hier übst du '+text+'.';
   if(e.op?.stage==='poss')return 'Die Besitzendung zeigt, wem etwas gehört. Hier: '+text+'. Danach kann eine Fallendung folgen.';
   if(e.op?.stage==='plural')return 'Mehrzahl: nach a, ı, o, u steht -lar; nach e, i, ö, ü steht -ler.';
@@ -39,9 +40,11 @@
   const tenseHelp={past:'Eine abgeschlossene Handlung: -DI + Person. Nach stimmlosen Konsonanten wird d zu t.',future:'Etwas Zukünftiges: -(y)AcAK + Person. Vor der ich-/wir-Endung wird k zu ğ.',aorist:'Eine Gewohnheit oder allgemeine Aussage. Die Aoristform gehört zum Verb und wird mitgelernt.',reported:'-mIş bezeichnet Gehörtes oder nachträglich Festgestelltes.',necessity:'-mAlI + Person drückt eine Notwendigkeit aus.',conditional:'Die Bedingung endet auf -sA + Person; danach folgt, was unter dieser Bedingung passiert.',optative:'-(y)AlIm ist ein Vorschlag für uns: „Lass uns …“.',imperative:'Die du-Aufforderung ist der Verbstamm ohne -mak / -mek.',ma:'-mA macht die Handlung zum Nomen. Besitz nennt die handelnde Person; danach kann ein Fall folgen.',dik:'-DIK + Besitzendung bildet einen abhängigen Inhalt. Vor einer vokalischen Endung wird k zu ğ.',acak:'-AcAK + Besitzendung bildet einen zukünftigen Inhalt; vor einer vokalischen Endung wird k zu ğ.',an:'-(y)An beschreibt, wer etwas tut. Der beschreibende Teil steht vor seinem Nomen.',ip:'-(y)Ip verbindet zwei Handlungen derselben Person; die Zeit steht am letzten Verb.',ince:'-(y)IncA bedeutet „sobald / als“.',arak:'-(y)ArAk zeigt, wie oder womit die andere Handlung geschieht.',madan:'-mAdAn bedeutet „ohne … zu“; zusammen mit önce „bevor“.',ken:'Aorist + ken verbindet gleichzeitig ablaufende Handlungen: „während“.',infinitive:'-mak / -mek bezeichnet die Tätigkeit ohne Zeit oder Person.'};
   if(e.op)return (tenseHelp[f.tense]||e.label)+ ' Hier übst du '+text+'.';
   const use=e.id.slice(4);
-  if(use.startsWith('morph:')){const word=AndreWords.byId[use.split(':')[1]];return 'Bei '+word.tr+' verändert sich der Stamm vor dieser Endung: '+(word.soften||word.vowelStem||word.progressiveStem)+'. Die Bedeutung bleibt gleich.';}
+  if(use.startsWith('morph:')){const word=AndreWords.byId[use.split(':')[1]];return 'Bei '+word.tr+' verändert sich der Stamm vor dieser Endung: '+(word.vowelLoss||word.soften||word.vowelStem||word.progressiveStem)+'. Die Bedeutung bleibt gleich.';}
   if(use==='subject-person')return 'ben, sen, o und biz benennen die Person. Am Verb muss dieselbe Person stehen. Ein eindeutiges Personalpronomen darf auch fehlen.';
   if(use==='motion-target')return 'Das Ziel einer Bewegung erhält den Dativ: zum Haus / nach Hause heißt eve. Das Verb steht am Satzende.';
+  if(use==='noun-compound')return 'Bei verbundenen Nomen trägt das zweite Nomen eine Besitzendung: protein + içecek → protein içeceği. Eine weitere Fallendung folgt danach.';
+  if(use==='proper-name')return 'Bei Personennamen und solchen Eigennamen wird die Fallendung mit Apostroph angefügt: Mert → Mert\'e. Für die Vokalharmonie zählt die Aussprache.';
   return ({statement:'Im Türkischen steht die Aussage am Satzende. Bei „ist“ in der dritten Person ist oft keine eigene Endung nötig.',demonstrative:'bu bedeutet „dies / das“. Es steht vor dem, was du näher beschreibst.','negative-nominal':'değil verneint Eigenschaften und Nomen. Für ein verneintes Verb brauchst du dagegen die Verbendung.','question-ne':'ne fragt nach „was“.','icin:purpose':'Infinitiv + için nennt einen Zweck: etwas tun, um etwas zu erreichen.','icin:beneficiary':'Nomen + için bedeutet „für jemanden / etwas“.','icin:reason':'-DIK + Besitzendung + için nennt den Grund für die andere Handlung.','relative-subject':'Die Form auf -(y)An beschreibt das folgende Nomen: die Person oder Sache, die etwas tut.','relative-object':'Der beschreibende Satzteil steht vor dem Nomen. Seine Besitzendung nennt die handelnde Person.','content':'Der Inhalt wird zu einem Satzteil: -DIK oder -AcAK + Besitzendung, danach bei Bedarf die Fallendung.'})[use]||(/^(var|yok):/.test(use)?'var bedeutet „es gibt / vorhanden“, yok „es gibt nicht / fehlt“. Ort oder Besitzer stehen davor.':'Übersetze den ganzen Satz. Achte darauf, wie die bekannten Wörter die beiden Satzteile verbinden.');
  }
  function draw(){const cur=engine.grammar.state.current;if(!cur)return;
@@ -72,6 +75,7 @@
  function check(){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null||!cur.draft?.trim())return;
   const wasUnlocked=engine.grammar.state.unlocked[cur.entryId]===true;
   const result=engine.grammar.check(cur.draft);if(result.ignored)return;
+  engine.syncProgress();root.updateProfileLevel();
   const newlyUnlocked=result.unlocked&&!wasUnlocked;
   if(result.correct)advanceTimer=setTimeout(()=>{advanceTimer=null;if(active)next();},750);
   draw();el('grammarAnswer').classList.add(result.correct?'correct':'wrong');

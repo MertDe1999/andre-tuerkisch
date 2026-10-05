@@ -90,36 +90,7 @@ test('search held Delete edits a selection and Unicode, filters immediately, and
  a.advance(1000);assert.equal(search.value,'');assert.equal(a.timers.size,0);
 });
 
-test('the profile loads the actual current level, validates old saves and preserves the learned count',()=>{
- for(const [saved,expected] of [[null,1],[{version:3,level:24,highestLevel:160},24],[{version:3,level:160},160],[{version:3,level:999},160],[{version:3,level:0},1]]){
-  const storage=new Map(saved?[[L.KEY,JSON.stringify(saved)]]:[]),a=app({storage});
-  assert.equal(a.el('profileLevelValue').textContent,String(expected));assert.equal(a.el('profileLevelChip').getAttribute('aria-label'),'Level '+expected);
-  const learned=a.el('learnedWordsValue').textContent;a.run('showView("grammar",null);showView("games",null);showView("dictionary",null)');
-  assert.equal(a.el('profileLevelValue').textContent,String(expected));assert.equal(a.el('learnedWordsValue').textContent,learned);
- }
- const storage=new Map([[Legacy.KEY,JSON.stringify({version:2,level:79,highestLevel:81})]]),a=app({storage});
- assert.equal(a.el('profileLevelValue').textContent,'79');assert.equal(JSON.parse(storage.get(L.KEY)).level,79);
-});
-
-function begin(a,level=24,kind='current'){
- a.unlock();a.run('SentenceGame.engine.state.level='+level+';SentenceGame.engine.state.highestLevel=Math.max('+level+',SentenceGame.engine.state.highestLevel);SentenceGame.engine.state.opened=Math.ceil('+level+'/5);openLearnMode("sentences");SentenceGame.engine.begin(AndreCourse.tasks[0],'+JSON.stringify(kind)+');SentenceGame.render()');
-}
-function solve(a){
- a.run('SentenceGame.current.tokens=SentenceGame.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:"s"+i,group:g.id})));checkSentence()');
-}
-test('profile follows real first-attempt level changes, while corrections and older repetitions stay neutral',()=>{
- const a=app();begin(a);assert.equal(a.el('profileLevelValue').textContent,'24');solve(a);
- assert.equal(a.el('profileLevelValue').textContent,'25');assert.equal(a.el('sentenceLevelText').textContent,'25');
- assert.equal(JSON.parse(a.storage.get(L.KEY)).level,25);assert.equal(app({storage:a.storage}).el('profileLevelValue').textContent,'25');
- begin(a,24);a.run('SentenceGame.check(true)');assert.equal(a.el('profileLevelValue').textContent,'23');solve(a);
- assert.equal(a.el('profileLevelValue').textContent,'23');a.run('showView("dictionary",null)');assert.equal(a.el('profileLevelValue').textContent,'23');
- begin(a,24,'older');solve(a);assert.equal(a.el('profileLevelValue').textContent,'24');
- begin(a,24);a.run('SentenceGame.engine.hint()');solve(a);assert.equal(a.el('profileLevelValue').textContent,'24');
-});
-
-test('profile respects levels 1 and 160, displays 100, and updates even with no sentence available',()=>{
- const a=app();begin(a,1);a.run('SentenceGame.check(true)');assert.equal(a.el('profileLevelValue').textContent,'1');
- begin(a,160);solve(a);assert.equal(a.el('profileLevelValue').textContent,'160');
- begin(a,100);a.run('showView("dictionary",null)');assert.equal(a.el('profileLevelValue').textContent,'100');
- const fresh=app();fresh.run('SentenceGame.engine.state.level=88;SentenceGame.render()');assert.equal(fresh.el('profileLevelValue').textContent,'88');
+test('the profile updates from real unlocks even when no sentence is available',()=>{
+ const {learnTo}=require('./helpers/progress.cjs');const a=app();assert.equal(a.el('profileLevelValue').textContent,'1');
+ for(const level of [24,40,41,80,81,100,120,121,160]){learnTo(a,level);assert.equal(a.el('profileLevelValue').textContent,String(level));assert.equal(app({storage:new Map(a.storage)}).el('profileLevelValue').textContent,String(level));}
 });

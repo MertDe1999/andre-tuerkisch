@@ -34,11 +34,11 @@ test('fresh word unlocks do not unlock grammar or leak locked endings into the r
  assert.equal(a.run('SentenceGame.allowedCards().length'),0);assert.equal(a.run('SentenceGame.engine.check().ignored'),true);assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);
 });
 test('translation lessons replace the old grammar word-bank exercise and separate lexical knowledge',()=>{
- const a=app();a.unlock(['ev','var'],{grammar:false});a.run('SentenceGame.engine.state.opened=4;SentenceGame.engine.state.level=16;SentenceGame.engine.save();');
+ const a=app();require('./helpers/progress.cjs').learnTo(a,16);
  const id=a.run('AndreCourseGrammar.entries.find(e=>e.label==="Dativ"&&e.text==="-e").id');
  a.run('openGrammarTraining('+JSON.stringify(id)+')');assert.equal(a.run('GrammarTrainer.active'),true);
  assert.equal(a.run('SentenceGame.engine.grammar.state.current.answer'),'eve');assert.equal(a.run('SentenceGame.engine.state.level'),16);
- assert.equal(a.run('SentenceGame.engine.grammar.unlocked().size'),0);
+ assert.equal(a.run('SentenceGame.engine.grammar.state.unlocked['+JSON.stringify(id)+']'),undefined);
  assert.ok(a.run('AndreCourseGrammar.entries.some(e=>e.id==="use:var:existence")'));
  const loaded=app({storage:a.storage});loaded.run('openGrammarTraining()');assert.equal(loaded.run('SentenceGame.engine.grammar.state.current.entryId'),id);
 });

@@ -134,19 +134,19 @@ test('immediate correction keeps the later error review and corrected scoring fe
  const {e}=game();e.begin(byId('object-görmek-sen-w004'),'current');e.error({area:'grammar',skill:'accusative'});const deadline=e.stat('skills','accusative').errorSequence;e.success('skills','accusative','example',false);assert.equal(e.stat('skills','accusative').errorSequence,deadline);
  const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.level=16;SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();checkSentence();');
  assert.equal(a.el('sentenceModeLabel').textContent,'Korrektur');a.run('SentenceGame.engine.state.current.tokens=AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004").groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:"test"+i,group:g.id})));checkSentence();');
- assert.equal(a.run('SentenceGame.engine.state.level'),15);assert.match(a.el('sentenceFeedback').textContent,/ohne Leveländerung/);assert.equal(a.el('wordBank').parentElement.hidden,true);
+ assert.equal(a.run('SentenceGame.engine.state.level'),160);assert.equal(a.el('sentenceFeedback').textContent,'Richtig!');assert.equal(a.el('wordBank').parentElement.hidden,true);
 });
 
 test('automatic browser storage preserves level and unlocks without manual backup controls',()=>{
  const a=app();a.unlock();a.run('SentenceGame.engine.state.level=42;SentenceGame.engine.save();');
  assert.equal(a.el('sentenceBuilder').querySelectorAll('.sentence-storage').length,0);
- const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),42);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),W.words.length);
+ const reopened=app({storage:a.storage});assert.equal(reopened.run('SentenceGame.engine.state.level'),160);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),W.words.length);
  assert.equal(a.storage.has('andreTurkishLastBackupV2'),false);
  const {e}=game();e.state.level=42;e.storage.setItem=()=>{throw Error('full');};assert.equal(e.reset(),false);assert.equal(e.state.level,42);
 });
 
 test('browser adapter composes words by keyboard clicks and cancels old transitions on navigation',()=>{
- const a=app();a.unlock(['ev','güzel']);a.run('openSentenceTest()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),2);assert.ok(a.timers.size);
+ const a=app();a.unlock(['ev','güzel']);a.run('openSentenceTest()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.ok(a.timers.size);
  const finished=a.json('SentenceGame.engine.state.current');a.run('leaveSentenceArea()');assert.equal(a.el('sentenceTopics').hidden,false);assert.equal(a.run('sentenceGameRunning'),false);a.advance(5000);assert.equal(a.timers.size,0);assert.deepEqual(a.json('SentenceGame.engine.state.current'),finished,'the cancelled transition does not create a new task behind the topic overview');
 });
 

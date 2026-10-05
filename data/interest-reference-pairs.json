@@ -1,0 +1,1122 @@
+[
+  {
+    "level": 1,
+    "stage": "A1",
+    "focus": "Dinge und Eigenschaften",
+    "tr": "Kirby pembe.",
+    "de": "Kirby ist rosa."
+  },
+  {
+    "level": 2,
+    "stage": "A1",
+    "focus": "Dinge und Eigenschaften",
+    "tr": "Mert tatlı.",
+    "de": "Mert ist süß."
+  },
+  {
+    "level": 3,
+    "stage": "A1",
+    "focus": "Dinge und Eigenschaften",
+    "tr": "Bu kesir kolay.",
+    "de": "Dieser Bruch ist einfach."
+  },
+  {
+    "level": 4,
+    "stage": "A1",
+    "focus": "Dinge und Eigenschaften",
+    "tr": "Bu çikolata lezzetli.",
+    "de": "Diese Schokolade ist lecker."
+  },
+  {
+    "level": 5,
+    "stage": "A1",
+    "focus": "Dinge und Eigenschaften",
+    "tr": "Bu göt güzel.",
+    "de": "Dieser Arsch ist hübsch."
+  },
+  {
+    "level": 6,
+    "stage": "A1",
+    "focus": "Vorhanden, nicht vorhanden und fragen",
+    "tr": "Çikolata var.",
+    "de": "Es gibt Schokolade."
+  },
+  {
+    "level": 7,
+    "stage": "A1",
+    "focus": "Vorhanden, nicht vorhanden und fragen",
+    "tr": "Matcha yok.",
+    "de": "Es gibt keinen Matcha."
+  },
+  {
+    "level": 8,
+    "stage": "A1",
+    "focus": "Vorhanden, nicht vorhanden und fragen",
+    "tr": "Mert sıkıcı değil.",
+    "de": "Mert ist nicht langweilig."
+  },
+  {
+    "level": 9,
+    "stage": "A1",
+    "focus": "Vorhanden, nicht vorhanden und fragen",
+    "tr": "Chia var mı?",
+    "de": "Gibt es Chiasamen?"
+  },
+  {
+    "level": 10,
+    "stage": "A1",
+    "focus": "Vorhanden, nicht vorhanden und fragen",
+    "tr": "Red Bull güzel mi?",
+    "de": "Schmeckt Red Bull gut?"
+  },
+  {
+    "level": 11,
+    "stage": "A1",
+    "focus": "Wer kommt?",
+    "tr": "Ben geliyom.",
+    "de": "Ich komme."
+  },
+  {
+    "level": 12,
+    "stage": "A1",
+    "focus": "Wer kommt?",
+    "tr": "Sen geliyon.",
+    "de": "Du kommst."
+  },
+  {
+    "level": 13,
+    "stage": "A1",
+    "focus": "Wer kommt?",
+    "tr": "Kirby geliyo.",
+    "de": "Kirby kommt."
+  },
+  {
+    "level": 14,
+    "stage": "A1",
+    "focus": "Wer kommt?",
+    "tr": "Biz geliyoz.",
+    "de": "Wir kommen."
+  },
+  {
+    "level": 15,
+    "stage": "A1",
+    "focus": "Wer kommt?",
+    "tr": "Mert gelmiyo.",
+    "de": "Mert kommt nicht."
+  },
+  {
+    "level": 16,
+    "stage": "A1",
+    "focus": "Wo und wohin?",
+    "tr": "André evde.",
+    "de": "André ist zu Hause."
+  },
+  {
+    "level": 17,
+    "stage": "A1",
+    "focus": "Wo und wohin?",
+    "tr": "Ben parkta.",
+    "de": "Ben ist im Park."
+  },
+  {
+    "level": 18,
+    "stage": "A1",
+    "focus": "Wo und wohin?",
+    "tr": "Mert eve gidiyo.",
+    "de": "Mert geht nach Hause."
+  },
+  {
+    "level": 19,
+    "stage": "A1",
+    "focus": "Wo und wohin?",
+    "tr": "Ben evdeyim.",
+    "de": "Ich bin zu Hause."
+  },
+  {
+    "level": 20,
+    "stage": "A1",
+    "focus": "Wo und wohin?",
+    "tr": "Sen güzelsin.",
+    "de": "Du bist schön."
+  },
+  {
+    "level": 21,
+    "stage": "A1",
+    "focus": "Bestimmte Objekte",
+    "tr": "André çikolatayı görüyo.",
+    "de": "André sieht die Schokolade."
+  },
+  {
+    "level": 22,
+    "stage": "A1",
+    "focus": "Bestimmte Objekte",
+    "tr": "Mert Ben'i seviyo.",
+    "de": "Mert mag Ben."
+  },
+  {
+    "level": 23,
+    "stage": "A1",
+    "focus": "Bestimmte Objekte",
+    "tr": "Mert André'yi seviyo.",
+    "de": "Mert liebt André."
+  },
+  {
+    "level": 24,
+    "stage": "A1",
+    "focus": "Bestimmte Objekte",
+    "tr": "André arabada penisi görüyo.",
+    "de": "André sieht den Penis im Auto."
+  },
+  {
+    "level": 25,
+    "stage": "A1",
+    "focus": "Bestimmte Objekte",
+    "tr": "André bir erkek görüyo.",
+    "de": "André sieht einen Mann."
+  },
+  {
+    "level": 26,
+    "stage": "A1",
+    "focus": "Woher und mit wem?",
+    "tr": "Mert Paris'ten geliyo.",
+    "de": "Mert kommt aus Paris."
+  },
+  {
+    "level": 27,
+    "stage": "A1",
+    "focus": "Woher und mit wem?",
+    "tr": "André havuzdan geliyo.",
+    "de": "André kommt aus dem Schwimmbad."
+  },
+  {
+    "level": 28,
+    "stage": "A1",
+    "focus": "Woher und mit wem?",
+    "tr": "André Mert'le geliyo.",
+    "de": "André kommt mit Mert."
+  },
+  {
+    "level": 29,
+    "stage": "A1",
+    "focus": "Woher und mit wem?",
+    "tr": "Mert arabayla geliyo.",
+    "de": "Mert kommt mit dem Auto."
+  },
+  {
+    "level": 30,
+    "stage": "A1",
+    "focus": "Woher und mit wem?",
+    "tr": "Mert Ben'le geliyo.",
+    "de": "Mert kommt mit Ben."
+  },
+  {
+    "level": 31,
+    "stage": "A1",
+    "focus": "Mehrzahl und Besitz",
+    "tr": "Erkekler güzel.",
+    "de": "Die Männer sind hübsch."
+  },
+  {
+    "level": 32,
+    "stage": "A1",
+    "focus": "Mehrzahl und Besitz",
+    "tr": "Çoraplar rengârenk.",
+    "de": "Die Socken sind kunterbunt."
+  },
+  {
+    "level": 33,
+    "stage": "A1",
+    "focus": "Mehrzahl und Besitz",
+    "tr": "Arabam güzel.",
+    "de": "Mein Auto ist schön."
+  },
+  {
+    "level": 34,
+    "stage": "A1",
+    "focus": "Mehrzahl und Besitz",
+    "tr": "Mert'in gözleri güzel.",
+    "de": "Merts Augen sind schön."
+  },
+  {
+    "level": 35,
+    "stage": "A1",
+    "focus": "Mehrzahl und Besitz",
+    "tr": "André'nin Switch 2 konsolu güzel.",
+    "de": "Andrés Switch-2-Konsole ist schön."
+  },
+  {
+    "level": 36,
+    "stage": "A1",
+    "focus": "A1 verbinden und anwenden",
+    "tr": "Mert evime geliyo.",
+    "de": "Mert kommt zu mir nach Hause."
+  },
+  {
+    "level": 37,
+    "stage": "A1",
+    "focus": "A1 verbinden und anwenden",
+    "tr": "PS5 evimde.",
+    "de": "Die PS5 ist bei mir zu Hause."
+  },
+  {
+    "level": 38,
+    "stage": "A1",
+    "focus": "A1 verbinden und anwenden",
+    "tr": "Merz, siktir git!",
+    "de": "Merz, verpiss dich!"
+  },
+  {
+    "level": 39,
+    "stage": "A1",
+    "focus": "A1 verbinden und anwenden",
+    "tr": "André'yi öpmek istiyom.",
+    "de": "Ich möchte André küssen."
+  },
+  {
+    "level": 40,
+    "stage": "A1",
+    "focus": "A1 verbinden und anwenden",
+    "tr": "Mert, geliyon mu?",
+    "de": "Mert, kommst du?"
+  },
+  {
+    "level": 41,
+    "stage": "A2",
+    "focus": "Vergangenes erzÃ¤hlen",
+    "tr": "Dün Split Fiction oynadık.",
+    "de": "Wir haben gestern Split Fiction gespielt."
+  },
+  {
+    "level": 42,
+    "stage": "A2",
+    "focus": "Vergangenes erzÃ¤hlen",
+    "tr": "Paris'te fotoğraf çektim.",
+    "de": "Ich habe in Paris Fotos gemacht."
+  },
+  {
+    "level": 43,
+    "stage": "A2",
+    "focus": "Vergangenes erzÃ¤hlen",
+    "tr": "Ben'i gördüm.",
+    "de": "Ich habe Ben gesehen."
+  },
+  {
+    "level": 44,
+    "stage": "A2",
+    "focus": "Vergangenes erzÃ¤hlen",
+    "tr": "Dün Invader Zim izlemedim.",
+    "de": "Ich habe gestern Invader Zim nicht geschaut."
+  },
+  {
+    "level": 45,
+    "stage": "A2",
+    "focus": "Vergangenes erzÃ¤hlen",
+    "tr": "Suşi yedin mi?",
+    "de": "Hast du Sushi gegessen?"
+  },
+  {
+    "level": 46,
+    "stage": "A2",
+    "focus": "Vorhaben und Zukunft",
+    "tr": "Yarın yüzeceğim.",
+    "de": "Ich werde morgen schwimmen."
+  },
+  {
+    "level": 47,
+    "stage": "A2",
+    "focus": "Vorhaben und Zukunft",
+    "tr": "Mert bu hafta sonu yemek yapacak.",
+    "de": "Mert wird dieses Wochenende kochen."
+  },
+  {
+    "level": 48,
+    "stage": "A2",
+    "focus": "Vorhaben und Zukunft",
+    "tr": "Yarın Münster'e gideceğiz.",
+    "de": "Wir werden morgen nach Münster fahren."
+  },
+  {
+    "level": 49,
+    "stage": "A2",
+    "focus": "Vorhaben und Zukunft",
+    "tr": "André hindistan cevizi yemeyecek.",
+    "de": "André wird keine Kokosnuss essen."
+  },
+  {
+    "level": 50,
+    "stage": "A2",
+    "focus": "Vorhaben und Zukunft",
+    "tr": "Galaxy S25+ telefonumu şarj edeceğim.",
+    "de": "Ich werde mein Galaxy-S25+-Handy laden."
+  },
+  {
+    "level": 51,
+    "stage": "A2",
+    "focus": "RegelmÃ¤ÃŸig oder nur gehÃ¶rt?",
+    "tr": "Her hafta sonu birlikte alışveriş yaparız.",
+    "de": "Wir gehen jedes Wochenende zusammen einkaufen."
+  },
+  {
+    "level": 52,
+    "stage": "A2",
+    "focus": "RegelmÃ¤ÃŸig oder nur gehÃ¶rt?",
+    "tr": "André her gün yürür.",
+    "de": "André geht jeden Tag spazieren."
+  },
+  {
+    "level": 53,
+    "stage": "A2",
+    "focus": "RegelmÃ¤ÃŸig oder nur gehÃ¶rt?",
+    "tr": "Ben bu boktan oyunu oynamam.",
+    "de": "Dieses beschissene Spiel spiele ich nicht."
+  },
+  {
+    "level": 54,
+    "stage": "A2",
+    "focus": "RegelmÃ¤ÃŸig oder nur gehÃ¶rt?",
+    "tr": "Kirby Red Bull içmiş.",
+    "de": "Kirby hat offenbar Red Bull getrunken."
+  },
+  {
+    "level": 55,
+    "stage": "A2",
+    "focus": "RegelmÃ¤ÃŸig oder nur gehÃ¶rt?",
+    "tr": "Mert yine Mario Party'de kazanmış, şerefsiz!",
+    "de": "Mert hat wohl schon wieder bei Mario Party gewonnen, dieser Dreckskerl!"
+  },
+  {
+    "level": 56,
+    "stage": "A2",
+    "focus": "Vergleichen und kÃ¶nnen",
+    "tr": "Mert matchadan daha tatlı.",
+    "de": "Mert ist süßer als Matcha."
+  },
+  {
+    "level": 57,
+    "stage": "A2",
+    "focus": "Vergleichen und kÃ¶nnen",
+    "tr": "Bu en güzel kruvasan.",
+    "de": "Das ist das beste Croissant."
+  },
+  {
+    "level": 58,
+    "stage": "A2",
+    "focus": "Vergleichen und kÃ¶nnen",
+    "tr": "Birlikte yüzebiliriz.",
+    "de": "Wir können zusammen schwimmen."
+  },
+  {
+    "level": 59,
+    "stage": "A2",
+    "focus": "Vergleichen und kÃ¶nnen",
+    "tr": "André bu denklemi çözebilir.",
+    "de": "André kann diese Gleichung lösen."
+  },
+  {
+    "level": 60,
+    "stage": "A2",
+    "focus": "Vergleichen und kÃ¶nnen",
+    "tr": "Bu boktan bölümü izleyemem.",
+    "de": "Diese beschissene Folge kann ich nicht anschauen."
+  },
+  {
+    "level": 61,
+    "stage": "A2",
+    "focus": "MÃ¼ssen und gemeinsam etwas vorschlagen",
+    "tr": "Dersi hazırlamalıyım.",
+    "de": "Ich muss den Unterricht vorbereiten."
+  },
+  {
+    "level": 62,
+    "stage": "A2",
+    "focus": "MÃ¼ssen und gemeinsam etwas vorschlagen",
+    "tr": "Bu akşam Quest 3'ü şarj etmeliyiz.",
+    "de": "Wir müssen heute Abend die Quest3 laden."
+  },
+  {
+    "level": 63,
+    "stage": "A2",
+    "focus": "MÃ¼ssen und gemeinsam etwas vorschlagen",
+    "tr": "Kesirleri anlatmalıyım.",
+    "de": "Ich muss die Brüche erklären."
+  },
+  {
+    "level": 64,
+    "stage": "A2",
+    "focus": "MÃ¼ssen und gemeinsam etwas vorschlagen",
+    "tr": "Peter Pane restoranına gidelim.",
+    "de": "Lass uns zu Peter Pane gehen."
+  },
+  {
+    "level": 65,
+    "stage": "A2",
+    "focus": "MÃ¼ssen und gemeinsam etwas vorschlagen",
+    "tr": "Fransız Devrimi'ni anlatalım.",
+    "de": "Lass uns die Französische Revolution erklären."
+  },
+  {
+    "level": 66,
+    "stage": "A2",
+    "focus": "Verbinden, begrÃ¼nden und einen Zweck nennen",
+    "tr": "Çikolata ve tatlandırıcı var.",
+    "de": "Es gibt Schokolade und Süßstoff."
+  },
+  {
+    "level": 67,
+    "stage": "A2",
+    "focus": "Verbinden, begrÃ¼nden und einen Zweck nennen",
+    "tr": "André matcha sevmiyo ama Mert seviyo.",
+    "de": "André mag keinen Matcha, aber Mert mag ihn."
+  },
+  {
+    "level": 68,
+    "stage": "A2",
+    "focus": "Verbinden, begrÃ¼nden und einen Zweck nennen",
+    "tr": "Drawn Together izliyom çünkü bu dizi komik.",
+    "de": "Ich schaue Drawn Together, weil diese Serie lustig ist."
+  },
+  {
+    "level": 69,
+    "stage": "A2",
+    "focus": "Verbinden, begrÃ¼nden und einen Zweck nennen",
+    "tr": "Bu çikolata André için.",
+    "de": "Diese Schokolade ist für André."
+  },
+  {
+    "level": 70,
+    "stage": "A2",
+    "focus": "Verbinden, begrÃ¼nden und einen Zweck nennen",
+    "tr": "Kilo vermek için yürüyom.",
+    "de": "Ich gehe spazieren, um abzunehmen."
+  },
+  {
+    "level": 71,
+    "stage": "A2",
+    "focus": "Ablauf und Begleitung",
+    "tr": "REWE marketine gidip muz aldık.",
+    "de": "Wir sind zum REWE gegangen und haben Bananen gekauft."
+  },
+  {
+    "level": 72,
+    "stage": "A2",
+    "focus": "Ablauf und Begleitung",
+    "tr": "Gülerek SüngerBob izledik.",
+    "de": "Wir haben lachend SpongeBob geschaut."
+  },
+  {
+    "level": 73,
+    "stage": "A2",
+    "focus": "Ablauf und Begleitung",
+    "tr": "Noel pazarına yürüyerek gittik.",
+    "de": "Wir sind zu Fuß zum Weihnachtsmarkt gegangen."
+  },
+  {
+    "level": 74,
+    "stage": "A2",
+    "focus": "Ablauf und Begleitung",
+    "tr": "Spora gitmeden önce su içtim.",
+    "de": "Vor dem Sport habe ich Wasser getrunken."
+  },
+  {
+    "level": 75,
+    "stage": "A2",
+    "focus": "Ablauf und Begleitung",
+    "tr": "Yüzdükten sonra üzüm suyuyla şarap içtik.",
+    "de": "Nach dem Schwimmen haben wir Wein mit Traubensaft getrunken."
+  },
+  {
+    "level": 76,
+    "stage": "A2",
+    "focus": "Wer etwas tut",
+    "tr": "Orta Çağ'ı anlatan öğretmen André.",
+    "de": "Der Lehrer, der das Mittelalter erklärt, ist André."
+  },
+  {
+    "level": 77,
+    "stage": "A2",
+    "focus": "Wer etwas tut",
+    "tr": "Atlet giyen erkek gülümsüyo.",
+    "de": "Der Mann im Tanktop lächelt."
+  },
+  {
+    "level": 78,
+    "stage": "A2",
+    "focus": "Wer etwas tut",
+    "tr": "André bu tarih kitabını okuyo.",
+    "de": "André liest dieses Geschichtsbuch."
+  },
+  {
+    "level": 79,
+    "stage": "A2",
+    "focus": "Wer etwas tut",
+    "tr": "Muzlu ekmek yapan Mert evde.",
+    "de": "Mert, der Bananenbrot macht, ist zu Hause."
+  },
+  {
+    "level": 80,
+    "stage": "A2",
+    "focus": "Wer etwas tut",
+    "tr": "Mario Party'de kazanan Mert gülüyo.",
+    "de": "Mert, der bei Mario Party gewinnt, lacht."
+  },
+  {
+    "level": 81,
+    "stage": "B1",
+    "focus": "Ãœbergang zu Standardformen und ZeitbezÃ¼ge",
+    "tr": "Ben Mert'i seviyorum.",
+    "de": "Ich liebe Mert."
+  },
+  {
+    "level": 82,
+    "stage": "B1",
+    "focus": "Ãœbergang zu Standardformen und ZeitbezÃ¼ge",
+    "tr": "Sen protein içeceği içiyor musun?",
+    "de": "Trinkst du einen Proteinshake?"
+  },
+  {
+    "level": 83,
+    "stage": "B1",
+    "focus": "Ãœbergang zu Standardformen und ZeitbezÃ¼ge",
+    "tr": "Biz Splatoon 3 oynuyoruz.",
+    "de": "Wir spielen Splatoon3."
+  },
+  {
+    "level": 84,
+    "stage": "B1",
+    "focus": "Ãœbergang zu Standardformen und ZeitbezÃ¼ge",
+    "tr": "Sen yemek yaparken ben dersi hazırlıyorum.",
+    "de": "Während du kochst, bereite ich den Unterricht vor."
+  },
+  {
+    "level": 85,
+    "stage": "B1",
+    "focus": "Ãœbergang zu Standardformen und ZeitbezÃ¼ge",
+    "tr": "Mert gelince Netflix'te dizi izliyorum.",
+    "de": "Sobald Mert kommt, schaue ich auf Netflix eine Serie."
+  },
+  {
+    "level": 86,
+    "stage": "B1",
+    "focus": "Wenn etwas passiert",
+    "tr": "Mert gelirse birlikte suşi yeriz.",
+    "de": "Wenn Mert kommt, essen wir zusammen Sushi."
+  },
+  {
+    "level": 87,
+    "stage": "B1",
+    "focus": "Wenn etwas passiert",
+    "tr": "Kaufland marketine gidersek çikolata alırız.",
+    "de": "Wenn wir zum Kaufland gehen, kaufen wir Schokolade."
+  },
+  {
+    "level": 88,
+    "stage": "B1",
+    "focus": "Wenn etwas passiert",
+    "tr": "Sen kazanırsan ben küfrederim.",
+    "de": "Wenn du gewinnst, fluche ich."
+  },
+  {
+    "level": 89,
+    "stage": "B1",
+    "focus": "Wenn etwas passiert",
+    "tr": "Ben'i görürsem birlikte yürürüz.",
+    "de": "Wenn ich Ben sehe, gehen wir zusammen spazieren."
+  },
+  {
+    "level": 90,
+    "stage": "B1",
+    "focus": "Wenn etwas passiert",
+    "tr": "André havuza giderse Mert evde kalır.",
+    "de": "Wenn André ins Schwimmbad geht, bleibt Mert zu Hause."
+  },
+  {
+    "level": 91,
+    "stage": "B1",
+    "focus": "Eine Handlung als Sache benennen",
+    "tr": "Benim sevgilim yakışıklı.",
+    "de": "Mein Freund ist gut aussehend."
+  },
+  {
+    "level": 92,
+    "stage": "B1",
+    "focus": "Eine Handlung als Sache benennen",
+    "tr": "Senin gülmen güzel.",
+    "de": "Es ist schön, dass du lachst."
+  },
+  {
+    "level": 93,
+    "stage": "B1",
+    "focus": "Eine Handlung als Sache benennen",
+    "tr": "Benim yemek yapmam seni mutlu ediyor.",
+    "de": "Dass ich koche, macht dich glücklich."
+  },
+  {
+    "level": 94,
+    "stage": "B1",
+    "focus": "Eine Handlung als Sache benennen",
+    "tr": "Senin Ben'le yürümen güzel.",
+    "de": "Es ist schön, dass du mit Ben spazieren gehst."
+  },
+  {
+    "level": 95,
+    "stage": "B1",
+    "focus": "Eine Handlung als Sache benennen",
+    "tr": "Senin matcha içmen garip.",
+    "de": "Dass du Matcha trinkst, ist seltsam."
+  },
+  {
+    "level": 96,
+    "stage": "B1",
+    "focus": "Wissen, dass etwas geschieht",
+    "tr": "Senin beni sevdiğini biliyorum.",
+    "de": "Ich weiß, dass du mich liebst."
+  },
+  {
+    "level": 97,
+    "stage": "B1",
+    "focus": "Wissen, dass etwas geschieht",
+    "tr": "Senin dün yüzdüğünü biliyorum.",
+    "de": "Ich weiß, dass du gestern geschwommen bist."
+  },
+  {
+    "level": 98,
+    "stage": "B1",
+    "focus": "Wissen, dass etwas geschieht",
+    "tr": "Senin dün Fransız Devrimi'ni anlattığını biliyorum.",
+    "de": "Ich weiß, dass du gestern die Französische Revolution erklärt hast."
+  },
+  {
+    "level": 99,
+    "stage": "B1",
+    "focus": "Wissen, dass etwas geschieht",
+    "tr": "Senin Paris'e gideceğini biliyorum.",
+    "de": "Ich weiß, dass du nach Paris fahren wirst."
+  },
+  {
+    "level": 100,
+    "stage": "B1",
+    "focus": "Wissen, dass etwas geschieht",
+    "tr": "Senin dün yine Mario Party'de kazandığını biliyorum.",
+    "de": "Ich weiß, dass du gestern schon wieder bei Mario Party gewonnen hast."
+  },
+  {
+    "level": 101,
+    "stage": "B1",
+    "focus": "Welches Ding gemeint ist",
+    "tr": "Senin gördüğün erkek yakışıklı.",
+    "de": "Der Mann, den du gesehen hast, ist gut aussehend."
+  },
+  {
+    "level": 102,
+    "stage": "B1",
+    "focus": "Welches Ding gemeint ist",
+    "tr": "Senin alacağın telefon güzel.",
+    "de": "Das Handy, das du kaufen wirst, ist schön."
+  },
+  {
+    "level": 103,
+    "stage": "B1",
+    "focus": "Welches Ding gemeint ist",
+    "tr": "Senin pişirdiğin keki seviyorum.",
+    "de": "Ich mag den Kuchen, den du gebacken hast."
+  },
+  {
+    "level": 104,
+    "stage": "B1",
+    "focus": "Welches Ding gemeint ist",
+    "tr": "Senin seçtiğin suşiyi yiyorum.",
+    "de": "Ich esse das Sushi, das du ausgewählt hast."
+  },
+  {
+    "level": 105,
+    "stage": "B1",
+    "focus": "Welches Ding gemeint ist",
+    "tr": "Senin beğendiğin kafeye gidiyorum.",
+    "de": "Ich gehe in das Café, das dir gefallen hat."
+  },
+  {
+    "level": 106,
+    "stage": "B1",
+    "focus": "Getan werden und sich selbst",
+    "tr": "Araba yıkanıyor.",
+    "de": "Das Auto wird gewaschen."
+  },
+  {
+    "level": 107,
+    "stage": "B1",
+    "focus": "Getan werden und sich selbst",
+    "tr": "Book5 şarj ediliyor.",
+    "de": "Das Book5 wird geladen."
+  },
+  {
+    "level": 108,
+    "stage": "B1",
+    "focus": "Getan werden und sich selbst",
+    "tr": "Matematik kitabı okunuyor.",
+    "de": "Das Mathematikbuch wird gelesen."
+  },
+  {
+    "level": 109,
+    "stage": "B1",
+    "focus": "Getan werden und sich selbst",
+    "tr": "André spordan sonra yıkanıyor.",
+    "de": "André wäscht sich nach dem Sport."
+  },
+  {
+    "level": 110,
+    "stage": "B1",
+    "focus": "Getan werden und sich selbst",
+    "tr": "Salmon Run'da altın yumurtalar toplanıyor.",
+    "de": "Bei Salmon Run werden goldene Eier gesammelt."
+  },
+  {
+    "level": 111,
+    "stage": "B1",
+    "focus": "Etwas berichten oder erfragen",
+    "tr": "Senin Galaxy S25+ telefonunu şarj edeceğini söylüyorum.",
+    "de": "Ich sage, dass du dein Galaxy-S25+-Handy laden wirst."
+  },
+  {
+    "level": 112,
+    "stage": "B1",
+    "focus": "Etwas berichten oder erfragen",
+    "tr": "Senin muzlu ekmek yaptığını söylüyorum.",
+    "de": "Ich sage, dass du Bananenbrot gemacht hast."
+  },
+  {
+    "level": 113,
+    "stage": "B1",
+    "focus": "Etwas berichten oder erfragen",
+    "tr": "Senin Phineas ve Ferb'i izleyip izlemediğini soruyorum.",
+    "de": "Ich frage, ob du Phineas und Ferb geschaut hast."
+  },
+  {
+    "level": 114,
+    "stage": "B1",
+    "focus": "Etwas berichten oder erfragen",
+    "tr": "Senin Quest 3'te oynayıp oynamadığını soruyorum.",
+    "de": "Ich frage, ob du auf der Quest3 gespielt hast."
+  },
+  {
+    "level": 115,
+    "stage": "B1",
+    "focus": "Etwas berichten oder erfragen",
+    "tr": "Senin kilo vermek isteyip istemediğini soruyorum.",
+    "de": "Ich frage, ob du abnehmen möchtest."
+  },
+  {
+    "level": 116,
+    "stage": "B1",
+    "focus": "Trotz eines Umstands",
+    "tr": "Senin kazanmana rağmen küfretmiyorum.",
+    "de": "Obwohl du gewinnst, fluche ich nicht."
+  },
+  {
+    "level": 117,
+    "stage": "B1",
+    "focus": "Trotz eines Umstands",
+    "tr": "Senin gitmene rağmen Ben burada kalıyor.",
+    "de": "Obwohl du gehst, bleibt Ben hier."
+  },
+  {
+    "level": 118,
+    "stage": "B1",
+    "focus": "Trotz eines Umstands",
+    "tr": "Senin matcha içmene rağmen seni seviyorum.",
+    "de": "Obwohl du Matcha trinkst, liebe ich dich."
+  },
+  {
+    "level": 119,
+    "stage": "B1",
+    "focus": "Trotz eines Umstands",
+    "tr": "Senin Korra'yı sevmene rağmen ben Aang'ı seviyorum.",
+    "de": "Obwohl du Korra magst, mag ich Aang."
+  },
+  {
+    "level": 120,
+    "stage": "B1",
+    "focus": "Trotz eines Umstands",
+    "tr": "Sen gelince birlikte yüzebiliriz.",
+    "de": "Sobald du kommst, können wir zusammen schwimmen."
+  },
+  {
+    "level": 121,
+    "stage": "B2",
+    "focus": "Vergangenes zeitlich einordnen",
+    "tr": "Mert yemek yaparken ben Disney+ uygulamasında Phineas ve Ferb izliyordum.",
+    "de": "Während Mert kochte, schaute ich in der Disney+-App Phineas und Ferb."
+  },
+  {
+    "level": 122,
+    "stage": "B2",
+    "focus": "Vergangenes zeitlich einordnen",
+    "tr": "André gelmeden önce alışverişi bitirmiştim.",
+    "de": "Bevor André kam, hatte ich den Einkauf schon erledigt."
+  },
+  {
+    "level": 123,
+    "stage": "B2",
+    "focus": "Vergangenes zeitlich einordnen",
+    "tr": "Dün Peter Pane restoranına gidecektik ama evde kaldık.",
+    "de": "Wir wollten gestern zu Peter Pane gehen, sind aber zu Hause geblieben."
+  },
+  {
+    "level": 124,
+    "stage": "B2",
+    "focus": "Vergangenes zeitlich einordnen",
+    "tr": "Çocukken annemle yemek programları izlerdim.",
+    "de": "Als Kind schaute ich mit meiner Mutter Kochsendungen."
+  },
+  {
+    "level": 125,
+    "stage": "B2",
+    "focus": "Vergangenes zeitlich einordnen",
+    "tr": "Ben yürüyüşe çıkarken Mert yemek yapıyordu.",
+    "de": "Während ich zum Spaziergang aufbrach, kochte Mert gerade."
+  },
+  {
+    "level": 126,
+    "stage": "B2",
+    "focus": "Miteinander und veranlassen",
+    "tr": "Mert'le hafta sonu görüşüyoruz.",
+    "de": "Mert und ich treffen uns am Wochenende."
+  },
+  {
+    "level": 127,
+    "stage": "B2",
+    "focus": "Miteinander und veranlassen",
+    "tr": "André arabayı yıkatıyor.",
+    "de": "André lässt das Auto waschen."
+  },
+  {
+    "level": 128,
+    "stage": "B2",
+    "focus": "Miteinander und veranlassen",
+    "tr": "Mert beni güldürüyor.",
+    "de": "Mert bringt mich zum Lachen."
+  },
+  {
+    "level": 129,
+    "stage": "B2",
+    "focus": "Miteinander und veranlassen",
+    "tr": "André annesine yemek yaptırıyor.",
+    "de": "André lässt seine Mutter kochen."
+  },
+  {
+    "level": 130,
+    "stage": "B2",
+    "focus": "Miteinander und veranlassen",
+    "tr": "Mert'le kapıda öpüşüyoruz.",
+    "de": "Mert und ich küssen uns an der Tür."
+  },
+  {
+    "level": 131,
+    "stage": "B2",
+    "focus": "Beschreibungen mit Besitz und FÃ¤llen",
+    "tr": "Mert'in pişirdiği keki buzdolabında saklıyorum.",
+    "de": "Ich bewahre den Kuchen, den Mert gebacken hat, im Kühlschrank auf."
+  },
+  {
+    "level": 132,
+    "stage": "B2",
+    "focus": "Beschreibungen mit Besitz und FÃ¤llen",
+    "tr": "Senin gördüğün Asyalı erkeğe bakıyorum.",
+    "de": "Ich schaue den asiatischen Mann an, den du gesehen hast."
+  },
+  {
+    "level": 133,
+    "stage": "B2",
+    "focus": "Beschreibungen mit Besitz und FÃ¤llen",
+    "tr": "Senin gördüğün erkeğin saçları kıvırcık, pantolonu bol.",
+    "de": "Der Mann, den du gesehen hast, hat lockige Haare und eine weite Hose."
+  },
+  {
+    "level": 134,
+    "stage": "B2",
+    "focus": "Beschreibungen mit Besitz und FÃ¤llen",
+    "tr": "Senin beğendiğin erkeğin gözleri yeşil.",
+    "de": "Der Mann, der dir gefallen hat, hat grüne Augen."
+  },
+  {
+    "level": 135,
+    "stage": "B2",
+    "focus": "Beschreibungen mit Besitz und FÃ¤llen",
+    "tr": "EDEKA marketinden aldığın çikolatanın yarısını yedim.",
+    "de": "Ich habe die Hälfte der Schokolade gegessen, die du bei EDEKA gekauft hast."
+  },
+  {
+    "level": 136,
+    "stage": "B2",
+    "focus": "Berichte mit Personen und Zeitbezug",
+    "tr": "Mert, André'nin Black Mirror izlediğini söyledi.",
+    "de": "Mert sagte, dass André Black Mirror geschaut habe."
+  },
+  {
+    "level": 137,
+    "stage": "B2",
+    "focus": "Berichte mit Personen und Zeitbezug",
+    "tr": "André, Mert'in dün yemek yaptığını söyledi.",
+    "de": "André sagte, dass Mert gestern gekocht habe."
+  },
+  {
+    "level": 138,
+    "stage": "B2",
+    "focus": "Berichte mit Personen und Zeitbezug",
+    "tr": "André, Mert'in robot süpürge hediye ettiğini söyledi.",
+    "de": "André sagte, dass Mert einen Saugroboter verschenkt habe."
+  },
+  {
+    "level": 139,
+    "stage": "B2",
+    "focus": "Berichte mit Personen und Zeitbezug",
+    "tr": "André annesinde yemek yiyormuş.",
+    "de": "André isst offenbar bei seiner Mutter."
+  },
+  {
+    "level": 140,
+    "stage": "B2",
+    "focus": "Berichte mit Personen und Zeitbezug",
+    "tr": "Mert bu akşam Donauwelle getirecekmiş.",
+    "de": "Mert bringt wohl heute Abend Donauwelle mit."
+  },
+  {
+    "level": 141,
+    "stage": "B2",
+    "focus": "Seit, solange und weil",
+    "tr": "Sen geldiğinden beri daha çok gülüyorum.",
+    "de": "Seit du gekommen bist, lache ich mehr."
+  },
+  {
+    "level": 142,
+    "stage": "B2",
+    "focus": "Seit, solange und weil",
+    "tr": "Birlikte oynadığımız sürece kaybetmek sorun değil.",
+    "de": "Solange wir zusammen spielen, ist Verlieren kein Problem."
+  },
+  {
+    "level": 143,
+    "stage": "B2",
+    "focus": "Seit, solange und weil",
+    "tr": "Yeşil gözlerini sevdiğim için sana bakıyorum.",
+    "de": "Ich schaue dich an, weil ich deine grünen Augen liebe."
+  },
+  {
+    "level": 144,
+    "stage": "B2",
+    "focus": "Seit, solange und weil",
+    "tr": "Dersi hazırladığım için şimdi dinlenebilirim.",
+    "de": "Weil ich den Unterricht vorbereitet habe, kann ich mich jetzt ausruhen."
+  },
+  {
+    "level": 145,
+    "stage": "B2",
+    "focus": "Seit, solange und weil",
+    "tr": "Seninle yürüdüğüm sürece telefona bakmıyorum.",
+    "de": "Solange ich mit dir spazieren gehe, schaue ich nicht aufs Handy."
+  },
+  {
+    "level": 146,
+    "stage": "B2",
+    "focus": "Gegensatz und Alternativen",
+    "tr": "André hindistan cevizi sevmiyor, oysa Mert seviyor.",
+    "de": "André mag keine Kokosnuss, Mert hingegen schon."
+  },
+  {
+    "level": 147,
+    "stage": "B2",
+    "focus": "Gegensatz und Alternativen",
+    "tr": "Çok güldüğümüzden dolayı Family Guy'ı durdurduk.",
+    "de": "Weil wir so viel gelacht haben, haben wir Family Guy pausiert."
+  },
+  {
+    "level": 148,
+    "stage": "B2",
+    "focus": "Gegensatz und Alternativen",
+    "tr": "TikTok izlemek yerine seninle yürüyorum.",
+    "de": "Statt TikTok zu schauen, gehe ich mit dir spazieren."
+  },
+  {
+    "level": 149,
+    "stage": "B2",
+    "focus": "Gegensatz und Alternativen",
+    "tr": "Mario Party'de kazanırsan bile bu akşam yemeği sen yapacaksın.",
+    "de": "Selbst wenn du bei Mario Party gewinnst, kochst heute Abend du."
+  },
+  {
+    "level": 150,
+    "stage": "B2",
+    "focus": "Gegensatz und Alternativen",
+    "tr": "Hindistan cevizi eklemek yerine Sriracha ekledim.",
+    "de": "Statt Kokosnuss hinzuzufügen, habe ich Sriracha hinzugefügt."
+  },
+  {
+    "level": 151,
+    "stage": "B2",
+    "focus": "Mehrere bekannte Beziehungen verbinden",
+    "tr": "Mert gelirse birlikte seçtiğimiz diziyi izleyebiliriz.",
+    "de": "Wenn Mert kommt, können wir die Serie schauen, die wir zusammen ausgewählt haben."
+  },
+  {
+    "level": 152,
+    "stage": "B2",
+    "focus": "Mehrere bekannte Beziehungen verbinden",
+    "tr": "Fransız Devrimi'ni anlatmak için hazırladığım metni öğrencilere okutuyorum.",
+    "de": "Ich lasse die Schüler den Text lesen, den ich zur Erklärung der Französischen Revolution vorbereitet habe."
+  },
+  {
+    "level": 153,
+    "stage": "B2",
+    "focus": "Mehrere bekannte Beziehungen verbinden",
+    "tr": "André'nin yazdığı denklem tahtada çözülüyor.",
+    "de": "Die Gleichung, die André aufgeschrieben hat, wird an der Tafel gelöst."
+  },
+  {
+    "level": 154,
+    "stage": "B2",
+    "focus": "Mehrere bekannte Beziehungen verbinden",
+    "tr": "Mert robot süpürgenin çalıştığını söyledi, oysa yerde hâlâ kırıntı var.",
+    "de": "Mert sagte, dass der Saugroboter arbeite, dabei liegen immer noch Krümel auf dem Boden."
+  },
+  {
+    "level": 155,
+    "stage": "B2",
+    "focus": "Mehrere bekannte Beziehungen verbinden",
+    "tr": "Senin gördüğün tarih kitabının kapağını Ben'den kurtardım.",
+    "de": "Ich habe den Umschlag des Geschichtsbuchs, das du gesehen hast, vor Ben gerettet."
+  },
+  {
+    "level": 156,
+    "stage": "B2",
+    "focus": "Anwenden und gezielt festigen",
+    "tr": "ÁRO restoranında seçtiğin yemeğe jalapeño eklediğin için seni öpüyorum.",
+    "de": "Ich küsse dich, weil du dem Gericht, das du bei ÁRO gewählt hast, Jalapeños hinzugefügt hast."
+  },
+  {
+    "level": 157,
+    "stage": "B2",
+    "focus": "Anwenden und gezielt festigen",
+    "tr": "Paris'te çektiğimiz fotoğraflara bakarken yine gülümsüyorum.",
+    "de": "Beim Anschauen der Fotos, die wir in Paris gemacht haben, lächle ich wieder."
+  },
+  {
+    "level": 158,
+    "stage": "B2",
+    "focus": "Anwenden und gezielt festigen",
+    "tr": "Annenin yaptığı yemekleri yedikten sonra Ben'le yürüyüşe çıkacağız.",
+    "de": "Nachdem wir das Essen deiner Mutter gegessen haben, gehen wir mit Ben spazieren."
+  },
+  {
+    "level": 159,
+    "stage": "B2",
+    "focus": "Anwenden und gezielt festigen",
+    "tr": "André'nin hediye ettiği kaplumbağa desenli çorapları giyince gülümsüyorum.",
+    "de": "Wenn ich die Socken mit Schildkrötenmotiv anziehe, die André mir geschenkt hat, lächle ich."
+  },
+  {
+    "level": 160,
+    "stage": "B2",
+    "focus": "Anwenden und gezielt festigen",
+    "tr": "Mert, Merz'e «Taşaklarımı yala!» dediğimi duyunca kahkahalarla güldü.",
+    "de": "Mert lachte schallend, als er hörte, dass ich zu Merz „Leck meine Eier!“ gesagt hatte."
+  }
+]
