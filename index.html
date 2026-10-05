@@ -1996,7 +1996,7 @@
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
   <link rel="stylesheet" href="grammar.css?v=20261005-einstieg">
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
-  <link rel="stylesheet" href="motion.css?v=20261005-keyboard-fast">
+  <link rel="stylesheet" href="motion.css?v=20261005-search-keyboard">
 </head>
 
 <body>
@@ -2033,7 +2033,12 @@
 
       <div id="wordTypeFilters" class="word-type-filters" role="group" aria-label="Nach Wortart filtern" hidden></div>
 
-      <input id="search" class="search" type="search" aria-label="Wortschatz durchsuchen" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
+      <div class="word-search">
+        <input id="search" class="search" type="search" inputmode="none" readonly aria-label="Wortschatz durchsuchen, App-Tastatur öffnen" aria-controls="searchKeyboard" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
+        <button id="clearWordSearch" class="clear-word-search" type="button" aria-label="Suche leeren" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>
+        </button>
+      </div>
 
       <div id="wordList" class="word-list">
         <!-- Populated from data/words.js. -->
@@ -2234,6 +2239,8 @@
     </button>
   </nav>
 </div>
+
+<div id="searchKeyboard" class="custom-keyboard search-keyboard" role="group" aria-label="App-Tastatur für die Wortschatzsuche" hidden inert></div>
 
 <script src="data/lexicon.js?v=20261004-course"></script>
 <script src="data/words.js?v=20261004-course"></script>
@@ -2525,6 +2532,7 @@
   const mainNavViews = ["dictionary","grammar","flashcards"];
 
   function showView(id, btn, swipeDirection = null, motionSwipe = null){
+    window.AndreDictionarySearch?.close({immediate:true});
     AndreMotion.cancel();
     const exitingView = document.querySelector(".view.active");
     const exitingBox = {box:exitingView?.getBoundingClientRect(),parent:exitingView?.parentElement?.getBoundingClientRect()};
@@ -2717,17 +2725,18 @@
     answerEl.focus({preventScroll:true});
   }
 
-  function renderAppKeyboard(language, {keyboard, onType, onCheck, onSkip, skipLabel = "Keine Ahnung", checkLabel = "Antwort prüfen", disabled = false}){
+  function renderAppKeyboard(language, {keyboard, onType, onCheck, onSkip, onLanguage, languageLabel = language.toUpperCase(), skipLabel = "Keine Ahnung", checkLabel = "Antwort prüfen", disabled = false}){
     const rows = language === "tr"
       ? [["q","w","e","r","t","y","u","ı","o","p","ğ","ü"], ["a","s","d","f","g","h","j","k","l","ş","i"], ["z","x","c","v","b","n","m","ö","ç"]]
       : [["q","w","e","r","t","z","u","i","o","p","ü"], ["a","s","d","f","g","h","j","k","l","ö","ä","ß"], ["y","x","c","v","b","n","m"]];
-    keyboard._actions = {onType,onCheck,onSkip};
-    const layout = language + ":" + Boolean(onSkip);
+    keyboard._actions = {onType,onCheck,onSkip,onLanguage};
+    const layout = language + ":" + Boolean(onSkip) + ":" + Boolean(onLanguage);
     if(keyboard.dataset.layout === layout){
       keyboard.querySelectorAll(".key").forEach(button => {
         button.disabled = disabled;
         if(button.dataset.action === "check") button.setAttribute("aria-label", checkLabel);
         if(button.dataset.action === "skip") button.textContent = skipLabel;
+        if(button.dataset.action === "language") button.setAttribute("aria-label", languageLabel);
       });
       return;
     }
@@ -2748,7 +2757,10 @@
       if(index === 2) keys.push(key("⌫", () => keyboard._actions.onType("BACKSPACE"), "key special delete", "Zeichen löschen", "delete"));
       row(keys);
     });
-    row([key("Leertaste", () => keyboard._actions.onType(" "), "key special space", "Leertaste", "space"),key("✓", () => keyboard._actions.onCheck(), "key special check", checkLabel, "check")]);
+    const controls = [];
+    if(onLanguage) controls.push(key(language.toUpperCase()+" ⇄", () => keyboard._actions.onLanguage(), "key special language", languageLabel, "language"));
+    controls.push(key("Leertaste", () => keyboard._actions.onType(" "), "key special space", "Leertaste", "space"),key("✓", () => keyboard._actions.onCheck(), "key special check", checkLabel, "check"));
+    row(controls);
   }
 
   function renderCustomKeyboard(language){
@@ -3457,6 +3469,7 @@
 </script>
 <script src="lib/filter-layout.js?v=20261005-kompakt"></script>
 <script src="lib/dictionary.js?v=20261005-kompakt"></script>
+<script src="lib/dictionary-search.js?v=20261005-search-keyboard"></script>
 <script src="sentence-game.js?v=20261005-milestones"></script>
 <script src="grammar-ui.js?v=20261005-einstieg"></script>
 </body>
