@@ -19,6 +19,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
   set innerHTML(value){this.replaceChildren();this._text='';}
   replaceChildren(...children){this.children.forEach(c=>c.parentElement=null);this.children=[];this._text='';this.append(...children);}
   appendChild(child){child.remove();child.parentElement=this;this.children.push(child);return child;}
+  insertBefore(child,reference){if(child===reference)return child;if(!reference)return this.appendChild(child);if(reference.parentElement!==this)throw Error('Reference is not a child');child.remove();child.parentElement=this;this.children.splice(this.children.indexOf(reference),0,child);return child;}
   append(...children){children.forEach(child=>this.appendChild(child));}
   focus(){document.activeElement=this;}
   closest(selector){for(let e=this;e;e=e.parentElement)if(selector.split(',').some(s=>match(e,s)))return e;return null;}

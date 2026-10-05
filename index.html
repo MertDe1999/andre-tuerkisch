@@ -631,15 +631,17 @@
       background:transparent;
     }
 
-    /* Legende */
-    .legend{
+    /* Wortartenfilter */
+    .word-type-filters{
       display:flex;
       gap:7px;
       flex-wrap:wrap;
       margin:0 0 14px;
     }
 
-    .legend-item,
+    .word-type-filters[hidden]{display:none}
+
+    .word-type-filter,
     .type-badge{
       display:inline-flex;
       align-items:center;
@@ -649,7 +651,17 @@
       font-weight:800;
     }
 
-    .legend-item{padding:6px 9px}
+    .word-type-filters .word-type-filter.type-badge{
+      min-height:44px;
+      margin:0;
+      padding:7px 11px;
+      border:1px solid transparent;
+      font-family:inherit;
+      cursor:pointer;
+      transition:transform 160ms var(--motion-ease),border-color 140ms ease,box-shadow 140ms ease;
+    }
+    .word-type-filters .word-type-filter[aria-pressed="true"]{border-color:currentColor;box-shadow:inset 0 0 0 1px currentColor}
+    .word-type-filter:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 
     .dot{
       width:8px;
@@ -658,12 +670,7 @@
       display:inline-block;
     }
 
-    .legend-noun{background:var(--noun-soft);color:var(--noun-dark)}
-    .legend-verb{background:var(--verb-soft);color:var(--verb-dark)}
-    .legend-adj{background:var(--adj-soft);color:var(--adj-dark)}
-    .legend-noun .dot{background:var(--noun-dark)}
-    .legend-verb .dot{background:var(--verb-dark)}
-    .legend-adj .dot{background:var(--adj-dark)}
+    .word-type-filter .dot{background:currentColor}
 
     /* Wortschatz */
     .dictionary-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
@@ -2016,13 +2023,9 @@
         </button>
       </div>
 
-      <div class="legend">
-        <span class="legend-item legend-noun"><span class="dot"></span>Nomen</span>
-        <span class="legend-item legend-verb"><span class="dot"></span>Verben</span>
-        <span class="legend-item legend-adj"><span class="dot"></span>Adjektive</span>
-      </div>
+      <div id="wordTypeFilters" class="word-type-filters" role="group" aria-label="Nach Wortart filtern" hidden></div>
 
-      <input id="search" class="search" type="search" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
+      <input id="search" class="search" type="search" aria-label="Wortschatz durchsuchen" placeholder="Deutsch oder Türkisch suchen …" oninput="filterWords()">
 
       <div id="wordList" class="word-list">
         <!-- Populated from data/words.js. -->
@@ -2415,6 +2418,7 @@
   function refreshUnlockUI(){
     updateWordLocks();
     updateLearnedWordsDisplay();
+    window.AndreDictionary?.refresh();
     if(window.refreshGrammarUI) refreshGrammarUI();
   }
 
@@ -2580,16 +2584,7 @@
   }
 
   function filterWords(){
-    const q = document.getElementById("search").value.trim().toLowerCase();
-
-    document.querySelectorAll(".word-row").forEach(row => {
-      const matches = row.dataset.search.toLowerCase().includes(q);
-      const unlocked = !row.classList.contains("locked");
-
-      row.style.display =
-        q === "" ? "grid" :
-        (matches && unlocked ? "grid" : "none");
-    });
+    window.AndreDictionary?.filter();
   }
 
   function normalizeTypedAnswer(value, language = "de"){
@@ -3451,7 +3446,7 @@
   document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
-<script src="lib/dictionary.js?v=20261003-varianten"></script>
+<script src="lib/dictionary.js?v=20261005-wortartfilter"></script>
 <script src="sentence-game.js?v=20261005-milestones"></script>
 <script src="grammar-ui.js?v=20261005-milestones"></script>
 </body>
