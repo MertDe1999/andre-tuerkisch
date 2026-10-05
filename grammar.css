@@ -20,7 +20,6 @@
 .grammar-entry.locked>*{pointer-events:none}
 .grammar-entry .word-tr{overflow-wrap:anywhere}
 .grammar-entry.neutral{background:var(--surface-soft);border-color:var(--line)}
-#grammarStatus:empty{display:none}
 @media(prefers-color-scheme:dark){
   :root{
     --adverb:#235a6c;--adverb-soft:#142e37;--adverb-dark:#a7deef;

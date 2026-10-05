@@ -101,7 +101,7 @@ test('previous stem-based saved state migrates without losing rating, wrong spel
 });
 test('unlock buttons belong to their own views and grammar opens its own training',()=>{
  const a=app();a.run('refreshUnlockUI()');assert.equal(a.el('unlockFloatingButton').hidden,false);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
- a.run('showView("grammar",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true,'words are needed first');
+ a.run('showView("grammar",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'fresh grammar keeps the same bottom entry');assert.equal(a.el('grammarUnlockFloatingButton').disabled,true,'words are needed first');
  a.unlock(undefined,{grammar:false});assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'all words learned must not hide grammar button');
  a.el('grammarUnlockFloatingButton').click();assert.equal(a.run('GrammarTrainer.active'),true);assert.equal(a.run('currentMainView'),'grammar');
  a.run('showView("flashcards",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);

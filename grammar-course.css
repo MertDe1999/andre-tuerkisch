@@ -21,8 +21,6 @@
 .grammar-rule.locked{cursor:default}
 .grammar-rule.locked>*{filter:blur(6px);opacity:.42;pointer-events:none}
 .grammar-rule.locked::after{content:"Gesperrt";position:absolute;inset:0;display:grid;place-items:center;background:rgba(248,245,242,.18);color:#514b48;font-size:.86rem;font-weight:900;letter-spacing:.025em;text-shadow:0 1px 10px rgba(255,255,255,.95);pointer-events:none}
-.grammar-next-words{margin:12px 0;font-size:.84rem;color:var(--muted)}
-.grammar-next-words p{margin:0 0 8px;line-height:1.4}
 .grammar-primary{min-height:44px;padding:10px 14px;border:0;border-radius:14px;background:var(--blue);color:var(--blue-dark);font-family:inherit;font-weight:800;cursor:pointer}
 .grammar-trainer{display:flex;flex-direction:column;gap:0;min-height:0;height:100%}
 .grammar-trainer[hidden]{display:none}
