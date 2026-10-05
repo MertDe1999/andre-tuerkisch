@@ -634,9 +634,9 @@
     /* Wortartenfilter */
     .word-type-filters{
       display:flex;
-      gap:7px;
+      gap:4px;
       flex-wrap:wrap;
-      margin:0 0 14px;
+      margin:0 0 10px;
     }
 
     .word-type-filters[hidden]{display:none}
@@ -652,9 +652,15 @@
     }
 
     .word-type-filters .word-type-filter.type-badge{
-      min-height:44px;
+      min-height:26px;
       margin:0;
-      padding:7px 11px;
+      padding:4px 7px;
+      gap:4px;
+      font-size:.7rem;
+      line-height:1.1;
+      flex:0 0 auto;
+      max-width:100%;
+      white-space:nowrap;
       border:1px solid transparent;
       font-family:inherit;
       cursor:pointer;
@@ -670,7 +676,7 @@
       display:inline-block;
     }
 
-    .word-type-filter .dot{background:currentColor}
+    .word-type-filter .dot{width:5px;height:5px;flex-shrink:0;background:currentColor}
 
     /* Wortschatz */
     .dictionary-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
@@ -2557,6 +2563,7 @@
     const targetView = document.getElementById(id);
     targetView.classList.add("active");
     currentMainView = id;
+    if(id === "dictionary") window.AndreDictionary?.layout();
     if(id === "grammar" && window.refreshGrammarUI) refreshGrammarUI();
     updateUnlockButtons();
 
@@ -3446,7 +3453,8 @@
   document.addEventListener("keydown", handleTypingKeyboard);
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
-<script src="lib/dictionary.js?v=20261005-wortartfilter"></script>
+<script src="lib/filter-layout.js?v=20261005-kompakt"></script>
+<script src="lib/dictionary.js?v=20261005-kompakt"></script>
 <script src="sentence-game.js?v=20261005-milestones"></script>
 <script src="grammar-ui.js?v=20261005-milestones"></script>
 </body>
