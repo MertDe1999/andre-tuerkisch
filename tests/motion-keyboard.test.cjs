@@ -123,3 +123,23 @@ test('opening a trainer never animates an ancestor of its fixed keyboard',()=>{
   assert.ok(active.every(animation=>!ancestors.has(animation.target)),kind+' fixed keyboard must keep the viewport as its containing block');
  }
 });
+
+test('grammar celebrates a new unlock once and a learned-rule review only gets local feedback',()=>{
+ for(const alreadyLearned of [false,true]){
+  const a=app();a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
+  a.run('window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};'+
+   'const lesson=SentenceGame.engine.grammar.state.current;SentenceGame.engine.grammar.state.counts[lesson.entryId]={tr:3,de:3,seen:[]};'+
+   'SentenceGame.engine.grammar.state.unlocked[lesson.entryId]='+alreadyLearned+';lesson.draft=lesson.answer;GrammarTrainer.check();GrammarTrainer.check()');
+  assert.equal(a.run('window.celebrations'),alreadyLearned?0:1);assert.equal(a.el('grammarFeedback').textContent,alreadyLearned?'Richtig.':'Freigeschaltet.');
+ }
+});
+
+test('level 160 is celebrated on its first arrival and stays quiet after a level loss',()=>{
+ for(const highest of [159,160]){
+  const a=app();a.unlock();a.run('startSentenceGame();window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};'+
+   'const gameEngine=SentenceGame.engine;gameEngine.state.level=159;gameEngine.state.highestLevel='+highest+';gameEngine.state.opened=32;'+
+   'gameEngine.begin(AndreCourse.tasks[0],"current");gameEngine.state.current.tokens=gameEngine.task().groups.flatMap(g=>g.slots.map((slot,i)=>({...AndreCourse.copy(slot),id:g.id+i,group:g.id})));'+
+   'checkSentence();checkSentence()');
+  assert.equal(a.run('SentenceGame.engine.state.level'),160);assert.equal(a.run('window.celebrations'),highest===159?1:0);
+ }
+});

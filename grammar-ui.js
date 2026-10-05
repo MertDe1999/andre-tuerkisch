@@ -72,11 +72,13 @@
   engine.grammar.save();const answer=el('grammarAnswer');answer.className='typing-answer'+(cur.draft?'':' empty');AndreMotion.write(answer,cur.draft);el('grammarFeedback').textContent=engine.grammar.error;
  }
  function check(){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null||!cur.draft?.trim())return;
+  const wasUnlocked=engine.grammar.state.unlocked[cur.entryId]===true;
   const result=engine.grammar.check(cur.draft);if(result.ignored)return;
+  const newlyUnlocked=result.unlocked&&!wasUnlocked;
   if(result.correct)advanceTimer=setTimeout(()=>{advanceTimer=null;if(active)next();},750);
   draw();el('grammarAnswer').classList.add(result.correct?'correct':'wrong');
-  el('grammarFeedback').textContent=(result.correct?(result.unlocked?'Freigeschaltet.':cur.assisted?'Richtig korrigiert.':'Richtig.'):'Noch nicht richtig.')+(engine.grammar.error?' '+engine.grammar.error:'');el('grammarAnswer').focus();
-  AndreMotion.feedback(el('grammarAnswer'),result.correct);if(result.unlocked)celebrateCorrectAnswer();
+  el('grammarFeedback').textContent=(result.correct?(newlyUnlocked?'Freigeschaltet.':cur.assisted?'Richtig korrigiert.':'Richtig.'):'Noch nicht richtig.')+(engine.grammar.error?' '+engine.grammar.error:'');el('grammarAnswer').focus();
+  AndreMotion.feedback(el('grammarAnswer'),result.correct);if(newlyUnlocked)celebrateCorrectAnswer();
  }
  function skip(){const cur=engine.grammar.state.current;if(!active||!cur||cur.answered||advanceTimer!==null)return;
   if(selection){close();return;}skipped.add(cur.entryId);engine.grammar.state.current=null;engine.grammar.save();next();

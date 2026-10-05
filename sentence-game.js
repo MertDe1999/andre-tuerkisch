@@ -226,6 +226,7 @@
   function check(unknown=false){
     if(!running||!current()||current().finished)return;
     const previousSection=engine.state.opened;
+    const previousHighest=engine.state.highestLevel;
     const result=engine.check({unknown});
     if(result.ignored)return;
     render();
@@ -233,7 +234,7 @@
       message('Richtig!'+(result.delta>0?' Level '+result.level+'.':' Weiter ohne Leveländerung.'),'ok');
       AndreMotion.feedback(el('answerZone'),true);
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
-      const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0);
+      const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
       const duration=milestone?celebrateCorrectAnswer():800;
       advanceTimer=setTimeout(()=>{if(running)next();},Math.max(1000,duration));
       el('sentenceNextButton').focus({preventScroll:true});
