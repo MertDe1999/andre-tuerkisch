@@ -4,7 +4,7 @@ const keys=a=>a.el('searchKeyboard').children.flatMap(row=>row.children);
 const key=(a,action)=>keys(a).find(k=>k.dataset.action===action);
 const letter=(a,text)=>keys(a).find(k=>k.dataset.action==='letter'&&k.textContent===text);
 const visible=a=>a.rows.filter(row=>row.style.display!=='none').map(row=>row.querySelector('.word-tr').textContent);
-const enter=(a,text)=>{for(const char of text)letter(a,char).click();};
+const enter=(a,text)=>{for(const char of text){if(char==='ß'){const s=letter(a,'s');s.dispatchEvent({type:'pointerdown',pointerId:1});a.advance(400);s.dispatchEvent({type:'pointerup',pointerId:1});s.dispatchEvent({type:'click',detail:1});}else letter(a,char).click();}};
 function hardware(a,name,target=a.el('search'),extra={}){
  const event={type:'keydown',key:name,target,prevented:false,preventDefault(){this.prevented=true;},...extra};
  a.document.dispatchEvent(event);return event;
@@ -31,12 +31,12 @@ test('search opens the shared keyboard, searches instantly and keeps the word-ty
 
 test('DE/TR layouts preserve search text, language-specific letters and Delete placement',()=>{
  const a=app();a.el('search').click();const rows=a.el('searchKeyboard').children;
- assert.equal(rows.length,4);assert.equal(rows[2].children.at(-2).textContent,'m');
- assert.equal(rows[2].children.at(-1).dataset.action,'delete');
+ assert.equal(rows.length,5);assert.equal(rows[3].children.filter(e=>e.tagName==='BUTTON').at(-2).textContent,'m');
+ assert.equal(rows[3].children.at(-1).dataset.action,'delete');
  enter(a,'äöüß');key(a,'language').click();assert.equal(a.el('search').value,'äöüß');
  assert.equal(a.el('searchKeyboard').getAttribute('lang'),'tr');
- assert.equal(a.el('searchKeyboard').children[2].children.at(-2).textContent,'ç');
- assert.equal(a.el('searchKeyboard').children[2].children.at(-1).dataset.action,'delete');
+ assert.equal(a.el('searchKeyboard').children[3].children.at(-2).textContent,'ç');
+ assert.equal(a.el('searchKeyboard').children[3].children.at(-1).dataset.action,'delete');
  enter(a,'çğıöşü');key(a,'space').click();assert.equal(a.el('search').value,'äöüßçğıöşü ');
  key(a,'language').click();assert.equal(a.el('searchKeyboard').getAttribute('lang'),'de');
  assert.equal(a.el('search').value,'äöüßçğıöşü ');

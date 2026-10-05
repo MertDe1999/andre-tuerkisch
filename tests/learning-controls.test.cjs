@@ -27,11 +27,11 @@ test('a correct answer locks all input and double checking advances only once', 
   key(a,'x');key(a,'Enter');
   assert.equal(a.el('typingAnswer').textContent,shown);
   assert.deepEqual([...a.storage],progress);
-  assert.ok(a.el('customKeyboard').children.flatMap(row=>row.children).every(button=>button.disabled));
+  assert.ok(a.el('customKeyboard').querySelectorAll('.key').every(button=>button.disabled));
   assert.equal(a.timers.size,1);
   a.advance(749);assert.equal(a.run('renderedWords'),1);
   a.advance(1);assert.equal(a.run('renderedWords'),2);
-  assert.ok(a.el('customKeyboard').children.flatMap(row=>row.children).every(button=>!button.disabled));
+  assert.ok(a.el('customKeyboard').querySelectorAll('.key').every(button=>!button.disabled));
 });
 
 test('double tapping unknown schedules one task; both unknown directions show a readable translation', () => {
