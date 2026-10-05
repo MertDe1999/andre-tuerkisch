@@ -573,6 +573,8 @@
     .unlock-floating:active{
       transform:translateY(1px);
     }
+    .unlock-floating[hidden]{display:none}
+    .unlock-floating:disabled{opacity:.55;cursor:default;box-shadow:none;transform:none}
 
     .bottom-nav{
       --nav-index:0;
@@ -1992,8 +1994,8 @@
 
   </style>
 <link rel="stylesheet" href="sentence-game.css?v=20261003-vereinfachen">
-  <link rel="stylesheet" href="grammar.css?v=20261003-varianten">
-  <link rel="stylesheet" href="grammar-course.css?v=20261004-ui2">
+  <link rel="stylesheet" href="grammar.css?v=20261005-einstieg">
+  <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-keyboard-fast">
 </head>
 
@@ -2144,7 +2146,6 @@
   <section id="grammar" class="view">
     <div id="grammarPanel" class="panel">
       <h2 class="section-title">Grammatik</h2>
-      <p id="grammarStatus" class="standard" role="status"></p>
       <div id="grammarList"></div>
     </div>
   </section>
@@ -2417,7 +2418,8 @@
     const words = document.getElementById("unlockFloatingButton");
     const grammar = document.getElementById("grammarUnlockFloatingButton");
     words.hidden = currentMainView !== "dictionary" || document.getElementById("cardsLearning").classList.contains("active") || document.getElementById("typingTrainer").classList.contains("active") || allUnlocked;
-    grammar.hidden = currentMainView !== "grammar" || (window.SentenceGame && (window.GrammarTrainer?.active || !window.GrammarTrainer?.canUnlock()));
+    grammar.hidden = currentMainView !== "grammar" || !!window.GrammarTrainer?.active;
+    grammar.disabled = !window.GrammarTrainer?.canUnlock();
     document.body.classList.toggle("without-unlock-button", words.hidden && grammar.hidden);
   }
 
@@ -3456,6 +3458,6 @@
 <script src="lib/filter-layout.js?v=20261005-kompakt"></script>
 <script src="lib/dictionary.js?v=20261005-kompakt"></script>
 <script src="sentence-game.js?v=20261005-milestones"></script>
-<script src="grammar-ui.js?v=20261005-milestones"></script>
+<script src="grammar-ui.js?v=20261005-einstieg"></script>
 </body>
 </html>

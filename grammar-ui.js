@@ -10,9 +10,7 @@
  function canUnlock(){return engine.grammar.ready(engine.unlocked(),engine.state.opened).some(e=>engine.grammar.exercise(e.id,engine.unlocked(),engine.state.opened));}
  function overview(){if(active)return;engine.refreshPool();const list=el('grammarList');list.replaceChildren();
   const opened=engine.state.opened,band=C.bands[opened-1],known=engine.grammar.unlocked();
-  el('grammarStatus').textContent=band.cefr+' · '+band.title;
   const missing=engine.missingWords();
-  if(missing.length){const note=make('div','grammar-next-words','');note.append(make('p','','Für den nächsten Schritt: '+missing.map(w=>w.tr).join(', ')),button('Wörter freischalten',()=>openTypingFromFloating(),'dictionary-cards-button'));list.append(note);}
   if(!missing.length&&G.core[band.index].every(id=>known.has(id)))list.append(button('Im Satzbau anwenden',()=>openLearnMode('sentences'),'grammar-primary'));
   for(const [group,title] of Object.entries(G.groupNames)){
    const entries=G.entries.filter(e=>e.group===group);if(!entries.length)continue;
@@ -92,7 +90,7 @@
  }
  function open(id){root.showView('grammar',null);AndreMotion.cancel();selection=id||null;skipped.clear();
   const cur=id?engine.grammar.next(engine.unlocked(),engine.state.opened,id):choose();
-  if(!cur){el('grammarStatus').textContent='Schalte zuerst die passenden Wörter oder die vorherige Form frei.';return;}
+  if(!cur){updateUnlockButtons();return;}
   AndreMotion.depart(el('grammarPanel'));active=true;el('grammarPanel').hidden=true;trainer.hidden=false;el('grammarUnlockFloatingButton').hidden=true;
   document.body.classList.add('without-unlock-button','learning-games-view','game-mode-active','grammar-training-view');root.scrollTo({top:0,behavior:'auto'});draw();el('grammarAnswer').focus();
  }
@@ -116,5 +114,5 @@
   else if(/^[\p{L} '’.,?!-]$/u.test(event.key)){event.preventDefault();type(event.key);}
  });
  root.GrammarTrainer={open,close,next,type,check,canUnlock,get active(){return active;}};root.openGrammarTraining=open;root.refreshGrammarUI=overview;
- el('grammarUnlockFloatingButton').addEventListener('click',()=>open());overview();updateUnlockButtons();
+ el('grammarUnlockFloatingButton').addEventListener('click',()=>{if(!el('grammarUnlockFloatingButton').disabled)open();});overview();updateUnlockButtons();
 })(window);

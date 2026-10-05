@@ -7,6 +7,29 @@ function keyboard(a,key,extras={}){
 function lesson(){const a=app();a.unlock(['ev','güzel','araba','bu'],{grammar:false});a.run('showView("grammar",null)');a.el('grammarUnlockFloatingButton').click();return a;}
 function correct(a){a.run('SentenceGame.engine.grammar.state.current.draft=SentenceGame.engine.grammar.state.current.answer;GrammarTrainer.check()');}
 
+test('fresh grammar keeps the bottom entry visible but locked, without an alternative top entry',()=>{
+ const a=app();a.run('showView("grammar",null)');const entry=a.el('grammarUnlockFloatingButton'),saved=[...a.storage];
+ assert.equal(entry.hidden,false);assert.equal(entry.disabled,true);assert.equal(a.el('unlockFloatingButton').hidden,true);
+ assert.equal(a.document.body.classList.contains('without-unlock-button'),false);
+ assert.ok(a.el('grammarList').children.every(node=>node.dataset.grammarGroup));
+ assert.equal(a.el('grammarList').querySelectorAll('.grammar-next-words').length,0);
+ entry.click();assert.equal(a.run('GrammarTrainer.active'),false);assert.equal(a.run('SentenceGame.engine.grammar.state.current'),null);assert.deepEqual([...a.storage],saved);
+ a.unlock(['ev','güzel'],{grammar:false});assert.equal(entry.hidden,false);assert.equal(entry.disabled,false);
+ entry.click();assert.equal(a.run('GrammarTrainer.active'),true);assert.equal(entry.hidden,true);
+ a.run('GrammarTrainer.close()');assert.equal(entry.hidden,false);assert.equal(entry.disabled,false);
+ a.run('showView("dictionary",null)');assert.equal(entry.hidden,true);assert.equal(a.el('unlockFloatingButton').hidden,false);
+});
+
+test('previous word unlocks use the same grammar entry and losing prerequisites locks it without moving it',()=>{
+ const storage=new Map([['andreTurkishUnlockProgressV1',JSON.stringify({ev:{toTurkish:true,toGerman:true},güzel:{toTurkish:true,toGerman:true}})]]);
+ const a=app({storage});a.run('showView("grammar",null)');const entry=a.el('grammarUnlockFloatingButton');
+ assert.equal(entry.hidden,false);assert.equal(entry.disabled,false);
+ a.run('resetUnlockDirections("ev")');assert.equal(entry.hidden,false);assert.equal(entry.disabled,true);
+ a.run('markUnlockDirection("ev","toTurkish");markUnlockDirection("ev","toGerman")');assert.equal(entry.disabled,false);
+ const loaded=app({storage});loaded.run('showView("grammar",null)');assert.equal(loaded.el('grammarUnlockFloatingButton').hidden,false);assert.equal(loaded.el('grammarUnlockFloatingButton').disabled,false);
+ assert.ok(loaded.el('grammarList').children.every(node=>node.dataset.grammarGroup));
+});
+
 test('unlearned and future rules stay locked while only learned forms are visible and reviewable',()=>{
  const a=app();a.unlock(undefined,{grammar:false});a.run('showView("grammar",null)');
  const topics=a.el('grammarList').children.filter(e=>e.dataset.grammarGroup);
