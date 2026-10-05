@@ -128,6 +128,7 @@
     button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
   function render(){
+    root.updateProfileLevel();
     const cur=current(),t=task();if(!cur||!t)return;
     const sameTask=renderedTask===cur.id;
     const oldPrompt=!sameTask?AndreMotion.snapshot(el('sentencePrompt')):null;
@@ -257,6 +258,7 @@
   root.leaveSentenceArea=()=>root.closeSentenceTest();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
   root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return false;},get current(){return current();},get task(){return task();}};
+  root.updateProfileLevel();
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
   el('sentenceNextButton').addEventListener('click',next);
   root.addEventListener('resize',()=>{if(running){clearDrag();render();}});

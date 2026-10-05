@@ -31,6 +31,13 @@ Empfohlene Reihenfolge: gehaltenes Löschen; danach Shift/Satzzeichen; anschlie�
 
 ## Recherchegrundlage
 
+Nachtrag HL01 vom 05.10.2026: Der Vorschlag für gehaltenes Löschen ist jetzt
+beauftragt und umgesetzt. Ein Zeichen beim Drücken, Wiederholung nach350ms
+alle70ms; Ende bei Loslassen, Bewegung, Abbruch, Fokusverlust, Navigation und
+gesperrter/neuer Tastatur. Gemeinsame Bedienung in beiden Trainern und Suche,
+kein zusätzlicher Zeigerklick nach dem Halten. Offline geprüft; die übrigen
+noch nicht umgesetzten Vorschläge behalten ihren bisherigen Status.
+
 - [W3C: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html): 24 × 24 CSS-px oder ausreichende Abstände; keine pauschale Behauptung, dass die ganze App dadurch konform ist.
 - [W3C: Target Size (Enhanced)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html): 44 × 44 CSS-px als erweitertes Ziel, größere Flächen unterstützen Touchbedienung.
 - [W3C: Pointer Cancellation](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html): Auslösen beim Loslassen ermöglicht Abbruch; Tastaturemulation ist eine ausdrücklich genannte Ausnahme. Sofortige Druckfarbe und spätere Aktivierung lassen sich trennen.

@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'../..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
- const animations=[],ids=new Map(),listeners=new Map();let document;
+ const animations=[],ids=new Map(),listeners=new Map(),windowListeners=new Map();let document;
  const match=(element,selector)=>{
    selector=selector.trim();
    if(selector==='*')return true;
@@ -57,7 +57,9 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  const sandbox={document,navigator:{},console,Blob,URL,confirm:()=>false,
  localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value),removeItem:key=>storage.delete(key)},
  setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),
- matchMedia:query=>({matches:query.includes('prefers-reduced-motion')?reducedMotion:false}),addEventListener(){},scrollTo(){}};
+ matchMedia:query=>({matches:query.includes('prefers-reduced-motion')?reducedMotion:false}),
+ addEventListener(type,f){if(!windowListeners.has(type))windowListeners.set(type,new Set());windowListeners.get(type).add(f);},
+ dispatchEvent(event){for(const f of windowListeners.get(event.type)||[])f(event);},scrollTo(){}};
  sandbox.window=sandbox;vm.createContext(sandbox);
  for(const [,src,inline] of html.matchAll(/<script(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g))vm.runInContext(src?fs.readFileSync(path.join(root,src.split('?')[0]),'utf8'):inline,sandbox,{filename:src||'index.html'});
  const run=code=>vm.runInContext(code,sandbox),json=code=>JSON.parse(JSON.stringify(run(code)));
