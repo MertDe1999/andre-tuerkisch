@@ -20,6 +20,8 @@ Die Navigation bietet **Wortschatz**, **Grammatik** und **Satzbau**. Satzbau zei
 
 Oberhalb der Suche erscheinen farbige Wortartenfilter, sobald mindestens ein Wort der jeweiligen Art in beiden Richtungen freigeschaltet ist. Antippen zeigt die passenden Einträge; erneutes Antippen hebt den Filter auf. Die Auswahl lässt sich mit der Suche kombinieren. Wörter mit mehreren Wortarten erscheinen in allen passenden Filtern. Ohne Suchtext bleiben gesperrte passende Wörter wie bisher sichtbar. Die Liste blendet beim Wechsel kurz ein; reduzierte Bewegung wird berücksichtigt. Später ergänzte Wörter werden aus derselben Datenquelle eingeordnet.
 
+Die Wortartenfilter sind kompakte Chips. Ein Algorithmus misst ihre Breiten und stellt möglichst volle Zeilen zusammen; eine andere Bildschirmbreite, neue Freischaltungen oder Schriftänderungen aktualisieren die Anordnung. Antippen eines Filters lässt die Reihenfolge stabil. Die Wortliste bleibt nach Wortart und türkischem Alphabet sortiert.
+
 **Karteikarten** öffnet die Abfrage über den kompakten Button neben dem Wortschatz-Titel. Zurück führt ins Wortschatz; Karteikarten bleiben im Wortschatz. Freischaltungen, Abfragerichtungen und Tastaturbedienung bleiben erhalten.
 
 Wörter werden nach einer richtigen Antwort in beiden Übersetzungsrichtungen freigeschaltet. Die App-Tastatur und die Hardwaretastatur können im Worttrainer verwendet werden: Buchstaben eingeben, mit Backspace löschen und mit Enter prüfen. Tab navigiert zwischen Bedienelementen; Enter oder Leertaste aktiviert fokussierte Buttons und Karteikarten. Satzbausteine lassen sich tippen, ziehen oder per Tastatur aktivieren.
