@@ -28,11 +28,26 @@ body.grammar-training-view #grammarTrainer .custom-keyboard{height:var(--app-key
 body.learning-games-view #typingTrainer #typingGameActive{padding-bottom:var(--app-keyboard-height)}
 body.grammar-training-view .app{padding-bottom:calc(var(--app-keyboard-height) + 12px + env(safe-area-inset-bottom))}
 .keyboard-row .key.delete{flex:1.2 1 0}
+.word-search{position:relative}
+.word-search .search{padding-right:44px}
+.clear-word-search{position:absolute;right:7px;top:7px;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.clear-word-search[hidden],.search-keyboard[hidden]{display:none}
+:root{--search-keyboard-height:max(32dvh,calc(210px + env(safe-area-inset-bottom)))}
+body.word-search-open .app{padding-bottom:calc(var(--search-keyboard-height) + 16px)}
+body.word-search-open .bottom-nav-wrap{visibility:hidden;pointer-events:none;opacity:0}
+.search-keyboard{position:fixed;z-index:20000;left:50%;bottom:0;transform:translateX(-50%);width:min(100vw,520px);height:var(--search-keyboard-height);margin:0;padding:10px 7px max(10px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;border-left:0;border-right:0;border-bottom:0;box-shadow:0 -12px 32px rgba(70,54,46,.16);isolation:isolate}
+.search-keyboard[inert]{pointer-events:none}
+.search-keyboard .keyboard-row{flex:1 1 0;min-height:0}
+.search-keyboard .key{height:auto;min-height:0;padding:0 2px}
+.search-keyboard .key.language{flex:1.7 1 0}
+.search-keyboard .key.check{flex:2 1 0}
 @media(max-width:360px){
   body.learning-games-view #typingTrainer .custom-keyboard,
   body.grammar-training-view #grammarTrainer .custom-keyboard{padding-left:4px;padding-right:4px}
   body.learning-games-view .keyboard-row{gap:2px}
   .keyboard-row .key.delete{flex:1 1 0}
+  .search-keyboard{padding-left:4px;padding-right:4px}
+  .search-keyboard .keyboard-row{gap:2px}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}

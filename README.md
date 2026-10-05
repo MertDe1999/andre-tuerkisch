@@ -48,6 +48,16 @@ Aufgaben und Ablenker verwenden ausschließlich Wörter, die im Worttrainer in b
 
 Der Aufgabenplan verbindet aktuelle Übungen, fällige Wiederholungen und ältere Aufgaben. Wiederholungen warten beim nächsten Öffnen; die App arbeitet nicht im Hintergrund. Lernstand, angefangene Aufgaben und Wortfreischaltungen werden automatisch im jeweiligen Browser gespeichert und beim Öffnen geladen. Eine Oberfläche zum Herunterladen, Importieren oder Zurücksetzen des Lernstands gibt es derzeit nicht. Die alten Wortfreischaltungen und der vorhandene Spiellevel bleiben erhalten. Ab dem erreichten B1-Übergang bleiben Standardformen aktiv, auch nach einem Levelverlust.
 
+Die Wortschatzsuche öffnet die gemeinsame App-Tastatur mit einer kurzen 160-ms-
+Einblendung. DE/TR wechselt die Sprache; Löschen sitzt rechts neben m bzw. ç.
+Suchtreffer und Wortartfilter reagieren sofort. Fertig, Escape und Tippen außerhalb
+schließen die Tastatur; Suchtext und Lernstand bleiben erhalten. Bei Navigation
+oder Trainerstart wird sie sofort entfernt. Das Suchfeld verwendet readonly und
+inputmode="none", um die native Handytastatur zu vermeiden; Hardwareeingabe wird
+separat verarbeitet. Die Liste bleibt oberhalb der fixierten Tastatur erreichbar.
+Reduzierte Bewegung deaktiviert die Animation. `lib/dictionary-search.js` verwaltet
+nur diese Eingabe und Darstellung, ohne Lernstände zu speichern.
+
 ## Tests
 
 Grammatik zeigt farbige Themenkarten und gesperrte unbekannte Regeln. Freischalten erfolgt über den zentralen Button; gelernte Regeln können wiederholt werden. Die Übersetzungsübung verwendet dieselbe vollständige App-Tastatur wie „Wörter Freischalten“, ohne Lösungsanzeige. Überspringen vergibt keinen Fortschritt.

@@ -22,6 +22,8 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
   insertBefore(child,reference){if(child===reference)return child;if(!reference)return this.appendChild(child);if(reference.parentElement!==this)throw Error('Reference is not a child');child.remove();child.parentElement=this;this.children.splice(this.children.indexOf(reference),0,child);return child;}
   append(...children){children.forEach(child=>this.appendChild(child));}
   focus(){document.activeElement=this;}
+  blur(){if(document.activeElement===this)document.activeElement=document.body;}
+  setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;}
   closest(selector){for(let e=this;e;e=e.parentElement)if(selector.split(',').some(s=>match(e,s)))return e;return null;}
   querySelectorAll(selector){return this.children.flatMap(c=>[...(match(c,selector)?[c]:[]),...c.querySelectorAll(selector)]);}
   querySelector(selector){return this.querySelectorAll(selector)[0]||null;}
