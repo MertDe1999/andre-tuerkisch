@@ -4,17 +4,17 @@ const Path=require('../lib/learning-path');
 
 function audioApp(){const a=app();a.run(`window.utterances=[];window.speechSynthesis={getVoices:()=>[],speak:u=>utterances.push(u),cancel(){}};window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};window.SpeechRecognition=class{constructor(){window.recognizer=this;}start(){}abort(){}};`);return a;}
 
-test('all new pronunciations precede any picture, and all choices precede typing',()=>{
+test('pictures stay visible while speaking, all pronunciations precede choices, and all choices precede typing',()=>{
  const a=audioApp();a.run('openLearnMode("typing")');const group=a.json('SentenceGame.engine.missingWords().map(w=>w.id)');
- assert.equal(a.run('utterances.length'),1);assert.equal(a.run('utterances[0].lang'),'tr-TR');assert.equal(a.el('wordStudy').querySelector('.word-picture'),null);assert.equal(a.el('wordStudy').querySelector('.typing-answer'),null);
+ assert.equal(a.run('utterances.length'),1);assert.equal(a.run('utterances[0].lang'),'tr-TR');assert.ok(a.el('wordStudy').querySelector('.word-picture'));assert.equal(a.el('wordStudy').querySelector('.typing-answer'),null);assert.equal(a.el('wordStudy').querySelector('.study-options'),null);
  a.run('WordTrainer.listen()');assert.equal(a.run('typeof recognizer'),'undefined');assert.equal(a.run('WordTrainer.model.progress(WordTrainer.model.state.current.id).spoken'),false);
  for(let i=0;i<group.length;i++){
-  assert.equal(a.run('WordTrainer.model.state.current.phase'),'spoken');assert.equal(a.el('wordStudy').querySelector('.word-picture'),null);
-  a.run('utterances.at(-1).onend();WordTrainer.listen();recognizer.onresult({results:[[{transcript:AndreWords.byId[WordTrainer.model.state.current.id].tr}]]});WordTrainer.next()');
+  assert.equal(a.run('WordTrainer.model.state.current.phase'),'spoken');assert.equal(a.el('wordStudy').querySelector('.word-picture').textContent,a.run('AndreWordPictures.scene(AndreWords.byId[WordTrainer.model.state.current.id])'));assert.equal(a.el('wordStudy').querySelector('.study-options'),null);
+  a.run('utterances.at(-1).onend()');assert.doesNotMatch(a.el('wordStudy').textContent,/Jetzt nachsprechen|Schriftlich lernen|Höre die türkische Aussprache/);assert.equal(a.el('wordStudy').querySelectorAll('.study-button').length,3);a.run('WordTrainer.listen();recognizer.onresult({results:[[{transcript:AndreWords.byId[WordTrainer.model.state.current.id].tr}]]});WordTrainer.next()');
  }
  assert.ok(group.every(id=>a.run('WordTrainer.model.progress('+JSON.stringify(id)+').spoken')));
  for(let i=0;i<group.length;i++){
-  assert.equal(a.run('WordTrainer.model.state.current.phase'),'choice');assert.ok(a.el('wordStudy').querySelector('.word-picture'));assert.equal(a.el('wordStudy').querySelector('.typing-answer'),null);
+  assert.equal(a.run('WordTrainer.model.state.current.phase'),'choice');assert.ok(a.el('wordStudy').querySelector('.word-picture'));assert.equal(a.el('wordStudy').querySelector('.typing-answer'),null);assert.equal(a.el('wordStudy').querySelector('.study-audio'),null);
   const options=a.el('wordStudy').querySelectorAll('.study-option'),target=a.run('AndreWords.byId[WordTrainer.model.state.current.id].tr');assert.equal(options.length,4);
   assert.ok(options.every(b=>group.some(id=>W.byId[id].tr===b.textContent)));options.find(b=>b.textContent===target).click();a.run('WordTrainer.next()');
  }
