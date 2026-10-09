@@ -146,7 +146,7 @@ test('automatic browser storage preserves level and unlocks without manual backu
 });
 
 test('browser adapter composes words by keyboard clicks and cancels old transitions on navigation',()=>{
- const a=app();a.unlock(['ev','güzel']);a.run('openSentenceTest()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.ok(a.timers.size);
+ const a=app();require('./helpers/progress.cjs').learnTo(a,1);a.run('openSentenceTest()');const task=a.json('SentenceGame.task');for(const slot of task.groups[0].slots){const id=a.json('SentenceGame.current.tokens').find(t=>t.lemma===slot.lemma).id;a.el('sentenceToken-'+id).click();}a.run('checkSentence()');assert.equal(a.run('SentenceGame.engine.state.current.finished'),true);assert.equal(a.run('SentenceGame.engine.state.level'),1);assert.ok(a.timers.size);
  const finished=a.json('SentenceGame.engine.state.current');a.run('leaveSentenceArea()');assert.equal(a.el('sentenceTopics').hidden,false);assert.equal(a.run('sentenceGameRunning'),false);a.advance(5000);assert.equal(a.timers.size,0);assert.deepEqual(a.json('SentenceGame.engine.state.current'),finished,'the cancelled transition does not create a new task behind the topic overview');
 });
 
@@ -229,11 +229,11 @@ test('empty sentence game points to unlocking and keeps browser progress across 
  assert.equal(a.el('sentenceGameActive').style.display,'none');assert.equal(a.el('sentenceComplete').classList.contains('show'),true);
  assert.equal(a.document.querySelector('#sentenceComplete h2').textContent,'Noch keine Wörter freigeschaltet');
  assert.equal(a.document.querySelector('#sentenceComplete p').textContent,'Schalte zuerst Wörter frei, damit sie hier erscheinen');
- a.run('openLearnMode("typing")');assert.equal(a.run('typingGameRunning'),true);
- a.unlock(['ev','güzel']);a.run('openLearnMode("sentences")');
+ a.run('openLearnMode("typing")');assert.equal(a.run('WordTrainer.active'),true);
+ require('./helpers/progress.cjs').learnTo(a,1);a.run('openLearnMode("sentences")');
  assert.equal(a.el('sentenceComplete').classList.contains('show'),false);assert.ok(a.run('SentenceGame.engine.state.current'));
  const before=a.json('SentenceGame.engine.state.current');const reopened=app({storage:a.storage});reopened.run('startSentenceGame()');
- assert.deepEqual(reopened.json('SentenceGame.engine.state.current'),before);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),2);
+ assert.deepEqual(reopened.json('SentenceGame.engine.state.current'),before);assert.equal(reopened.run('SentenceGame.engine.unlocked().size'),reopened.run('AndreLearningPath.wordIds(1).length+AndreLearningPath.auto.size'));
 });
 
 test('confetti retains reduced-motion behavior and terminates after the celebration',()=>{

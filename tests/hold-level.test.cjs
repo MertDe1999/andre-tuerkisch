@@ -54,31 +54,9 @@ test('synchronously closing during deletion never rearms a timer or emits into a
  assert.equal(typed.length,2);
 });
 
-test('word trainer erases Unicode text, stops at empty, and restart/navigation cancel held Delete without learning changes',()=>{
- const a=app();a.run('openLearnMode("typing");typedAnswer="abc😀";typeCustomKey("ş")');const saved=[...a.storage];
- let remove=key(a.el('customKeyboard'),'delete');pointer(remove,'pointerdown');assert.equal(a.run('typedAnswer'),'abc😀');
- a.advance(350);assert.equal(a.run('typedAnswer'),'abc');a.advance(400);assert.equal(a.run('typedAnswer'),'');
- pointer(remove,'pointerup');remove.dispatchEvent({type:'click',detail:1});assert.deepEqual([...a.storage],saved);
- a.run('typeCustomKey("ev")');pointer(remove,'pointerdown');a.run('startTypingGame();typeCustomKey("neu")');
- a.advance(1000);pointer(remove,'pointerup');remove.dispatchEvent({type:'click',detail:1});assert.equal(a.run('typedAnswer'),'neu');
- remove=key(a.el('customKeyboard'),'delete');pointer(remove,'pointerdown');a.run('showView("grammar",null)');
- const draft=a.run('typedAnswer');a.advance(1000);assert.equal(a.run('typedAnswer'),draft);assert.equal(a.timers.size,0);
-});
+test('word trainer holds Delete safely across Unicode and saves only draft changes',()=>{const a=require('./helpers/word-study.cjs').study();a.run('WordTrainer.type("abc😀ş")');const remove=key(a.el('customKeyboard'),'delete'),before=a.json('getUnlockProgress()');pointer(remove,'pointerdown');assert.equal(a.run('WordTrainer.model.state.current.draft'),'abc😀');a.advance(350);assert.equal(a.run('WordTrainer.model.state.current.draft'),'abc');a.advance(400);assert.equal(a.run('WordTrainer.model.state.current.draft'),'');a.run('showView("grammar",null)');a.advance(1000);assert.equal(a.timers.size,0);assert.deepEqual(a.json('getUnlockProgress()'),before);});
 
-test('grammar saves the shortened draft without granting progress and cancels held Delete before a new exercise',()=>{
- const a=app();a.unlock(undefined,{grammar:false});a.run('openGrammarTraining();SentenceGame.engine.grammar.state.current.draft="ev güzel"');
- const keyboard=a.el('grammarKeyboard'),remove=key(keyboard,'delete'),counts=a.json('SentenceGame.engine.grammar.state.counts');
- pointer(remove,'pointerdown');a.advance(350);assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),'ev güz');
- assert.deepEqual(a.json('SentenceGame.engine.grammar.state.counts'),counts);
- const resumed=app({storage:new Map(a.storage)});resumed.run('openGrammarTraining()');
- assert.equal(resumed.run('SentenceGame.engine.grammar.state.current.draft'),'ev güz');
- key(keyboard,'skip').click();const next=a.run('SentenceGame.engine.grammar.state.current.entryId');
- a.advance(1000);pointer(remove,'pointerup');remove.dispatchEvent({type:'click',detail:1});
- assert.equal(a.run('SentenceGame.engine.grammar.state.current.entryId'),next);assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft||""'),'');
- assert.equal(a.timers.size,0);
- a.run('GrammarTrainer.close()');const restored=app({storage:a.storage});restored.run('openGrammarTraining()');
- assert.equal(restored.run('SentenceGame.engine.grammar.state.current.draft||""'),'');
-});
+test('sentence meaning drafts save shortened Unicode input without granting grammar',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.render();SentenceGame.typeReading("ev güzel")');const remove=key(a.el('sentenceReadingKeyboard'),'delete'),known=a.json('SentenceGame.engine.grammar.state.unlocked');pointer(remove,'pointerdown');a.advance(350);assert.equal(a.run('SentenceGame.current.draft'),'ev güz');assert.deepEqual(a.json('SentenceGame.engine.grammar.state.unlocked'),known);a.run('showView("dictionary",null)');a.advance(1000);assert.equal(a.timers.size,0);});
 
 test('search held Delete edits a selection and Unicode, filters immediately, and closes without affecting progress',()=>{
  const a=app();a.el('search').click();const search=a.el('search');search.value='abc😀de';search.setSelectionRange(5,7);

@@ -11,7 +11,7 @@
   const surface=token=>{try{return B.surface(token);}catch{return W.byId[token.lemma].tr+' · ?';}};
   const message=(text,kind='')=>{el('sentenceFeedback').textContent=text;el('sentenceFeedback').className='sentence-feedback '+kind;};
   const introduced=()=>new Set(['present','past','future','aorist','reported','accusative','dative','locative','ablative','genitive','instrumental',...(engine.state.standard?['otherPeople']:[])]);
-  function allowedCards(){const known=engine.grammar.unlocked();return B.availableCards(task(),current(),[...introduced()],op=>known.has(G.key(op)));}
+  function allowedCards(){const known=engine.practiceGrammar();return B.availableCards(task(),current(),[...introduced()],op=>known.has(G.key(op)));}
   const fits=(token,card)=>B.fits(token,card);
   function selectTarget(card){
     const cur=current();
@@ -127,6 +127,10 @@
     };
     button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
+  const reading=make('div','sentence-reading');reading.id='sentenceReading';reading.hidden=true;const readingAnswer=make('div','typing-answer empty','Antwort tippen …');readingAnswer.id='sentenceReadingAnswer';readingAnswer.tabIndex=0;readingAnswer.setAttribute('role','textbox');readingAnswer.setAttribute('aria-label','Deutsche Übersetzung');readingAnswer.setAttribute('aria-readonly','true');const readingKeyboard=make('div','custom-keyboard');readingKeyboard.id='sentenceReadingKeyboard';reading.append(readingAnswer,readingKeyboard);el('sentenceGameActive').insertBefore(reading,el('sentenceFeedback'));
+  function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
+  function topicProgress(){const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status&&x)status.textContent=engine.flow.finished?'›':(Number(x.tr)+Number(x.de))+' / 2';}}
+  root.refreshSentenceTopics=topicProgress;
   function render(){
     root.updateProfileLevel();
     const cur=current(),t=task();if(!cur||!t)return;
@@ -141,9 +145,12 @@
     el('sentenceLevelBadge').hidden=false;
     el('sentenceTaskLabel').textContent=t.cefr+(t.register==='colloquial'?' · Alltag':'');
     el('sentenceTaskLabel').setAttribute('aria-label','Aufgabe '+t.cefr+', '+(t.register==='colloquial'?'Alltagssprache':'Standard'));
-    el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated?'Korrektur':cur.kind==='intro'?'Einführung':cur.kind!=='current'?'Wiederholung':'';
-    el('sentenceModeLabel').title='Satzbau übt dein gelerntes Sprachlevel.';
-    el('sentencePrompt').textContent=t.de;
+    const round=engine.roundSummary();el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated&&!cur.finished?'Korrektur':cur.free?'Freies Üben':cur.kind==='intro'?'Einführung '+Math.min(2,engine.round().intro+(cur.finished?0:1))+' / 2':cur.practice?'Freies Üben':round.done<46?'Runde '+round.done+' / 46':'Formen festigen';
+    el('sentenceModeLabel').title='Alle 23 Themen in beide Richtungen; 80 % direkt richtig und neue Formen dreimal je Richtung.';
+    el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
+    reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');
+    if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else AndreKeyboard.cancel(readingKeyboard);
+    topicProgress();
     const zone=el('answerZone');zone.replaceChildren();
     const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
     for(const g of t.groups){
@@ -162,7 +169,7 @@
     const anchor=words.find(t=>t.id===selected),remaining=words.filter(t=>t!==anchor),items=[];
     const wordOrder=B.shuffle(remaining,(()=>{let seed=cur.bankSeed||cur.id||1;return()=>((seed=seed*16807%2147483647)-1)/2147483646;})());
     for(let i=0;i<Math.max(wordOrder.length,cards.length);i++){if(wordOrder[i])items.push({token:wordOrder[i]});if(cards[i])items.push({card:cards[i]});}
-    bank.parentElement.hidden=cur.finished;
+    bank.parentElement.hidden=cur.finished||cur.direction==='de';
     const short=root.matchMedia('(max-height:700px)').matches,height=bank.getBoundingClientRect().height;
     const size=Math.max(3,Math.min(18,Math.floor((height-(short?14:20)+(short?6:8))/((short?44:52)+(short?6:8)))*3));
     // Long concrete endings occupy two grid cells. Pack actual rows so the
@@ -183,7 +190,7 @@
       button.addEventListener('click',()=>{bankPage+=step;render();el('sentenceBankPages').children[step<0?0:2]?.focus({preventScroll:true});});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
     }
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
-    el('checkSentenceButton').hidden=cur.finished;el('sentenceUnknownButton').hidden=cur.finished;
+    el('checkSentenceButton').hidden=cur.finished||cur.direction==='de';el('sentenceUnknownButton').hidden=cur.finished||cur.direction==='de';
     el('sentenceNextButton').hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
@@ -198,7 +205,7 @@
     next();
   }
   function stop(){
-    running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
+    AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
     if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
@@ -209,18 +216,13 @@
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
-      const empty=engine.unlocked().size===0;
-      const missingGrammar=!empty?engine.missingGrammar():[];
-      document.querySelector('#sentenceComplete h2').textContent=empty?'Noch keine Wörter freigeschaltet':missingGrammar.length?'Grammatik für den nächsten Schritt':'Wörter für den nächsten Schritt';
-      const needed=engine.missingWords();
-      document.querySelector('#sentenceComplete p').textContent=!empty&&needed.length?'Schalte diese Wörter frei: '+needed.map(w=>w.tr+' ('+w.de+')').join(', ')+'.':'Schalte zuerst Wörter frei, damit sie hier erscheinen';
-      const button=el('sentenceUnlockNeededButton');button.textContent=missingGrammar.length?'Benötigte Grammatik freischalten':'Benötigte Wörter freischalten';
-      button.onclick=()=>missingGrammar.length?openGrammarTraining():openTypingFromFloating();
-      if(missingGrammar.length)document.querySelector('#sentenceComplete p').textContent='Schalte zuerst Grammatik frei, damit du diese Sätze bilden kannst.';
+      document.querySelector('#sentenceComplete h2').textContent='Noch keine Wörter freigeschaltet';
+      document.querySelector('#sentenceComplete p').textContent='Schalte zuerst Wörter frei, damit sie hier erscheinen';
+      const button=el('sentenceUnlockNeededButton');button.textContent='Benötigte Wörter freischalten';button.onclick=()=>openTypingFromFloating();
       return;
     }
     message(cur.attempts?'Korrigiere weiter.':'');render();
-    el('sentencePrompt').focus({preventScroll:true});
+    (cur.direction==='de'?readingAnswer:el('sentencePrompt')).focus({preventScroll:true});
     const needed=engine.missingWords();
     if(cur.kind!=='current'&&needed.length&&C.bandAt(engine.state.level).start>1)message('Wiederholung · neue Wörter im Worttrainer freischalten.');
   }
@@ -228,7 +230,7 @@
     if(!running||!current()||current().finished)return;
     const previousSection=engine.state.opened;
     const previousHighest=engine.state.highestLevel;
-    const result=engine.check({unknown});
+    const result=engine.check({unknown,answer:current().draft});
     if(result.ignored)return;
     render();
     if(result.correct){
@@ -240,9 +242,10 @@
       advanceTimer=setTimeout(()=>{if(running)next();},Math.max(1000,duration));
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
+      if(unknown){message('Lösung: '+(current().direction==='de'?task().de:task().answer)+'. Weiter zum nächsten Satz.','bad');return;}
       const issue=result.issue;
       const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:'Prüfe die Endungen.'};
-      message((hints[issue.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
+      message((hints[issue?.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
       AndreMotion.feedback(el('answerZone'),false);
     }
   }
@@ -257,7 +260,7 @@
   }
   root.leaveSentenceArea=()=>root.closeSentenceTest();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
-  root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,get training(){return false;},get current(){return current();},get task(){return task();}};
+  root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,typeReading,topicProgress,get training(){return false;},get current(){return current();},get task(){return task();}};
   const topicList=el('sentenceTopicList');
   const mixed=make('button','sentence-topic test','');mixed.id='sentenceTestButton';mixed.type='button';
   mixed.append(make('span','','Alles gemischt'),make('span','sentence-topic-arrow','›'));

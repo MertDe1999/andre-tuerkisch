@@ -7,8 +7,8 @@ const types=a=>chips(a).map(button=>button.dataset.wordType);
 const lemma=(a,text)=>a.rows.find(row=>row.querySelector('.word-tr').textContent===text);
 
 test('categories appear only after both word directions, and every represented type becomes available',()=>{
- const a=app();assert.deepEqual(types(a),[]);assert.equal(a.el('wordTypeFilters').hidden,true);
- a.run('markUnlockDirection("ev","toTurkish")');assert.deepEqual(types(a),[]);
+ const a=app();assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
+ a.run('markUnlockDirection("ev","toTurkish")');assert.deepEqual(types(a),['noun']);
  a.run('markUnlockDirection("ev","toGerman")');assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
  a.unlock(undefined,{grammar:false});
  const expected=a.json('Object.keys(typeNames).filter(type=>AndreWords.words.some(w=>w.type===type||(w.otherTypes||[]).includes(type)))');
@@ -37,8 +37,8 @@ test('search and category intersect without revealing locked search matches or c
 });
 
 test('a word with multiple categories enables and appears in both corresponding filters',()=>{
- const a=app();a.unlock(['sonra'],{grammar:false});assert.deepEqual(types(a),['adverb','postposition']);
- for(const type of types(a)){
+ const a=app();a.unlock(['sonra'],{grammar:false});assert.deepEqual(types(a),['noun','adverb','postposition']);
+ for(const type of types(a).filter(t=>t!=='noun')){
   chip(a,type).click();assert.ok(visible(a).includes(lemma(a,'sonra')));assert.ok(visible(a).includes(lemma(a,'önce')));
   const ids=visible(a).map(row=>row.dataset.wordId);const matching=a.json('AndreWords.words.filter(w=>[w.type,...(w.otherTypes||[])].includes('+JSON.stringify(type)+')).map(w=>w.id)');
   assert.deepEqual([...ids].sort(),matching.sort());
@@ -51,7 +51,7 @@ test('unlock refresh preserves selection and unchanged button focus, then clears
  assert.deepEqual(types(a),['noun','verb']);assert.equal(chip(a,'verb'),verb);assert.equal(a.document.activeElement,verb);assert.equal(verb.getAttribute('aria-pressed'),'true');
  assert.ok(visible(a).every(row=>row.classList.contains('verb')));
  a.run('resetUnlockDirections("gitmek")');assert.deepEqual(types(a),['noun']);assert.equal(visible(a).length,a.rows.length);
- a.run('resetUnlockDirections("ev")');assert.deepEqual(types(a),[]);assert.equal(a.el('wordTypeFilters').hidden,true);
+ a.run('resetUnlockDirections("ev")');assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
 });
 
 test('saved unlocks recreate available categories while the presentation selection stays temporary',()=>{

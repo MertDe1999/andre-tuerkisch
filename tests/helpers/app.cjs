@@ -41,7 +41,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
   animate(keyframes,options){const a={target:this,keyframes,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(a);return a;}
  }
  const el=id=>{if(!ids.has(id)){const e=new Element();e.id=id;}return ids.get(id);};
- el('sentenceBankArea').append(el('wordBank'));
+ el('sentenceBankArea').append(el('wordBank'));el('sentenceGameActive').append(el('sentenceFeedback'));
  document={body:new Element(),documentElement:new Element(),getElementById:el,createElement:tag=>{const e=new Element();e.tagName=tag.toUpperCase();return e;},
    createElementNS(ns,tag){return this.createElement(tag);},
    addEventListener(type,f){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type).add(f);},dispatchEvent(event){for(const f of listeners.get(event.type)||[])f(event);},
@@ -65,7 +65,7 @@ function app({reducedMotion=true,storage=new Map(),bankHeight=250}={}){
  const run=code=>vm.runInContext(code,sandbox),json=code=>JSON.parse(JSON.stringify(run(code)));
  // Existing curriculum/gesture fixtures assume all grammar is already learned.
  // New unlock tests pass grammar:false to exercise a fresh real learner.
- const unlock=(keys,{grammar=true}={})=>run('saveUnlockProgress(Object.fromEntries('+JSON.stringify(keys||el('wordList').children.map(row=>row.dataset.wordId))+'.map(word=>[unlockWordKey(word),{toTurkish:true,toGerman:true}])));'+(grammar?'SentenceGame.engine.grammar.state.unlocked=Object.fromEntries([...AndreGrammar.entries,...AndreCourseGrammar.entries].map(e=>[e.id,true]));SentenceGame.engine.grammar.save();':'')+'refreshUnlockUI();');
+ const unlock=(keys,{grammar=true}={})=>run('saveUnlockProgress(Object.fromEntries('+JSON.stringify(keys||el('wordList').children.map(row=>row.dataset.wordId))+'.map(word=>[unlockWordKey(word),{toTurkish:true,toGerman:true}])));'+(grammar?'SentenceGame.engine.grammar.state.unlocked=Object.fromEntries([...AndreGrammar.entries,...AndreCourseGrammar.entries].map(e=>[e.id,true]));SentenceGame.engine.grammar.save();SentenceGame.engine.flow.level=160;SentenceGame.engine.flow.frontier=160;SentenceGame.engine.flow.finished=true;SentenceGame.engine.flow.completed=Object.fromEntries(AndreLearningPath.lessons.map(l=>[l.level,true]));SentenceGame.engine.save();':'')+'refreshUnlockUI();');
  const advance=ms=>{const until=now+ms;while(true){const next=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!next)break;timers.delete(next[0]);now=next[1].at;next[1].fn();}now=until;};
  return {run,json,unlock,advance,el,get rows(){return el('wordList').children;},storage,document,animations,timers};
 }

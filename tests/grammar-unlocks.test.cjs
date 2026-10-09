@@ -27,21 +27,9 @@ test('each case variant unlocks independently and equal spelling never grants an
  const acc=entry('Akkusativ','-i'),poss=G.entries.find(e=>e.text==='-i'&&e.group==='possession');m.learn(acc.id);assert.equal(m.unlocked().has(poss.id),false);
  const reloaded=new G.Manager(io);assert.ok(reloaded.unlocked().has(e.id));assert.equal(reloaded.unlocked().has(entry('Dativ','-a').id),false);
 });
-test('fresh word unlocks do not unlock grammar or leak locked endings into the regular sentence game',()=>{
- const a=app();a.unlock(undefined,{grammar:false});assert.equal(a.run('SentenceGame.engine.grammar.unlocked().size'),0);
- a.run('startSentenceGame()');assert.equal(a.run('SentenceGame.engine.state.current'),null);assert.match(a.el('#sentenceComplete h2').textContent,/Grammatik/);
- const t=C.tasks.find(t=>t.id==='object-görmek-sen-w004');a.run('SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(t.id)+'),"older");SentenceGame.render();');
- assert.equal(a.run('SentenceGame.allowedCards().length'),0);assert.equal(a.run('SentenceGame.engine.check().ignored'),true);assert.equal(a.run('SentenceGame.engine.state.current.attempts'),0);
-});
-test('translation lessons replace the old grammar word-bank exercise and separate lexical knowledge',()=>{
- const a=app();require('./helpers/progress.cjs').learnTo(a,16);
- const id=a.run('AndreCourseGrammar.entries.find(e=>e.label==="Dativ"&&e.text==="-e").id');
- a.run('openGrammarTraining('+JSON.stringify(id)+')');assert.equal(a.run('GrammarTrainer.active'),true);
- assert.equal(a.run('SentenceGame.engine.grammar.state.current.answer'),'eve');assert.equal(a.run('SentenceGame.engine.state.level'),16);
- assert.equal(a.run('SentenceGame.engine.grammar.state.unlocked['+JSON.stringify(id)+']'),undefined);
- assert.ok(a.run('AndreCourseGrammar.entries.some(e=>e.id==="use:var:existence")'));
- const loaded=app({storage:a.storage});loaded.run('openGrammarTraining()');assert.equal(loaded.run('SentenceGame.engine.grammar.state.current.entryId'),id);
-});
+test('word preparation permits only the current grammar step without a permanent unlock',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);assert.equal(a.run('SentenceGame.engine.grammar.unlocked().size'),0);a.run('startSentenceGame()');assert.ok(a.run('SentenceGame.current'));assert.ok(a.run('SentenceGame.engine.practiceGrammar().has("use:statement")'));assert.equal(a.run('SentenceGame.engine.grammar.unlocked().has("use:statement")'),false);});
+
+test('grammar level points explain a rule and leave application to sentence topics',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,16);a.run('openGrammarTraining(16)');assert.equal(a.run('GrammarTrainer.active'),true);assert.match(a.el('grammarTrainer').textContent,/Level 16/);assert.equal(a.run('SentenceGame.engine.grammar.state.current'),null);assert.equal(a.run('SentenceGame.engine.flow.level'),16);});
 
 test('all 160-level prerequisites can be learned through available exercises using only unlocked words',()=>{
  const {m}=manager();let count=0;

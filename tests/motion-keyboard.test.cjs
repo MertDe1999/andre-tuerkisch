@@ -59,13 +59,7 @@ test('swipe follows the finger and cancellation restores preview and navigation 
  assert.equal(target.classList.contains('motion-swipe-preview'),false);a.run('AndreMotion.cancel()');
 });
 
-test('grammar typing animates the real draft while preserving keyboard and input guards',()=>{
- const a=app({reducedMotion:false});a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
- const keyboard=a.el('grammarKeyboard'),key=keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q');a.run('GrammarTrainer.type("ş");GrammarTrainer.type("ü")');
- assert.equal(a.el('grammarAnswer').textContent,'şü');assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),'şü');
- a.run('GrammarTrainer.type("BACKSPACE")');assert.equal(a.el('grammarAnswer').textContent,'ş');assert.equal(a.el('grammarKeyboard'),keyboard);assert.equal(keyboard.querySelectorAll('.key').find(k=>k.dataset.letter==='q'),key);
- a.run('showView("dictionary",null)');const draft=a.run('SentenceGame.engine.grammar.state.current.draft');a.run('GrammarTrainer.type("x")');assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),draft);
-});
+test('word typing animates the real draft and respects finished input guards',()=>{const a=require('./helpers/word-study.cjs').study({reducedMotion:false});a.run('WordTrainer.type("ş");WordTrainer.type("ü")');assert.equal(a.el('wordStudyAnswer').textContent,'şü');assert.ok(a.animations.some(x=>x.options.duration===100));const draft=a.run('WordTrainer.model.state.current.draft');a.run('WordTrainer.model.state.current.done=true;WordTrainer.type("x")');assert.equal(a.run('WordTrainer.model.state.current.draft'),draft);});
 
 test('outgoing copies are inert, have no duplicate IDs and are removed on interruption',()=>{
  const a=app({reducedMotion:false}),card=a.el('outgoing'),child=a.el('outgoingChild');card.append(child);child.textContent='ışık';
@@ -91,13 +85,7 @@ test('landing a dragged tile shows one destination and restores it after cancell
  a.run('AndreMotion.land')(fallback,destination,null,{hideTarget:true});assert.equal(destination.style.visibility,'');assert.equal(fallback.parentElement,null);
 });
 
-test('leaving grammar directly animates the return and stops answer advancement',()=>{
- const a=app({reducedMotion:false});a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
- a.run('SentenceGame.engine.grammar.state.current.draft=SentenceGame.engine.grammar.state.current.answer;GrammarTrainer.check()');assert.equal(a.timers.size,1);
- a.run('GrammarTrainer.close()');assert.equal(a.timers.size,0);assert.equal(a.run('GrammarTrainer.active'),false);assert.equal(a.el('grammarPanel').hidden,false);
- const before=a.json('SentenceGame.engine.grammar.state');a.advance(3000);assert.deepEqual(a.json('SentenceGame.engine.grammar.state'),before);
- a.run('AndreMotion.cancel()');assert.equal(a.document.body.querySelector('.motion-snapshot'),null);
-});
+test('leaving the new grammar explanation animates the return without advancing answers',()=>{const a=app({reducedMotion:false});require('./helpers/progress.cjs').learnTo(a,1);a.run('openGrammarTraining();GrammarTrainer.close()');assert.equal(a.run('GrammarTrainer.active'),false);assert.equal(a.el('grammarPanel').hidden,false);assert.equal(a.timers.size,0);assert.ok(a.animations.length);});
 
 test('real drag handlers preserve the grab offset and cancel without moving or rating a token',()=>{
  const a=app({reducedMotion:false});a.unlock();a.run('startSentenceGame()');
@@ -112,27 +100,9 @@ test('real drag handlers preserve the grab offset and cancel without moving or r
  a.run('AndreMotion.cancel()');assert.equal(ghost.parentElement,null);assert.equal(button.classList.contains('dragging'),false);
 });
 
-test('opening a trainer never animates an ancestor of its fixed keyboard',()=>{
- for(const kind of ['words','grammar']){
-  const a=app({reducedMotion:false});a.unlock(undefined,{grammar:false});
-  a.run(kind==='words'?'openLearnMode("typing")':'openGrammarTraining()');
-  const keyboard=a.el(kind==='words'?'customKeyboard':'grammarKeyboard'),ancestors=new Set();
-  for(let element=keyboard.parentElement;element;element=element.parentElement)ancestors.add(element);
-  ancestors.add(a.el(kind==='words'?'dictionary':'grammar'));
-  const active=a.animations.filter(animation=>!animation.cancelled);assert.ok(active.length);
-  assert.ok(active.every(animation=>!ancestors.has(animation.target)),kind+' fixed keyboard must keep the viewport as its containing block');
- }
-});
+test('opening word typing animates the answer card, while the shared keyboard remains independent',()=>{const a=require('./helpers/word-study.cjs').study({reducedMotion:false});assert.equal(a.el('customKeyboard').getAttribute('lang'),'tr');assert.ok(a.animations.some(x=>x.target===a.el('wordStudy')));assert.ok(a.animations.every(x=>x.target!==a.el('typingTrainer')));});
 
-test('grammar celebrates a new unlock once and a learned-rule review only gets local feedback',()=>{
- for(const alreadyLearned of [false,true]){
-  const a=app();a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
-  a.run('window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};'+
-   'const lesson=SentenceGame.engine.grammar.state.current;SentenceGame.engine.grammar.state.counts[lesson.entryId]={tr:3,de:3,seen:[]};'+
-   'SentenceGame.engine.grammar.state.unlocked[lesson.entryId]='+alreadyLearned+';lesson.draft=lesson.answer;GrammarTrainer.check();GrammarTrainer.check()');
-  assert.equal(a.run('window.celebrations'),alreadyLearned?0:1);assert.equal(a.el('grammarFeedback').textContent,alreadyLearned?'Richtig.':'Freigeschaltet.');
- }
-});
+test('grammar explanations do not celebrate or teach a form by opening it',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);a.run('window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};openGrammarTraining();GrammarTrainer.close();openGrammarTraining()');assert.equal(a.run('window.celebrations'),0);assert.equal(a.run('SentenceGame.engine.grammar.unlocked().size'),0);});
 
 test('sentence practice stays neutral and never celebrates a course-level change',()=>{
  const a=app();a.unlock();a.run('startSentenceGame();window.celebrations=0;celebrateCorrectAnswer=()=>{window.celebrations++;return 0};SentenceGame.engine.begin(AndreCourse.tasks[0],"current");SentenceGame.engine.state.current.tokens=SentenceGame.engine.task().groups.flatMap(g=>g.slots.map((slot,i)=>({...AndreCourse.copy(slot),id:g.id+i,group:g.id})));checkSentence();checkSentence()');
