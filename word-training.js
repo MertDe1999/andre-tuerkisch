@@ -7,19 +7,20 @@
  const target=()=>engine.flow.finished?W.words.filter(w=>!engine.unlocked().has(w.id)).map(w=>w.id):engine.missingWords().map(w=>w.id),current=()=>model.state.current;
  function feedback(text){let f=el('wordStudyFeedback');if(!f){f=make('div','typing-feedback');f.id='wordStudyFeedback';panel.append(f);}f.textContent=[text,model.storageError,root.unlockStorageError].filter(Boolean).join(' ');}
  function cancelSpeech(){session++;try{recognition?.abort();}catch{}recognition=null;listening=false;root.speechSynthesis?.cancel();audioPending=false;}
- function say(){const cur=current();if(!cur)return;cancelSpeech();const synth=root.speechSynthesis;
+ function say({pronunciation=false}={}){const cur=current();if(!cur)return;cancelSpeech();const synth=root.speechSynthesis;
   if(!synth||!root.SpeechSynthesisUtterance){feedback('Audio ist hier nicht verfügbar. Du kannst schriftlich weiterlernen.');return;}
   const word=W.byId[cur.id],token=session;audioPending=true;let index=0;
-  const queue=[{text:word.tr,lang:'tr-TR'},{text:word.de,lang:'de-DE'}];
-  const next=()=>{if(!active||token!==session)return;if(index===queue.length){audioPending=false;return;}
+  const queue=pronunciation?[{text:word.tr,lang:'tr-TR'}]:[{text:word.tr,lang:'tr-TR'},{text:word.de,lang:'de-DE'}];
+  const next=()=>{if(!active||token!==session||current()!==cur)return;if(index===queue.length){audioPending=false;if(pronunciation){cur.heard=true;model.save();draw();feedback('Jetzt nachsprechen.');}return;}
    const part=queue[index++],u=new root.SpeechSynthesisUtterance(part.text);u.lang=part.lang;u.rate=.82;const voice=synth.getVoices().find(v=>v.lang.toLowerCase().startsWith(part.lang.slice(0,2)));if(voice)u.voice=voice;
-   u.onend=()=>root.setTimeout(next,300);u.onerror=()=>{if(!active||token!==session)return;audioPending=false;feedback('Audio konnte nicht abgespielt werden. Tippe zum erneuten Anhören.');};synth.speak(u);
+   u.onend=()=>pronunciation?next():root.setTimeout(next,300);u.onerror=()=>{if(!active||token!==session)return;audioPending=false;feedback('Audio konnte nicht abgespielt werden. Tippe zum erneuten Anhören.');};synth.speak(u);
   };next();
  }
- function next(){cancelSpeech();selfCheck=false;const raw=root.getUnlockProgress();let pending=false;for(const id of target()){const p=model.progress(id);if(p.tr&&p.de){raw[id]={toTurkish:true,toGerman:true};pending=true;}}if(pending&&!root.saveUnlockProgress(raw)){feedback(root.unlockStorageError);return;}model.next(target(),engine.unlocked());draw();root.refreshUnlockUI();}
- function unknown(){const cur=current();if(!active||!cur||cur.done||cur.reveal)return;model.skip();draw();if(cur.phase!=='typing'){say();feedback('Hör zu. Das Bild kommt später wieder.');}}
- function listen(){const cur=current();if(!cur||cur.phase!=='spoken'||listening)return;
+ function next(){cancelSpeech();selfCheck=false;const raw=root.getUnlockProgress();let pending=false;for(const id of target()){const p=model.progress(id);if(p.tr&&p.de){raw[id]={toTurkish:true,toGerman:true};pending=true;}}if(pending&&!root.saveUnlockProgress(raw)){feedback(root.unlockStorageError);return;}model.next(target(),engine.unlocked());draw();root.refreshUnlockUI();if(current()?.phase==='spoken'&&!current().done)say({pronunciation:true});}
+ function unknown(){const cur=current();if(!active||!cur||cur.done||cur.reveal)return;model.skip();draw();if(cur.phase!=='typing'){say();feedback(cur.phase==='spoken'?'Hör zu. Du übst dieses Wort später noch einmal.':'Hör zu. Das Bild kommt später wieder.');}}
+ function listen(){const cur=current();if(!active||!cur||cur.phase!=='spoken'||cur.done||listening)return;
   const SR=root.SpeechRecognition||root.webkitSpeechRecognition;
+  if(!cur.heard){feedback('Höre zuerst die türkische Aussprache an.');return;}
   if(!SR){selfCheck=true;draw();feedback('Sprachprüfung ist hier nicht verfügbar. Sprich selbst und vergleiche mit dem Audio.');return;}
   cancelSpeech();const token=session,id=cur.id;recognition=new SR();recognition.lang='tr-TR';recognition.interimResults=false;recognition.maxAlternatives=3;listening=true;feedback('Ich höre zu …');
   recognition.onresult=event=>{if(!active||token!==session||current()?.id!==id)return;listening=false;const alternatives=Array.from(event.results[0]||[]);let result;
@@ -38,19 +39,20 @@
  function textFallback(){const ids=target();for(const id of ids){const p=model.progress(id);p.spoken=true;if(!V.mapped(W.byId[id]))p.choice=true;p.speechMode='written-alternative';}model.state.current=null;model.save();next();}
  function draw(){const context=[current()?.id,current()?.phase,current()?.direction,current()?.done,current()?.reveal].join('|'),changed=context!==lastKey;lastKey=context;panel.replaceChildren();el('customKeyboard').style.display='none';const cur=current(),words=target();
   if(!cur){panel.append(make('h2','','Wörter bereit'),make('p','','Öffne deinen Grammatikpunkt und übe anschließend im Satzbau.'),button('Zur Grammatik',()=>{close();root.showView('grammar',null);}));return;}
-  const word=W.byId[cur.id],missingPicture=!V.mapped(word),title={spoken:'Bild · Sprechen',choice:'Bild · Auswählen',typing:cur.direction==='tr'?'Deutsch → Türkisch':'Türkisch → Deutsch'}[cur.phase];
+  const word=W.byId[cur.id],missingPicture=!V.mapped(word),title={spoken:'Aussprache · Nachsprechen',choice:'Bild · Auswählen',typing:cur.direction==='tr'?'Deutsch → Türkisch':'Türkisch → Deutsch'}[cur.phase];
   panel.append(make('div','study-progress','Level '+engine.preparationLevel()+' · '+title));
-  const picture=make('div','word-picture',missingPicture?'':V.scene(word));picture.setAttribute('role','img');picture.setAttribute('aria-label','Bildaufgabe. Die Beschreibung kann vorgelesen werden.');panel.append(picture);
-  if(missingPicture&&cur.phase!=='typing'){panel.append(make('p','','Für dieses Wort fehlt noch ein eindeutiges Bild.'),button('Schriftlich lernen',textFallback,'study-button primary'));const f=make('div','typing-feedback');f.id='wordStudyFeedback';panel.append(f);return;}
-  if(cur.phase==='typing'){picture.hidden=true;panel.append(make('div','study-prompt',cur.direction==='tr'?word.de:word.tr));const answer=make('div','typing-answer'+(!cur.draft?' empty':''),cur.draft||'Antwort tippen …');answer.id='wordStudyAnswer';answer.tabIndex=0;answer.setAttribute('role','textbox');answer.setAttribute('aria-readonly','true');panel.append(answer);answer._saveCaret=()=>model.save();AndreAnswerEditor.draw(answer,cur,{editable:!cur.done&&!cur.reveal});
+  if(cur.phase==='choice'){const picture=make('div','word-picture',missingPicture?'':V.scene(word));picture.setAttribute('role','img');picture.setAttribute('aria-label','Bildaufgabe.');panel.append(picture);}
+  if(missingPicture&&cur.phase==='choice'){panel.append(make('p','','Für dieses Wort fehlt noch ein eindeutiges Bild.'),button('Schriftlich lernen',textFallback,'study-button primary'));const f=make('div','typing-feedback');f.id='wordStudyFeedback';panel.append(f);return;}
+  if(cur.phase==='typing'){panel.append(make('div','study-prompt',cur.direction==='tr'?word.de:word.tr));const answer=make('div','typing-answer'+(!cur.draft?' empty':''),cur.draft||'Antwort tippen …');answer.id='wordStudyAnswer';answer.tabIndex=0;answer.setAttribute('role','textbox');answer.setAttribute('aria-readonly','true');panel.append(answer);answer._saveCaret=()=>model.save();AndreAnswerEditor.draw(answer,cur,{editable:!cur.done&&!cur.reveal});
    if(cur.reveal){const solution=make('div','study-solution');solution.append(make('span','study-language','Türkisch'),make('strong','',word.tr),make('span','study-language','Deutsch'),make('strong','',word.de));panel.append(solution,button('Anhören',say),button('Weiter',check,'study-button primary'));}
    else{el('customKeyboard').style.display='grid';root.renderAppKeyboard(cur.direction==='tr'?'tr':'de',{keyboard:el('customKeyboard'),onType:type,onCheck:check,onSkip:unknown,checkLabel:cur.done?'Weiter':'Antwort prüfen',inputLocked:cur.done,reset:changed,contextKey:context});}
   }else if(cur.phase==='choice'){
-   const options=make('div','study-options');const pool=[...new Set([...words,...engine.unlocked()])];for(const choice of model.choices(pool,V.key)){const b=button(choice.tr,()=>{const result=model.choose(choice.id);draw();feedback(result.correct?'Richtig gewählt.':'Hör zu. Das Bild kommt später wieder.');if(!result.correct)say();},'study-option word-type-'+choice.type);b.disabled=cur.done;options.append(b);}panel.append(options);if(cur.done)panel.append(button('Weiter',next,'study-button primary'));
+   const options=make('div','study-options'),choices=model.choices(words,V.key);for(const choice of choices){const b=button(choice.tr,()=>{const result=model.choose(choice.id);draw();feedback(result.correct?'Richtig gewählt.':'Hör zu. Das Bild kommt später wieder.');if(!result.correct)say();},'study-option word-type-'+choice.type);b.disabled=cur.done;options.append(b);}panel.append(options);if(choices.length<4)panel.append(make('p','study-instruction',choices.length===1?'In dieser Gruppe lernst du ein neues Wort.':'Diese neue Wortgruppe hat '+choices.length+' verschiedene Antworten.'));if(cur.done)panel.append(button('Weiter',next,'study-button primary'));
   }else{
+   panel.append(make('p','study-instruction','Höre die türkische Aussprache und sprich das Wort nach.'),button('🔊 Aussprache anhören',()=>say({pronunciation:true})));
    if(cur.done)panel.append(button('Weiter',next,'study-button primary'));
-   else if(selfCheck){panel.append(button('Anhören',say),button('Ich habe es richtig gesagt',()=>{model.spoken('',{manual:true});draw();},'study-button primary'),button('Noch üben',unknown));}
-   else panel.append(button('🎙 Sprechen',listen,'study-button primary'),button('Keine Ahnung',unknown));
+   else if(selfCheck){panel.append(button('Ich habe es richtig gesagt',()=>{model.spoken('',{manual:true});draw();},'study-button primary'),button('Noch üben',unknown));}
+   else panel.append(button('🎙 Nachsprechen',listen,'study-button primary'),button('Keine Ahnung',unknown));
    panel.append(button('Schriftlich lernen',textFallback,'study-alternative'));
   }
   const f=make('div','typing-feedback',model.storageError||root.unlockStorageError||'');f.id='wordStudyFeedback';f.setAttribute('role','status');f.setAttribute('aria-live','polite');panel.append(f);
