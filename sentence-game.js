@@ -148,7 +148,7 @@
     const round=engine.roundSummary();el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated&&!cur.finished?'Korrektur':cur.free?'Freies Üben':cur.kind==='intro'?'Einführung '+Math.min(2,engine.round().intro+(cur.finished?0:1))+' / 2':cur.practice?'Freies Üben':round.done<46?'Runde '+round.done+' / 46':'Formen festigen';
     el('sentenceModeLabel').title='Alle 23 Themen in beide Richtungen; 80 % direkt richtig und neue Formen dreimal je Richtung.';
     el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
-    reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');
+    reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished);
     if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else AndreKeyboard.cancel(readingKeyboard);
     topicProgress();
     const zone=el('answerZone');zone.replaceChildren();
