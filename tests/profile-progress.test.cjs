@@ -18,7 +18,4 @@ test('legacy sentence levels are archived, never mistaken for vocabulary and gra
   learnTo(a,81);const loaded=app({storage:new Map(a.storage)});assert.equal(loaded.el('profileLevelStage').textContent,'B1');assert.equal(loaded.el('profileLevelValue').textContent,'81');
  }
 });
-test('correct, wrong, helped and repeated sentences never change the learned level',()=>{
- const a=app();learnTo(a,81);a.run('startSentenceGame();SentenceGame.engine.begin(AndreCourse.tasks[0],"current");SentenceGame.render();SentenceGame.check(true)');assert.equal(a.el('profileLevelValue').textContent,'81');
- a.run('SentenceGame.current.tokens=SentenceGame.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:g.id+i,group:g.id})));checkSentence()');assert.equal(a.el('profileLevelValue').textContent,'81');assert.equal(app({storage:a.storage}).el('profileLevelValue').textContent,'81');
-});
+test('individual answers and corrections remain neutral until the whole round is decided',()=>{const a=app();learnTo(a,81);a.run('startSentenceGame();SentenceGame.check(true)');assert.equal(a.el('profileLevelValue').textContent,'81');assert.equal(app({storage:a.storage}).el('profileLevelValue').textContent,'81');});

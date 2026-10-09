@@ -47,7 +47,7 @@ function measuredApp(){
   'window.getComputedStyle=node=>node.id==="wordTypeFilters"?{columnGap:"4px"}:{width:(chipWidths[node.dataset.wordType]||40)+"px"};'+
   'document.getElementById("wordTypeFilters").getBoundingClientRect=()=>({width:filterWidth});'+
   'document.fonts={ready:{then(callback){layoutEvents.fontReady=callback}},addEventListener(name,callback){layoutEvents[name]=callback}}');
- a.run(fs.readFileSync(require.resolve('../lib/dictionary'),'utf8'));a.unlock(['ev','gitmek','güzel','ben'],{grammar:false});
+ a.el('wordTypeFilters').replaceChildren();a.run(fs.readFileSync(require.resolve('../lib/dictionary'),'utf8'));a.unlock(['ev','gitmek','güzel','ben'],{grammar:false});
  return a;
 }
 const types=a=>a.el('wordTypeFilters').children.map(button=>button.dataset.wordType);

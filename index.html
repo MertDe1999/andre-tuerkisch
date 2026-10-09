@@ -2016,6 +2016,7 @@
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
   <link rel="stylesheet" href="keyboard.css?v=20261005-pastel-progress">
+  <link rel="stylesheet" href="guided-learning.css?v=20261009-guided">
 </head>
 
 <body>
@@ -2202,7 +2203,7 @@
             <span id="sentenceModeLabel" class="sentence-mode-label"></span>
           </div>
           <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
-          <div class="sentence-prompt"><div class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
+          <div class="sentence-prompt"><div id="sentencePromptDirection" class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
           <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
           <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wörter, Endungen und Formen"></div></div>
           <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
@@ -2266,15 +2267,20 @@
 <script src="lib/grammar.js?v=20261005-interests"></script>
 <script src="lib/learning.js?v=20261005-interests"></script>
 <script src="data/course-data.js?v=20261005-interests"></script>
-<script src="lib/course.js?v=20261005-interests"></script>
+<script src="lib/course.js?v=20261009-guided"></script>
 <script src="data/interest-references.js?v=20261005-interests"></script>
 <script src="lib/interest-generator.js?v=20261005-interests"></script>
 <script src="lib/course-grammar.js?v=20261005-interests"></script>
 <script src="data/learning-packages.js?v=20261005-interests"></script>
 <script src="lib/course-progress.js?v=20261005-interests"></script>
+<script src="lib/learning-path.js?v=20261009-guided"></script>
 <script src="lib/course-learning.js?v=20261005-interests"></script>
+<script src="lib/guided-learning.js?v=20261009-guided"></script>
+<script src="lib/word-preparation.js?v=20261009-guided"></script>
+<script src="lib/word-pictures.js?v=20261009-guided"></script>
 <script src="lib/motion.js?v=20261005-interests"></script>
-<script src="lib/app-keyboard.js?v=20261005-interests"></script>
+<script src="lib/app-keyboard.js?v=20261009-guided"></script>
+<script src="lib/answer-editor.js?v=20261009-guided"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -2351,6 +2357,7 @@
   }
 
   function isWordUnlocked(turkishWord, progress = getUnlockProgress()){
+    if(window.AndreLearningPath?.auto.has(unlockWordKey(turkishWord))) return true;
     const state = progress[unlockWordKey(turkishWord)];
     return state?.toTurkish === true && state?.toGerman === true;
   }
@@ -2433,7 +2440,7 @@
     const end = bands?.at(-1)?.end ?? 40;
     const next = course?.bands.find(band => band.start > end)?.cefr ?? (course ? null : "A2");
     const percent = Math.max(0, Math.min(100, (level - start) / (end - start) * 100));
-    const complete = !next && level === end;
+    const complete = !next && window.SentenceGame?.engine.flow.finished === true;
     document.getElementById("profileLevelValue").textContent = level;
     const chip = document.getElementById("profileLevelChip");
     chip.setAttribute("aria-label", "Level " + level);
@@ -3488,7 +3495,8 @@
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
 <script src="lib/dictionary.js?v=20261005-interests"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="sentence-game.js?v=20261005-interests"></script>
-<script src="grammar-ui.js?v=20261005-interests"></script>
+<script src="sentence-game.js?v=20261009-guided"></script>
+<script src="grammar-ui.js?v=20261009-guided"></script>
+<script src="word-training.js?v=20261009-guided"></script>
 </body>
 </html>

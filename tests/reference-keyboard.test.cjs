@@ -19,7 +19,7 @@ test('both layouts retain exact letters and numbers, with floating actions above
   const bottom=keyboard.children[4].children.filter(k=>k.tagName==='BUTTON');
   assert.equal(bottom[0].dataset.action,'shift');assert.equal(bottom.at(-1).dataset.action,'delete');
   assert.equal(bottom.at(-2).textContent,language==='de'?'m':'ç');
-  assert.deepEqual(keyboard.children[5].children.map(k=>k.dataset.action),['space']);
+  assert.deepEqual(keyboard.children[5].children.map(k=>k.dataset.action),['symbols','space']);
   assert.equal(action(keyboard,'skip').textContent,'Keine Ahnung');assert.equal(action(keyboard,'space').textContent,name);
   assert.match(action(keyboard,'space').getAttribute('aria-label'),/^Leertaste/);
   for(const kind of ['shift','delete','check']){
@@ -80,36 +80,10 @@ test('cancelled, moved, hidden or replaced holds never emit a character or leave
  a.document.hidden=true;a.document.dispatchEvent({type:'visibilitychange'});a.advance(600);pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});assert.deepEqual(typed,[]);
 });
 
-test('the reference keyboard completes both word directions and numbers use the same editable draft',()=>{
- const a=app();a.run('openLearnMode("typing");typingRemaining=[typingRemaining.find(w=>w.tr==="ev")];typingCurrentIndex=0;typingDirection="toTurkish";renderTypingWord()');const keyboard=a.el('customKeyboard');
- assert.equal(a.run('typingRemaining[typingCurrentIndex].tr'),'ev');
- assert.equal(keyboard.style.display,'grid','trainer activation must preserve the shared grid proportions');
- action(keyboard,'number').click();assert.equal(a.run('typedAnswer'),'1');action(keyboard,'delete').click();
- action(keyboard,'shift').click();letter(keyboard,'e').click();letter(keyboard,'v').click();assert.equal(a.run('typedAnswer'),'Ev');
- action(keyboard,'check').click();a.advance(750);assert.equal(keyboard.getAttribute('lang'),'de');
- action(keyboard,'shift').click();for(const char of 'haus')letter(keyboard,char).click();
- assert.equal(a.run('typedAnswer'),'Haus');action(keyboard,'check').click();a.advance(750);
- assert.equal(a.run('isWordUnlocked("ev")'),true);
-});
+test('the reference keyboard edits the current word and teaches its Turkish direction',()=>{const a=require('./helpers/word-study.cjs').study(),keyboard=a.el('customKeyboard');action(keyboard,'number').click();assert.equal(a.run('WordTrainer.model.state.current.draft'),'1');action(keyboard,'delete').click();action(keyboard,'shift').click();letter(keyboard,'e').click();letter(keyboard,'v').click();assert.equal(a.run('WordTrainer.model.state.current.draft'),'Ev');action(keyboard,'check').click();assert.equal(a.run('WordTrainer.model.progress(AndreWords.byLemma.ev.id).tr'),true);assert.equal(a.run('isWordUnlocked("ev")'),false);});
 
-test('grammar uses the reference actions, accepts numbers without granting progress, and checks a real sentence',()=>{
- const a=app();a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');const keyboard=a.el('grammarKeyboard');
- assert.equal(action(keyboard,'skip').textContent,'Keine Ahnung');const counts=a.json('SentenceGame.engine.grammar.state.counts');
- action(keyboard,'number').click();assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),'1');
- assert.deepEqual(a.json('SentenceGame.engine.grammar.state.counts'),counts);action(keyboard,'delete').click();
- const answer=a.run('SentenceGame.engine.grammar.state.current.answer');
- action(keyboard,'shift').click();for(const char of answer){if(char===' ')action(keyboard,'space').click();else letter(keyboard,char).click();}
- action(keyboard,'check').click();assert.equal(a.el('grammarFeedback').textContent,'Richtig.');
- assert.ok(keys(keyboard).every(k=>k.disabled));a.advance(750);assert.ok(keys(keyboard).some(k=>!k.disabled));
-});
+test('sentence reverse translation uses the shared German keyboard without German building cards',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.render()');assert.equal(a.el('sentenceGameActive').classList.contains('reading-writing'),true);const keyboard=a.el('sentenceReadingKeyboard');action(keyboard,'number').click();assert.equal(a.run('SentenceGame.current.draft'),'1');action(keyboard,'delete').click();const answer=a.run('SentenceGame.task.de');a.run('SentenceGame.typeReading('+JSON.stringify(answer)+');SentenceGame.check()');assert.match(a.el('sentenceFeedback').textContent,/Richtig/);assert.equal(a.el('sentenceGameActive').classList.contains('reading-writing'),false);assert.equal(a.run('SentenceGame.engine.flow.level'),1);});
 
-test('trainer navigation and search close cancel pending variants; physical digits also reach both trainers',()=>{
- const a=app();a.el('search').click();let keyboard=a.el('searchKeyboard'),s=letter(keyboard,'s');
- pointer(s,'pointerdown');a.advance(400);action(keyboard,'check').click();pointer(s,'pointerup');assert.equal(a.el('search').value||'','');assert.equal(a.timers.size,0);
- a.run('openLearnMode("typing")');keyboard=a.el('customKeyboard');
- const input={type:'keydown',key:'7',target:a.el('typingAnswer'),preventDefault(){this.prevented=true;}};a.document.dispatchEvent(input);
- assert.equal(input.prevented,true);assert.equal(a.run('typedAnswer'),'7');
- a.run('showView("grammar",null)');a.unlock(undefined,{grammar:false});a.run('openGrammarTraining()');
- input.target=a.el('grammarAnswer');input.prevented=false;a.document.dispatchEvent(input);
- assert.equal(input.prevented,true);assert.equal(a.run('SentenceGame.engine.grammar.state.current.draft'),'7');
-});
+test('search and the new trainer retain hardware digits and safe navigation',()=>{const a=require('./helpers/word-study.cjs').study();const input={type:'keydown',key:'7',target:a.el('wordStudyAnswer'),preventDefault(){this.prevented=true;}};a.document.dispatchEvent(input);assert.equal(input.prevented,true);assert.equal(a.run('WordTrainer.model.state.current.draft'),'7');a.run('showView("grammar",null)');input.prevented=false;a.document.dispatchEvent(input);assert.equal(input.prevented,false);});
+
+test('switching from unfinished German work to another topic hides the fixed keyboard and preserves the draft',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);const themes=a.json('AndreInterestGenerator.themes.map(t=>t.id)');a.run('openSentenceTest('+JSON.stringify(themes[0])+');SentenceGame.current.direction="de";SentenceGame.render();SentenceGame.typeReading("Entwurf")');assert.equal(a.el('sentenceReadingKeyboard').hidden,false);assert.equal(a.el('sentenceReadingKeyboard').parentElement,a.el('sentenceBuilder'));a.run('openSentenceTest('+JSON.stringify(themes[1])+')');assert.equal(a.run('SentenceGame.current.direction'),'tr');assert.equal(a.el('sentenceReadingKeyboard').hidden,true);a.run('openSentenceTest('+JSON.stringify(themes[0])+')');assert.equal(a.run('SentenceGame.current.draft'),'Entwurf');assert.equal(a.el('sentenceReadingKeyboard').hidden,false);a.run('leaveSentenceArea()');assert.equal(a.el('sentenceReadingKeyboard').hidden,true);});

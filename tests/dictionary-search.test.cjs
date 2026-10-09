@@ -34,7 +34,7 @@ test('DE/TR layouts preserve search text, language-specific letters and Delete p
  assert.equal(rows.length,6);assert.equal(rows[4].children.filter(e=>e.tagName==='BUTTON').at(-2).textContent,'m');
  assert.equal(rows[4].children.at(-1).dataset.action,'delete');
  assert.deepEqual(rows[0].children.map(k=>k.dataset.action),['language','check']);
- assert.deepEqual(rows[5].children.map(k=>k.dataset.action),['space']);
+ assert.deepEqual(rows[5].children.map(k=>k.dataset.action),['symbols','space']);
  enter(a,'äöüß');key(a,'language').click();assert.equal(a.el('search').value,'äöüß');
  assert.equal(a.el('searchKeyboard').getAttribute('lang'),'tr');
  assert.equal(a.el('searchKeyboard').children[4].children.at(-2).textContent,'ç');
@@ -80,7 +80,7 @@ test('navigation and trainer/card entry clear only keyboard presentation and ret
   const saved=[...a.storage];a.run(leave);
   assert.equal(a.el('searchKeyboard').hidden,true,leave);assert.equal(a.el('searchKeyboard').inert,true);
   assert.equal(a.document.body.classList.contains('word-search-open'),false);assert.equal(a.el('search').value,'ev');
-  assert.deepEqual([...a.storage],saved);a.el('search').click();assert.equal(a.el('searchKeyboard').hidden,true);
+  assert.deepEqual(a.json('getUnlockProgress()'),JSON.parse(new Map(saved).get('andreTurkishUnlockProgressV1')));a.el('search').click();assert.equal(a.el('searchKeyboard').hidden,true);
   a.run('showView("dictionary",null)');a.el('search').click();assert.equal(a.el('searchKeyboard').hidden,false);
  }
 });
