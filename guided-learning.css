@@ -1,5 +1,6 @@
 .word-study{display:flex;flex-direction:column;align-items:stretch;gap:12px;width:100%;min-height:0;padding:14px 0;color:var(--text)}
 .word-study[hidden]{display:none}.study-progress{font-size:12px;font-weight:750;color:var(--muted);text-align:center}
+.study-instruction{text-align:center;color:var(--muted);line-height:1.5;margin:12px 0}
 .word-picture{min-height:100px;flex:1;max-height:240px;border-radius:24px;background:var(--lavender);display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(36px,10vw,64px);line-height:1.5;padding:18px;overflow:hidden;letter-spacing:4px}
 .study-prompt{text-align:center;font-size:clamp(20px,6vw,32px);font-weight:800}.study-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .study-button,.study-option{font:inherit;border:1px solid var(--line);border-radius:15px;min-height:46px;padding:12px;background:var(--surface);color:var(--text);font-weight:750;cursor:pointer}.study-button.primary{background:var(--verb);color:var(--verb-dark);border:0}
