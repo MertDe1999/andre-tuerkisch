@@ -127,7 +127,7 @@
     };
     button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
-  const reading=make('div','sentence-reading');reading.id='sentenceReading';reading.hidden=true;const readingAnswer=make('div','typing-answer empty','Antwort tippen …');readingAnswer.id='sentenceReadingAnswer';readingAnswer.tabIndex=0;readingAnswer.setAttribute('role','textbox');readingAnswer.setAttribute('aria-label','Deutsche Übersetzung');readingAnswer.setAttribute('aria-readonly','true');const readingKeyboard=make('div','custom-keyboard');readingKeyboard.id='sentenceReadingKeyboard';reading.append(readingAnswer,readingKeyboard);el('sentenceGameActive').insertBefore(reading,el('sentenceFeedback'));
+  const reading=make('div','sentence-reading');reading.id='sentenceReading';reading.hidden=true;const readingAnswer=make('div','typing-answer empty','Antwort tippen …');readingAnswer.id='sentenceReadingAnswer';readingAnswer.tabIndex=0;readingAnswer.setAttribute('role','textbox');readingAnswer.setAttribute('aria-label','Deutsche Übersetzung');readingAnswer.setAttribute('aria-readonly','true');const readingKeyboard=make('div','custom-keyboard');readingKeyboard.id='sentenceReadingKeyboard';readingKeyboard.hidden=true;reading.append(readingAnswer);el('sentenceBuilder').append(readingKeyboard);el('sentenceGameActive').insertBefore(reading,el('sentenceFeedback'));
   function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
   function topicProgress(){const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status&&x)status.textContent=engine.flow.finished?'›':(Number(x.tr)+Number(x.de))+' / 2';}}
   root.refreshSentenceTopics=topicProgress;
@@ -149,7 +149,7 @@
     el('sentenceModeLabel').title='Alle 23 Themen in beide Richtungen; 80 % direkt richtig und neue Formen dreimal je Richtung.';
     el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
     reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished);
-    if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else AndreKeyboard.cancel(readingKeyboard);
+    if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
     topicProgress();
     const zone=el('answerZone');zone.replaceChildren();
     const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
@@ -205,7 +205,7 @@
     next();
   }
   function stop(){
-    AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
+    readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
     if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
