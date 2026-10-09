@@ -55,16 +55,8 @@ test('learned B1 register and saved generated tasks survive mistakes and reload'
  const loaded=new L.Engine({storage});assert.deepEqual(loaded.task(),e.task());assert.equal(loaded.state.current.rated,true);assert.equal(solve(loaded).delta,0);assert.equal(loaded.state.level,160);
  loaded.next();assert.ok(!loaded.task().groups.flatMap(g=>g.slots).some(s=>s.features.register==='colloquial'));
 });
-test('grammar has a separate minimal translation view and navigation preserves the exercise',()=>{
- const a=app();a.unlock(['ev','güzel','araba','bu'],{grammar:false});a.run('openGrammarTraining()');assert.equal(a.run('GrammarTrainer.active'),true);assert.equal(a.el('grammarPanel').hidden,true);
- assert.ok(a.el('grammarAnswer'));assert.equal(a.run('SentenceGame.current'),null);
- const id=a.run('SentenceGame.engine.grammar.state.current.entryId');a.run('showView("dictionary",null)');assert.equal(a.run('GrammarTrainer.active'),false);a.run('openGrammarTraining()');assert.equal(a.run('SentenceGame.engine.grammar.state.current.entryId'),id);
- a.run('GrammarTrainer.close()');a.unlock(undefined,{grammar:false});
- a.run('SentenceGame.engine.state.opened=4;SentenceGame.engine.state.level=20;SentenceGame.engine.refreshPool();SentenceGame.engine.grammar.state.current=null;SentenceGame.engine.grammar.state.unlocked=Object.fromEntries(AndreCourseGrammar.core.slice(0,4).flat().map(id=>[id,true]));refreshGrammarUI();updateUnlockButtons()');
- assert.ok(a.run('SentenceGame.engine.grammar.ready(SentenceGame.engine.unlocked(),4).length>0'),'optional forms remain available through their rule');
- assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'optional forms also use the shared unlock button');
- assert.ok(a.el('grammarList').children.some(c=>c.textContent==='Im Satzbau anwenden'));
-});
+test('grammar levels explain prepared steps, while navigation preserves the learned rules',()=>{const a=app();require('./helpers/progress.cjs').learnTo(a,1);a.run('openGrammarTraining()');assert.equal(a.run('GrammarTrainer.active'),true);assert.equal(a.el('grammarPanel').hidden,true);assert.equal(a.run('SentenceGame.current'),null);const before=a.json('SentenceGame.engine.grammar.state');a.run('showView("dictionary",null)');assert.equal(a.run('GrammarTrainer.active'),false);a.run('openGrammarTraining()');assert.match(a.el('grammarTrainer').textContent,/Level 1/);assert.deepEqual(a.json('SentenceGame.engine.grammar.state'),before);a.run('GrammarTrainer.close()');assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);assert.equal(a.el('grammarList').querySelectorAll('.grammar-level').length,160);});
+
 test('all 188 new reference tasks can be solved using the visible paged word and suffix controls',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');
  function item(predicate){let found;for(let attempt=0;attempt<100;attempt++){

@@ -99,12 +99,4 @@ test('previous stem-based saved state migrates without losing rating, wrong spel
  state.current.taskId=past.id;state.current.levelAtStart=50;
  assert.equal(B.surface(L.cleanState(state).current.tokens[1]),'görüyon','present alternatives in a past task follow the level policy too');
 });
-test('unlock buttons belong to their own views and grammar opens its own training',()=>{
- const a=app();a.run('refreshUnlockUI()');assert.equal(a.el('unlockFloatingButton').hidden,false);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
- a.run('showView("grammar",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'fresh grammar keeps the same bottom entry');assert.equal(a.el('grammarUnlockFloatingButton').disabled,true,'words are needed first');
- a.unlock(undefined,{grammar:false});assert.equal(a.el('grammarUnlockFloatingButton').hidden,false,'all words learned must not hide grammar button');
- a.el('grammarUnlockFloatingButton').click();assert.equal(a.run('GrammarTrainer.active'),true);assert.equal(a.run('currentMainView'),'grammar');
- a.run('showView("flashcards",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
- a.run('openLearnMode("sentences")');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);
- a.run('showView("dictionary",null)');assert.equal(a.el('unlockFloatingButton').hidden,true,'all words learned keeps the prior completed state');
-});
+test('word preparation entry stays in vocabulary and grammar is opened through prepared level points',()=>{const a=app();a.run('refreshUnlockUI()');assert.equal(a.el('unlockFloatingButton').hidden,false);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);a.run('showView("grammar",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);assert.equal(a.el('grammarUnlockFloatingButton').hidden,true);require('./helpers/progress.cjs').learnTo(a,1);a.el('grammarList').querySelectorAll('.grammar-level')[0].click();assert.equal(a.run('GrammarTrainer.active'),true);a.run('showView("flashcards",null)');assert.equal(a.el('unlockFloatingButton').hidden,true);a.run('showView("dictionary",null)');assert.equal(a.el('unlockFloatingButton').hidden,false);assert.equal(a.el('unlockFloatingButton').disabled,true);assert.match(a.el('unlockFloatingButton').textContent,/freigeschaltet/);});
