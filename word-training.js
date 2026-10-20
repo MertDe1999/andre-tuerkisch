@@ -22,16 +22,32 @@
  function check(){const cur=current();if(!active||!cur)return;if(cur.done||cur.reveal){if(cur.reveal){cur.done=true;model.save();}next();return;}if(cur.phase!=='typing'||!cur.draft.trim())return;
   const result=model.type(cur.draft);if(result.correct&&!cur.assisted)root.markUnlockDirection(cur.id,cur.direction==='tr'?'toTurkish':'toGerman');draw();feedback(result.correct?'Richtig.':result.reveal?'':'Noch nicht richtig.');AndreMotion.feedback(el('wordStudyAnswer'),result.correct);
  }
+ function choiceResult(cur,word){
+  const correct=!cur.assisted,result=make('section','study-result '+(correct?'correct':'incorrect'));
+  result.id='wordChoiceResult';result.setAttribute('role','status');result.setAttribute('aria-live','polite');result.setAttribute('aria-atomic','true');panel.append(result);
+  const heading=make('div','study-result-heading');heading.append(make('strong','',correct?'Richtig':'Falsch'));
+  if(!correct){const audio=button('Anhören',say,'study-button study-audio');audio.setAttribute('aria-label','Richtige Antwort anhören');heading.append(audio);}
+  result.append(heading,make('p','study-result-answer',(correct?'':'Richtig ist: ')+word.tr+' = '+word.de));
+  if(!correct)result.append(make('p','study-result-hint','Dieses Wort kommt noch einmal.'));
+ }
  function draw(){const context=[current()?.id,current()?.phase,current()?.direction,current()?.done,current()?.reveal].join('|'),changed=context!==lastKey;lastKey=context;panel.replaceChildren();el('customKeyboard').style.display='none';const cur=current(),words=target();
+  panel.classList.toggle('has-result',cur?.phase==='choice'&&cur.done);
   if(!cur){panel.append(make('h2','','Wörter bereit'),button('Zur Grammatik',()=>{close();root.showView('grammar',null);}));return;}
   const word=W.byId[cur.id],title={choice:'Wortauswahl',typing:cur.direction==='tr'?'Deutsch → Türkisch':'Türkisch → Deutsch'}[cur.phase];
   panel.append(make('div','study-progress','Level '+engine.preparationLevel()+' · '+title));
-  if(cur.phase==='choice'){const prompt=make('div','study-prompt study-word',word.de);prompt.setAttribute('lang','de');panel.append(prompt);if(cur.assisted){const audio=button('Anhören',say,'study-button study-audio');audio.setAttribute('aria-label','Lösung anhören');panel.append(audio);}}
+  if(cur.phase==='choice'){const prompt=make('div','study-prompt study-word',word.de);prompt.setAttribute('lang','de');panel.append(prompt);}
   if(cur.phase==='typing'){panel.append(make('div','study-prompt',cur.direction==='tr'?word.de:word.tr));const answer=make('div','typing-answer'+(!cur.draft?' empty':''),cur.draft||'Antwort tippen …');answer.id='wordStudyAnswer';answer.tabIndex=0;answer.setAttribute('role','textbox');answer.setAttribute('aria-readonly','true');panel.append(answer);answer._saveCaret=()=>model.save();AndreAnswerEditor.draw(answer,cur,{editable:!cur.done&&!cur.reveal});
    if(cur.reveal){const solution=make('div','study-solution');solution.append(make('span','study-language','Türkisch'),make('strong','',word.tr),make('span','study-language','Deutsch'),make('strong','',word.de));panel.append(solution,button('Anhören',say),button('Weiter',check,'study-button primary'));}
    else{el('customKeyboard').style.display='grid';root.renderAppKeyboard(cur.direction==='tr'?'tr':'de',{keyboard:el('customKeyboard'),onType:type,onCheck:check,onSkip:unknown,checkLabel:cur.done?'Weiter':'Antwort prüfen',inputLocked:cur.done,reset:changed,contextKey:context});}
   }else if(cur.phase==='choice'){
-   const options=make('div','study-options'),choices=model.choices(words);options.setAttribute('lang','tr');for(const choice of choices){const b=button(choice.tr,()=>{const result=model.choose(choice.id);draw();feedback(result.correct?'Richtig.':'Noch üben.');if(!result.correct)say();},'study-option word-type-'+choice.type);b.disabled=cur.done;options.append(b);}panel.append(options);if(cur.done)panel.append(button('Weiter',next,'study-button primary'));
+   const options=make('div','study-options'),choices=model.choices(words),selected=cur.selectedId||(cur.done&&!cur.assisted?cur.id:null);options.setAttribute('lang','tr');
+   for(const choice of choices){
+    const b=button(choice.tr,()=>{const result=model.choose(choice.id);if(result.ignored)return;draw();if(!result.correct)say();},'study-option word-type-'+choice.type);
+    b.dataset.wordId=choice.id;b.setAttribute('aria-pressed',String(selected===choice.id));b.disabled=cur.done;
+    if(cur.done){let label='';if(choice.id===cur.id){b.classList.add('is-correct');label=cur.assisted?'Richtige Antwort':'Richtig';}else if(choice.id===selected){b.classList.add('is-incorrect');label='Deine Auswahl: falsch';}
+     if(label){const status=make('span','study-option-status',label);status.setAttribute('lang','de');b.append(status);}
+    }options.append(b);
+   }panel.append(options);if(cur.done){choiceResult(cur,word);panel.append(button('Weiter',next,'study-button primary'));}
   }
   const f=make('div','typing-feedback',model.storageError||root.unlockStorageError||'');f.id='wordStudyFeedback';f.setAttribute('role','status');f.setAttribute('aria-live','polite');panel.append(f);
   if(cur.phase==='typing'&&!cur.reveal){const settings=make('details','study-settings'),heading=make('summary','study-alternative','Tastatur');settings.append(heading);for(const [key,label] of [['preview','Buchstabenvorschau'],['haptics','Kurze Vibration']]){const row=make('label','study-setting'),box=make('input','');box.type='checkbox';box.checked=AndreKeyboard.preferences[key];box.addEventListener('change',()=>AndreKeyboard.configure({[key]:box.checked}));row.append(box,make('span','',label));settings.append(row);}panel.append(settings);}if(cur.phase==='typing'&&!cur.reveal)el('wordStudyAnswer').focus({preventScroll:true});AndreMotion.enter(panel);
