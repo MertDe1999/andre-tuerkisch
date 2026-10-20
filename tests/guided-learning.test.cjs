@@ -1,16 +1,16 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),L=require('../lib/guided-learning'),P=require('../lib/learning-path'),W=require('../data/words'),G=require('../lib/course-grammar'),C=require('../lib/course'),I=require('../lib/interest-generator'),Prep=require('../lib/word-preparation'),V=require('../lib/word-pictures'),Editor=require('../lib/answer-editor');
+const {test}=require('node:test'),assert=require('node:assert/strict'),L=require('../lib/guided-learning'),P=require('../lib/learning-path'),W=require('../data/words'),G=require('../lib/course-grammar'),C=require('../lib/course'),I=require('../lib/interest-generator'),Prep=require('../lib/word-preparation'),Editor=require('../lib/answer-editor');
 function engine(){const map=new Map(),storage={getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v)},e=new L.Engine({storage});return {e,map,storage};}
 function prepare(e,map,level){e.flow.level=level;e.flow.frontier=level;e.syncProgress();map.set(L.UNLOCK,JSON.stringify(Object.fromEntries(P.wordIds(level).map(id=>[id,{toTurkish:true,toGerman:true}]))));}
 function solve(e,cur){cur.tokens=cur.task.groups.flatMap(g=>g.slots.map((s,i)=>({...C.copy(s),id:g.id+i,group:g.id})));return e.check({answer:cur.task.de});}
-test('160 fixed steps, familiar names, distinct Ben and ben, and explicit visuals',()=>{assert.equal(P.lessons.length,160);assert.equal(P.auto.has(W.byLemma.ben.id),false);assert.ok(P.auto.has(W.words.find(w=>w.properName&&w.tr==='Ben').id));for(const w of W.words.filter(w=>!P.auto.has(w.id)))assert.ok(V.mapped(w),w.tr);for(const l of P.lessons){assert.ok(l.words.every(id=>W.byId[id]&&!P.auto.has(id)));assert.equal(l.cefr,['A1','A2','B1','B2'][Math.floor((l.level-1)/40)]);}});
+test('160 fixed steps, familiar names, distinct Ben and ben, and written vocabulary',()=>{assert.equal(P.lessons.length,160);assert.equal(P.auto.has(W.byLemma.ben.id),false);assert.ok(P.auto.has(W.words.find(w=>w.properName&&w.tr==='Ben').id));for(const w of W.words.filter(w=>!P.auto.has(w.id)))assert.ok(w.de&&w.tr,w.id);for(const l of P.lessons){assert.ok(l.words.every(id=>W.byId[id]&&!P.auto.has(id)));assert.equal(l.cefr,['A1','A2','B1','B2'][Math.floor((l.level-1)/40)]);}});
 test('word learning gates whole groups, retains failed words and needs both typed directions',()=>{
  const map=new Map(),p=new Prep.Preparation({getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v)}),ids=['ev','araba','köpek','masa'].map(w=>W.byLemma[w].id),known=new Set();
  let cur=p.next(ids,known);assert.equal(cur.phase,'choice');assert.equal(p.choose(ids.find(id=>id!==cur.id)).correct,false);assert.equal(p.progress(cur.id).choice,false);
- cur=p.next(ids,known);assert.equal(cur.phase,'choice');const choices=p.choices(ids,V.key);assert.equal(choices.length,4);assert.ok(choices.every(w=>ids.includes(w.id)));assert.equal(new Set(choices.map(w=>w.tr)).size,4);
+ cur=p.next(ids,known);assert.equal(cur.phase,'choice');const choices=p.choices(ids);assert.equal(choices.length,4);assert.ok(choices.every(w=>ids.includes(w.id)));assert.equal(new Set(choices.map(w=>w.tr)).size,4);
  while(ids.some(id=>!p.progress(id).choice)){cur=p.next(ids,known);assert.equal(cur.phase,'choice');p.choose(cur.id);}
  cur=p.next(ids,known);assert.equal(cur.phase,'typing');p.type('wrong');assert.equal(p.type('wrong').reveal,true);assert.equal(p.progress(cur.id).tr,false);const restored=new Prep.Preparation(p.storage);assert.equal(restored.state.current.reveal,true);p.state.current.done=true;cur=p.next(ids,known);assert.equal(p.type(W.byId[cur.id].tr).correct,true);assert.equal(p.progress(cur.id).de,false);
 });
-test('old speaking tasks resume with pictures or typing without losing either written direction',()=>{
+test('old speaking tasks resume with word choices or typing without losing either written direction',()=>{
  for(const choice of [false,true]){
   const {storage}=engine(),p=new Prep.Preparation(storage),id=W.byLemma.araba.id;
   p.state.words[id]={spoken:false,choice,tr:true,de:false,due:0};p.state.current={id,phase:'spoken',heard:true,done:false};p.save();
