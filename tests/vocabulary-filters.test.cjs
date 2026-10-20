@@ -7,11 +7,11 @@ const types=a=>chips(a).map(button=>button.dataset.wordType);
 const lemma=(a,text)=>a.rows.find(row=>row.querySelector('.word-tr').textContent===text);
 
 test('categories appear only after both word directions, and every represented type becomes available',()=>{
- const a=app();assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
- a.run('markUnlockDirection("ev","toTurkish")');assert.deepEqual(types(a),['noun']);
+ const a=app();assert.deepEqual(types(a),[]);assert.equal(a.el('wordTypeFilters').hidden,true);
+ a.run('markUnlockDirection("ev","toTurkish")');assert.deepEqual(types(a),[]);assert.equal(a.el('wordTypeFilters').hidden,true);
  a.run('markUnlockDirection("ev","toGerman")');assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
  a.unlock(undefined,{grammar:false});
- const expected=a.json('Object.keys(typeNames).filter(type=>AndreWords.words.some(w=>w.type===type||(w.otherTypes||[]).includes(type)))');
+ const expected=a.json('Object.keys(typeNames).filter(type=>AndreWords.words.some(w=>!AndreLearningPath.auto.has(w.id)&&(w.type===type||(w.otherTypes||[]).includes(type))))');
  assert.deepEqual(types(a),expected);assert.ok(expected.length>3);
  for(const button of chips(a)){assert.ok(button.classList.contains(button.dataset.wordType));assert.equal(button.tagName,'BUTTON');assert.equal(button.getAttribute('aria-pressed'),'false');}
 });
@@ -37,8 +37,8 @@ test('search and category intersect without revealing locked search matches or c
 });
 
 test('a word with multiple categories enables and appears in both corresponding filters',()=>{
- const a=app();a.unlock(['sonra'],{grammar:false});assert.deepEqual(types(a),['noun','adverb','postposition']);
- for(const type of types(a).filter(t=>t!=='noun')){
+ const a=app();a.unlock(['sonra'],{grammar:false});assert.deepEqual(types(a),['adverb','postposition']);
+ for(const type of types(a)){
   chip(a,type).click();assert.ok(visible(a).includes(lemma(a,'sonra')));assert.ok(visible(a).includes(lemma(a,'önce')));
   const ids=visible(a).map(row=>row.dataset.wordId);const matching=a.json('AndreWords.words.filter(w=>[w.type,...(w.otherTypes||[])].includes('+JSON.stringify(type)+')).map(w=>w.id)');
   assert.deepEqual([...ids].sort(),matching.sort());
@@ -51,7 +51,7 @@ test('unlock refresh preserves selection and unchanged button focus, then clears
  assert.deepEqual(types(a),['noun','verb']);assert.equal(chip(a,'verb'),verb);assert.equal(a.document.activeElement,verb);assert.equal(verb.getAttribute('aria-pressed'),'true');
  assert.ok(visible(a).every(row=>row.classList.contains('verb')));
  a.run('resetUnlockDirections("gitmek")');assert.deepEqual(types(a),['noun']);assert.equal(visible(a).length,a.rows.length);
- a.run('resetUnlockDirections("ev")');assert.deepEqual(types(a),['noun']);assert.equal(a.el('wordTypeFilters').hidden,false);
+ a.run('resetUnlockDirections("ev")');assert.deepEqual(types(a),[]);assert.equal(a.el('wordTypeFilters').hidden,true);
 });
 
 test('saved unlocks recreate available categories while the presentation selection stays temporary',()=>{
@@ -67,6 +67,21 @@ test('later vocabulary additions join the same filters without adding a separate
  a.run('markUnlockDirection("sessizce","toTurkish")');assert.deepEqual(types(a),['noun']);
  a.run('markUnlockDirection("sessizce","toGerman")');assert.deepEqual(types(a),['noun','adverb']);
  chip(a,'adverb').click();a.el('search').value='leise';a.run('filterWords()');assert.deepEqual(visible(a),[lemma(a,'sessizce')]);
+});
+
+test('familiar names and loanwords stay absent from dictionary, search and counts while usable in sentences',()=>{
+ const a=app(),count=a.run('AndreWords.words.length-AndreLearningPath.auto.size');
+ const assertDictionary=instance=>{
+  const auto=instance.json('[...AndreLearningPath.auto]');assert.ok(auto.length>0);
+  assert.equal(instance.rows.length,count);assert.ok(instance.rows.every(row=>!auto.includes(row.dataset.wordId)));
+  for(const name of ['Aang','Black Mirror','park','protein']){assert.equal(lemma(instance,name),undefined);assert.equal(instance.run('isWordUnlocked('+JSON.stringify(name)+')'),true);}
+ };
+ assertDictionary(a);assert.equal(a.el('learnedWordsValue').textContent,'0 / '+count);
+ a.unlock(['Aang','Black Mirror','ev'],{grammar:false});assertDictionary(a);assert.equal(a.el('learnedWordsValue').textContent,'1 / '+count);
+ chip(a,'noun').click();a.el('search').value='Black Mirror';a.run('filterWords();refreshUnlockUI()');assert.equal(visible(a).length,0);assertDictionary(a);
+ const loaded=app({storage:a.storage});assertDictionary(loaded);assert.equal(loaded.el('learnedWordsValue').textContent,'1 / '+count);
+ loaded.unlock(undefined,{grammar:false});assertDictionary(loaded);assert.equal(loaded.el('learnedWordsValue').textContent,count+' / '+count);
+ loaded.run('AndreWords.register({id:"future-familiar",tr:"Future Hero",de:"Future Hero",type:"noun",properName:true});AndreDictionary.render()');assertDictionary(loaded);assert.equal(lemma(loaded,'Future Hero'),undefined);assert.equal(loaded.run('isWordUnlocked("future-familiar")'),true);
 });
 
 test('fast animation replacement, cancellation, reduced motion and missing animation support keep the real filter',()=>{
