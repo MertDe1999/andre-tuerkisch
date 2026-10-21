@@ -22,7 +22,7 @@ body .search-keyboard{
   gap:var(--keyboard-row-gap);padding:10px 6px max(6px,env(safe-area-inset-bottom));border:0;border-radius:0;box-shadow:none;
 }
 body .custom-keyboard .keyboard-row{
-  display:flex;justify-content:center;gap:var(--keyboard-gap);min-height:0;flex:none;
+  position:relative;display:flex;justify-content:center;gap:var(--keyboard-gap);min-height:0;flex:none;
 }
 body .custom-keyboard .key,
 body.learning-games-view .custom-keyboard .key{
@@ -66,6 +66,19 @@ body .custom-keyboard .key.check:not(:disabled):active{background:color-mix(in s
 body .custom-keyboard .key.language:not(:disabled):active,
 body .custom-keyboard .key.space:not(:disabled):active{background:color-mix(in srgb,var(--blue) 85%,var(--text))}
 body .custom-keyboard .key:disabled{opacity:.5}
+body .custom-keyboard .key.letter[data-variants]{position:relative;touch-action:none;-webkit-touch-callout:none}
+body .custom-keyboard .key.letter[data-variants]::before{
+  content:'…';position:absolute;right:3px;top:1px;font-size:10px;line-height:1;opacity:.6;pointer-events:none;
+}
+body .custom-keyboard .keyboard-variants{
+  position:absolute;bottom:calc(100% + 6px);z-index:10;box-sizing:border-box;
+  display:flex;flex-wrap:wrap;gap:4px;width:max-content;max-width:100%;padding:6px;
+  border:1px solid var(--line);border-radius:14px;background:var(--surface);
+  box-shadow:0 4px 18px #0003;touch-action:none;-webkit-touch-callout:none;
+}
+body .custom-keyboard .key.keyboard-variant{flex:0 0 40px;width:40px;height:46px;min-height:46px;cursor:pointer}
+body .custom-keyboard .key.keyboard-variant.is-selected,
+body .custom-keyboard .key.keyboard-variant:focus-visible{background:var(--lavender-dark);color:var(--surface)}
 @media(orientation:landscape) and (max-height:500px){
   :root{
     --app-keyboard-height:calc(50dvh + max(6px,env(safe-area-inset-bottom)));
