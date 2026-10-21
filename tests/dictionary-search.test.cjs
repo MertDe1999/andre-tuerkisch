@@ -4,7 +4,7 @@ const keys=a=>a.el('searchKeyboard').children.flatMap(row=>row.children);
 const key=(a,action)=>keys(a).find(k=>k.dataset.action===action);
 const letter=(a,text)=>keys(a).find(k=>k.dataset.action==='letter'&&k.textContent===text);
 const visible=a=>a.rows.filter(row=>row.style.display!=='none').map(row=>row.querySelector('.word-tr').textContent);
-const enter=(a,text)=>{for(const char of text){if(char==='ß'){const s=letter(a,'s');s.dispatchEvent({type:'pointerdown',pointerId:1});a.advance(400);s.dispatchEvent({type:'pointerup',pointerId:1});s.dispatchEvent({type:'click',detail:1});}else letter(a,char).click();}};
+const enter=(a,text)=>{for(const char of text){if(char==='ß'){const s=letter(a,'s');s.dispatchEvent({type:'pointerdown',pointerId:1});a.advance(400);s.dispatchEvent({type:'pointerup',pointerId:1});s.dispatchEvent({type:'click',detail:1});a.el('searchKeyboard').querySelectorAll('.keyboard-variant').find(k=>k.textContent===char).click();}else letter(a,char).click();}};
 function hardware(a,name,target=a.el('search'),extra={}){
  const event={type:'keydown',key:name,target,prevented:false,preventDefault(){this.prevented=true;},...extra};
  a.document.dispatchEvent(event);return event;

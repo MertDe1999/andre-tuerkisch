@@ -55,21 +55,22 @@ test('a stable keyboard keeps focus and Shift while updating actions, and reset/
  assert.equal(s.textContent,'s');assert.equal(shift.getAttribute('aria-pressed'),'false');
 });
 
-test('holding s commits ß once on release, offers ẞ with Shift, and a later normal tap still works',()=>{
+test('holding s offers selectable ß and ẞ without changing short taps or adding an extra character',()=>{
  const {a,keyboard,typed}=fixture(),s=letter(keyboard,'s');
  pointer(s,'pointerdown');a.advance(399);assert.equal(s.textContent,'s');pointer(s,'pointerup');s.click();assert.deepEqual(typed,['s']);
- pointer(s,'pointerdown');a.advance(400);assert.equal(s.textContent,'ß');assert.deepEqual(typed,['s']);
- pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});assert.deepEqual(typed,['s','ß']);
+ pointer(s,'pointerdown');a.advance(400);assert.equal(s.textContent,'s');assert.deepEqual(typed,['s']);
+ pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});assert.deepEqual(typed,['s']);
+ keyboard.querySelectorAll('.keyboard-variant').find(k=>k.textContent==='ß').click();assert.deepEqual(typed,['s','ß']);
  assert.equal(s.textContent,'s');assert.equal(a.timers.size,0);
- action(keyboard,'shift').click();pointer(s,'pointerdown');a.advance(400);assert.equal(s.textContent,'ẞ');
- pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});assert.deepEqual(typed,['s','ß','ẞ']);
+ action(keyboard,'shift').click();pointer(s,'pointerdown');a.advance(400);
+ pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});keyboard.querySelectorAll('.keyboard-variant').find(k=>k.textContent==='ẞ').click();assert.deepEqual(typed,['s','ß','ẞ']);
  pointer(s,'pointerdown');pointer(s,'pointerup');s.dispatchEvent({type:'click',detail:1});assert.equal(typed.at(-1),'s');
 });
 
 test('cancelled, moved, hidden or replaced holds never emit a character or leave a timer',()=>{
  for(const end of ['pointercancel','lostpointercapture','move','pagehide','replace','close']){
   const {a,keyboard,typed,options}=fixture(),s=letter(keyboard,'s');pointer(s,'pointerdown');a.advance(400);
-  if(end==='move')pointer(s,'pointermove',{clientX:15});
+  if(end==='move'){pointer(s,'pointermove',{clientX:200});pointer(s,'pointerup',{clientX:200});}
   else if(end==='pagehide')a.run('AndreKeyboard.cancelAll()');
   else if(end==='replace')a.run('renderAppKeyboard')('tr',options);
   else if(end==='close')a.run('AndreKeyboard.cancel')(keyboard);
