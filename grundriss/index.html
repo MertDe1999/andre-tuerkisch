@@ -4132,6 +4132,15 @@
         renderAll();
       });
 
+      inspectorBody.addEventListener('input', event => {
+        const input = event.target.closest('input[data-spatial]');
+        const entity = selectedEntity();
+        if (!input || !entity || selected.type !== 'object') return;
+        const key = input.dataset.spatial, n = input.valueAsNumber;
+        if (!['height3d', 'base3d'].includes(key) || !Number.isFinite(n) || n < (key === 'height3d' ? 1 : 0) || n > 1000) return;
+        entity[key] = n; saveState(); renderPlan();
+      });
+
       inspectorBody.addEventListener('change', event => {
         const input = event.target.closest('[data-spatial]');
         const entity = selectedEntity();
