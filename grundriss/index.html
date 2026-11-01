@@ -4611,7 +4611,7 @@
           for(const o of room.objects)furniture(o);
           groups.forEach(g=>{g.data=new Float32Array(g.vertices);delete g.vertices});
           const pad=Math.min(W,D)*.06;bounds.push([-pad,0,-pad],[W+pad,H,D+pad]);dirty=false;
-          $('scene-room-height').value=H;
+          if(document.activeElement!==$('scene-room-height'))$('scene-room-height').value=H;
           $('scene-model-note').textContent=room.objects.length?'Höhen geschätzt · im Element anpassbar':'Füge Möbel in 2D hinzu · 3D zeigt denselben Plan';
         }
         function init(){if(initialized)return;initialized=true;gpu=canvas.getContext('webgl',{antialias:true,alpha:false,preserveDrawingBuffer:true});software=gpu?null:canvas.getContext('2d');
@@ -4647,7 +4647,7 @@
         $('scene-settings').onclick=()=>{$('scene-config').hidden=!$('scene-config').hidden;$('scene-settings').setAttribute('aria-expanded',String(!$('scene-config').hidden))};
         $('scene-wall-mode').onclick=()=>{wallMode=wallMode==='auto'?'off':wallMode==='off'?'all':'auto';$('scene-wall-mode').textContent={auto:'Wände: automatisch',off:'Wände: ausgeblendet',all:'Wände: alle'}[wallMode];request()};
         $('scene-labels').onclick=()=>{showNames=!showNames;$('scene-labels').setAttribute('aria-pressed',String(showNames));request()};
-        $('scene-room-height').onchange=e=>{const n=e.target.valueAsNumber,room=activeRoom();if(!room||!Number.isFinite(n)||n<100||n>1000){e.target.value=room?.ceilingHeight||ROOM_HEIGHT;return}room.ceilingHeight=n;saveState();invalidate()};
+        const updateRoomHeight=e=>{const n=e.target.valueAsNumber,room=activeRoom();if(!room||!Number.isFinite(n)||n<100||n>1000)return;if(room.ceilingHeight!==n){room.ceilingHeight=n;saveState();invalidate()}};$('scene-room-height').oninput=updateRoomHeight;$('scene-room-height').onchange=e=>{updateRoomHeight(e);e.target.value=activeRoom()?.ceilingHeight||ROOM_HEIGHT};$('scene-room-height').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur()}};
         $('scene-photo').onclick=()=>{draw();const out=document.createElement('canvas');out.width=canvas.width;out.height=canvas.height;const c=out.getContext('2d');c.drawImage(canvas,0,0);c.drawImage(overlay,0,0);out.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Merts_Raum_3D.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)},'image/png')};
         const pointers=new Map();let previous=null,total=0,start=0,wasPinch=false,lastTap=null;
         const gesture=()=>{const p=[...pointers.values()];return p.length>=2?{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}:p[0]?{...p[0],d:0}:null};
