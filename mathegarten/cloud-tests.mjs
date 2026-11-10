@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {randomUUID} from 'node:crypto';
+const require=createRequire(import.meta.url),M=require('./cloud-model.js');
+let checks=0;async function test(name,fn){await fn();checks++;console.log('OK '+name);}
+function progress(n,session=null){return {version:1,points:n*10,records:{o1a:{tries:n,clean:n,missed:false,last:'2026-11-10',streak:n}},days:{'2026-11-10':{solved:n,correct:n}},session};}
+function server(n=0){return {state:progress(n),revision:1,ids:new Set(),async read(){return M.copy({state:this.state,revision:this.revision});},async write(p){if(this.ids.has(p.id))return {...await this.read(),applied:true};if(this.revision!==p.revision)return {...await this.read(),applied:false};this.ids.add(p.id);this.state=M.copy(p.state);this.revision++;return {...await this.read(),applied:true};}};}
+function device(s,local,base=null){const d={local:M.copy(local),cache:{base:base&&M.copy(base),revision:1,pending:null}};d.io={get:()=>d.local,put:v=>d.local=M.copy(v),cache:v=>d.cache=M.copy(v),id:randomUUID,read:()=>s.read(),write:p=>s.write(p)};d.cycle=()=>new M.Engine(d.io,M.copy(d.cache)).cycle();return d;}
+await test('Erste Anmeldung zählt gleiche Sicherungen nicht doppelt',()=>assert.equal(M.merge(null,progress(3),progress(3)).points,30));
+await test('Zwei Geräte addieren nur neue Aufgaben',()=>{const r=M.merge(progress(2),progress(4),progress(5));assert.equal(r.points,70);assert.equal(r.records.o1a.tries,7);assert.equal(r.days['2026-11-10'].correct,7);});
+await test('Unveränderter Entwurf übernimmt den anderen Gerätestand',()=>{const a={index:1},b={index:2};assert.deepEqual(M.merge(progress(2,a),progress(2,a),progress(3,b)).session,b);});
+await test('Lokale neue Eingabe bleibt bei Abgleich erhalten',()=>{const a={index:1},b={index:2},c={index:3};assert.deepEqual(M.merge(progress(2,a),progress(3,b),progress(4,c)).session,b);});
+await test('Beendete Runde wird auf dem zweiten Gerät entfernt',()=>assert.equal(M.merge(progress(2,{index:1}),progress(2,{index:1}),progress(3)).session,null));
+await test('Offline-Fortschritt wird nach Wiederverbindung ergänzt',async()=>{const s=server(5),d=device(s,progress(4),progress(2));await d.cycle();assert.equal(s.state.points,70);assert.equal(d.local.points,70);assert.equal(d.cache.pending,null);});
+await test('Server gespeichert, Antwort verloren: Wiederholung ohne Doppelzählung',async()=>{const s=server(2),d=device(s,progress(3),progress(2));const write=d.io.write;let once=true;d.io.write=async p=>{const result=await write(p);if(once){once=false;throw Error('connection lost');}return result;};await assert.rejects(d.cycle());assert(d.cache.pending);d.local=progress(4);await d.cycle();assert.equal(s.state.points,40);assert.equal(d.local.points,40);});
+await test('Gleichzeitiges Schreiben löst Versionskonflikt ohne Datenverlust',async()=>{const s=server(2),a=device(s,progress(3),progress(2)),b=device(s,progress(4),progress(2));await Promise.all([a.cycle(),b.cycle()]);await a.cycle();assert.equal(s.state.points,50);assert.equal(a.local.points,50);assert.equal(b.local.points,50);});
+await test('Eingabe während des Speicherns wird in weiterer Runde gespeichert',async()=>{const s=server(1),d=device(s,progress(2),progress(1)),write=d.io.write;let once=true;d.io.write=async p=>{if(once){once=false;d.local=progress(3);}return write(p);};await d.cycle();assert.equal(s.state.points,30);assert.equal(d.local.points,30);});
+await test('Mehrfaches Abrufen eines identischen Standes verändert keine Zähler',async()=>{const s=server(3),d=device(s,progress(3),progress(3));for(let i=0;i<4;i++)await d.cycle();assert.equal(s.revision,1);assert.equal(d.local.points,30);});
+await test('Fehlgeschlagener lokaler Zwischenspeicher verhindert Online-Schreiben',async()=>{const s=server(1),d=device(s,progress(2),progress(1));d.io.cache=()=>{throw Error('quota');};await assert.rejects(d.cycle());assert.equal(s.state.points,10);});
+console.log(checks+' Cloud-Prüfgruppen bestanden.');
