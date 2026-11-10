@@ -17,7 +17,7 @@ returns jsonb language plpgsql security definer set search_path = '' as $$
 declare row_data public.mathegarten_progress; uid uuid := auth.uid();
 begin
  if uid is null then raise exception 'Authentication required' using errcode='28000'; end if;
- if operation_id is null or expected_revision < 0 or payload is null or octet_length(payload::text)>500000
+ if operation_id is null or expected_revision is null or expected_revision < 0 or payload is null or octet_length(payload::text)>500000
     or payload->>'version' is distinct from '1' or jsonb_typeof(payload->'records') is distinct from 'object'
     or jsonb_typeof(payload->'days') is distinct from 'object' then raise exception 'Invalid progress'; end if;
  insert into public.mathegarten_progress(user_id) values(uid) on conflict do nothing;
