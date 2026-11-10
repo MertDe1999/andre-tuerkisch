@@ -1,7 +1,11 @@
 Mathegarten – privater Geräteabgleich
 
 Webseite: https://mertde1999.github.io/andre-tuerkisch/mathegarten/
-Stand: 10.11.2026 – Verbindung vorbereitet, Supabase-Konfiguration noch offen.
+Stand: 10.11.2026 – Supabase-Projekt eingerichtet und verbunden.
+Projekt: lbvbslsoswyinsukcbxq, Free Plan, West EU (Ireland).
+setup.sql angewendet; backend-check.sql erfolgreich mit Rollback aller Testdaten.
+Site URL und Redirect URL entsprechen der oben genannten Webseiten-Adresse.
+cloud-config.js enthält ausschließlich den öffentlichen Publishable-Key.
 
 Einrichtung im ausgewählten Supabase-Projekt:
 1. setup.sql anwenden. Die Tabelle ist für anonyme Besucher gesperrt. Angemeldete
@@ -29,3 +33,4 @@ Speicherung:
 Prüfungen: node tests.mjs und node cloud-tests.mjs.
 Die Cloud-Modelltests ersetzen keine Prüfung gegen das tatsächliche Backend.
 Supabase-JS 2.119.0 ist lokal mitgeliefert; Lizenz in dist/vendor.
+
