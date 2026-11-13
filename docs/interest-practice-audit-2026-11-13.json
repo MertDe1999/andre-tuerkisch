@@ -1,0 +1,1459 @@
+{
+  "method": "Offline models only; no browser, server, live speech or microphone.",
+  "levels": [
+    {
+      "level": 1,
+      "cefr": "A1",
+      "pool": 89,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 2,
+      "cefr": "A1",
+      "pool": 163,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 3,
+      "cefr": "A1",
+      "pool": 264,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 4,
+      "cefr": "A1",
+      "pool": 323,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 5,
+      "cefr": "A1",
+      "pool": 373,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 6,
+      "cefr": "A1",
+      "pool": 389,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 7,
+      "cefr": "A1",
+      "pool": 415,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 8,
+      "cefr": "A1",
+      "pool": 431,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 9,
+      "cefr": "A1",
+      "pool": 424,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 10,
+      "cefr": "A1",
+      "pool": 439,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 11,
+      "cefr": "A1",
+      "pool": 411,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 12,
+      "cefr": "A1",
+      "pool": 417,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 13,
+      "cefr": "A1",
+      "pool": 414,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 14,
+      "cefr": "A1",
+      "pool": 413,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 15,
+      "cefr": "A1",
+      "pool": 394,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 16,
+      "cefr": "A1",
+      "pool": 392,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 17,
+      "cefr": "A1",
+      "pool": 431,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 18,
+      "cefr": "A1",
+      "pool": 503,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 19,
+      "cefr": "A1",
+      "pool": 512,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 20,
+      "cefr": "A1",
+      "pool": 522,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 21,
+      "cefr": "A1",
+      "pool": 463,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 22,
+      "cefr": "A1",
+      "pool": 518,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 23,
+      "cefr": "A1",
+      "pool": 518,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 24,
+      "cefr": "A1",
+      "pool": 525,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 25,
+      "cefr": "A1",
+      "pool": 530,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 26,
+      "cefr": "A1",
+      "pool": 536,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 27,
+      "cefr": "A1",
+      "pool": 541,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 28,
+      "cefr": "A1",
+      "pool": 535,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 29,
+      "cefr": "A1",
+      "pool": 542,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 30,
+      "cefr": "A1",
+      "pool": 550,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 31,
+      "cefr": "A1",
+      "pool": 594,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 32,
+      "cefr": "A1",
+      "pool": 584,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 33,
+      "cefr": "A1",
+      "pool": 578,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 34,
+      "cefr": "A1",
+      "pool": 627,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 35,
+      "cefr": "A1",
+      "pool": 623,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 36,
+      "cefr": "A1",
+      "pool": 618,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 37,
+      "cefr": "A1",
+      "pool": 608,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 38,
+      "cefr": "A1",
+      "pool": 652,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 39,
+      "cefr": "A1",
+      "pool": 667,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 40,
+      "cefr": "A1",
+      "pool": 664,
+      "taskLabels": [
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 41,
+      "cefr": "A2",
+      "pool": 584,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 42,
+      "cefr": "A2",
+      "pool": 691,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 43,
+      "cefr": "A2",
+      "pool": 685,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 44,
+      "cefr": "A2",
+      "pool": 691,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 45,
+      "cefr": "A2",
+      "pool": 733,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 46,
+      "cefr": "A2",
+      "pool": 672,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 47,
+      "cefr": "A2",
+      "pool": 738,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 48,
+      "cefr": "A2",
+      "pool": 743,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 49,
+      "cefr": "A2",
+      "pool": 738,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 50,
+      "cefr": "A2",
+      "pool": 739,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 51,
+      "cefr": "A2",
+      "pool": 687,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 52,
+      "cefr": "A2",
+      "pool": 734,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 53,
+      "cefr": "A2",
+      "pool": 731,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 54,
+      "cefr": "A2",
+      "pool": 732,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 55,
+      "cefr": "A2",
+      "pool": 743,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 56,
+      "cefr": "A2",
+      "pool": 747,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 57,
+      "cefr": "A2",
+      "pool": 813,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 58,
+      "cefr": "A2",
+      "pool": 787,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 59,
+      "cefr": "A2",
+      "pool": 792,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 60,
+      "cefr": "A2",
+      "pool": 761,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 61,
+      "cefr": "A2",
+      "pool": 760,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 62,
+      "cefr": "A2",
+      "pool": 783,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 63,
+      "cefr": "A2",
+      "pool": 779,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 64,
+      "cefr": "A2",
+      "pool": 787,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 65,
+      "cefr": "A2",
+      "pool": 787,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 66,
+      "cefr": "A2",
+      "pool": 755,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 67,
+      "cefr": "A2",
+      "pool": 760,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 68,
+      "cefr": "A2",
+      "pool": 796,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 69,
+      "cefr": "A2",
+      "pool": 793,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 70,
+      "cefr": "A2",
+      "pool": 799,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 71,
+      "cefr": "A2",
+      "pool": 790,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 72,
+      "cefr": "A2",
+      "pool": 820,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 73,
+      "cefr": "A2",
+      "pool": 812,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 74,
+      "cefr": "A2",
+      "pool": 823,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 75,
+      "cefr": "A2",
+      "pool": 821,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 76,
+      "cefr": "A2",
+      "pool": 858,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 77,
+      "cefr": "A2",
+      "pool": 942,
+      "taskLabels": [
+        "A2",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 78,
+      "cefr": "A2",
+      "pool": 940,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 79,
+      "cefr": "A2",
+      "pool": 953,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 80,
+      "cefr": "A2",
+      "pool": 938,
+      "taskLabels": [
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 81,
+      "cefr": "B1",
+      "pool": 892,
+      "taskLabels": [
+        "B1",
+        "A2",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 82,
+      "cefr": "B1",
+      "pool": 971,
+      "taskLabels": [
+        "B1",
+        "A1",
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 83,
+      "cefr": "B1",
+      "pool": 971,
+      "taskLabels": [
+        "B1",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 84,
+      "cefr": "B1",
+      "pool": 987,
+      "taskLabels": [
+        "B1",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 85,
+      "cefr": "B1",
+      "pool": 998,
+      "taskLabels": [
+        "B1",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 86,
+      "cefr": "B1",
+      "pool": 952,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 87,
+      "cefr": "B1",
+      "pool": 1029,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 88,
+      "cefr": "B1",
+      "pool": 1013,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 89,
+      "cefr": "B1",
+      "pool": 1032,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 90,
+      "cefr": "B1",
+      "pool": 1011,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 91,
+      "cefr": "B1",
+      "pool": 1016,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 92,
+      "cefr": "B1",
+      "pool": 1031,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 93,
+      "cefr": "B1",
+      "pool": 1017,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 94,
+      "cefr": "B1",
+      "pool": 1016,
+      "taskLabels": [
+        "B1",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 95,
+      "cefr": "B1",
+      "pool": 1022,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 96,
+      "cefr": "B1",
+      "pool": 1039,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 97,
+      "cefr": "B1",
+      "pool": 1050,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 98,
+      "cefr": "B1",
+      "pool": 1042,
+      "taskLabels": [
+        "B1",
+        "A1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 99,
+      "cefr": "B1",
+      "pool": 1058,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 100,
+      "cefr": "B1",
+      "pool": 1050,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 101,
+      "cefr": "B1",
+      "pool": 1075,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 102,
+      "cefr": "B1",
+      "pool": 1094,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 103,
+      "cefr": "B1",
+      "pool": 1073,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 104,
+      "cefr": "B1",
+      "pool": 1098,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 105,
+      "cefr": "B1",
+      "pool": 1084,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 106,
+      "cefr": "B1",
+      "pool": 1088,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 107,
+      "cefr": "B1",
+      "pool": 1109,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 108,
+      "cefr": "B1",
+      "pool": 1096,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 109,
+      "cefr": "B1",
+      "pool": 1111,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 110,
+      "cefr": "B1",
+      "pool": 1093,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 111,
+      "cefr": "B1",
+      "pool": 1097,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 112,
+      "cefr": "B1",
+      "pool": 1112,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 113,
+      "cefr": "B1",
+      "pool": 1116,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 114,
+      "cefr": "B1",
+      "pool": 1116,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 115,
+      "cefr": "B1",
+      "pool": 1121,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 116,
+      "cefr": "B1",
+      "pool": 1126,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 117,
+      "cefr": "B1",
+      "pool": 1142,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 118,
+      "cefr": "B1",
+      "pool": 1135,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 119,
+      "cefr": "B1",
+      "pool": 1131,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 120,
+      "cefr": "B1",
+      "pool": 1121,
+      "taskLabels": [
+        "B1"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 121,
+      "cefr": "B2",
+      "pool": 1130,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 122,
+      "cefr": "B2",
+      "pool": 1140,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 123,
+      "cefr": "B2",
+      "pool": 1139,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 124,
+      "cefr": "B2",
+      "pool": 1149,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 125,
+      "cefr": "B2",
+      "pool": 1146,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 126,
+      "cefr": "B2",
+      "pool": 1150,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 127,
+      "cefr": "B2",
+      "pool": 1159,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 128,
+      "cefr": "B2",
+      "pool": 1164,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 129,
+      "cefr": "B2",
+      "pool": 1172,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 130,
+      "cefr": "B2",
+      "pool": 1170,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 131,
+      "cefr": "B2",
+      "pool": 1167,
+      "taskLabels": [
+        "B2",
+        "A2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 132,
+      "cefr": "B2",
+      "pool": 1186,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 133,
+      "cefr": "B2",
+      "pool": 1184,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 134,
+      "cefr": "B2",
+      "pool": 1187,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 135,
+      "cefr": "B2",
+      "pool": 1188,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 136,
+      "cefr": "B2",
+      "pool": 1213,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 137,
+      "cefr": "B2",
+      "pool": 1213,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 138,
+      "cefr": "B2",
+      "pool": 1215,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 139,
+      "cefr": "B2",
+      "pool": 1206,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 140,
+      "cefr": "B2",
+      "pool": 1215,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 141,
+      "cefr": "B2",
+      "pool": 1151,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 142,
+      "cefr": "B2",
+      "pool": 1208,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 143,
+      "cefr": "B2",
+      "pool": 1211,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 144,
+      "cefr": "B2",
+      "pool": 1217,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 145,
+      "cefr": "B2",
+      "pool": 1218,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 146,
+      "cefr": "B2",
+      "pool": 1230,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 147,
+      "cefr": "B2",
+      "pool": 1237,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 148,
+      "cefr": "B2",
+      "pool": 1247,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 149,
+      "cefr": "B2",
+      "pool": 1246,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 150,
+      "cefr": "B2",
+      "pool": 1256,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 151,
+      "cefr": "B2",
+      "pool": 1174,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 152,
+      "cefr": "B2",
+      "pool": 1202,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 153,
+      "cefr": "B2",
+      "pool": 1197,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 154,
+      "cefr": "B2",
+      "pool": 1221,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 155,
+      "cefr": "B2",
+      "pool": 1234,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 156,
+      "cefr": "B2",
+      "pool": 1269,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 157,
+      "cefr": "B2",
+      "pool": 1269,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 158,
+      "cefr": "B2",
+      "pool": 1269,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 159,
+      "cefr": "B2",
+      "pool": 1265,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    },
+    {
+      "level": 160,
+      "cefr": "B2",
+      "pool": 1268,
+      "taskLabels": [
+        "B2"
+      ],
+      "themes": 23
+    }
+  ],
+  "sessions": 11040,
+  "tasks": 30350,
+  "dialogPartners": 3426
+}

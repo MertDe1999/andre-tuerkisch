@@ -2017,6 +2017,7 @@
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
   <link rel="stylesheet" href="keyboard.css?v=20261021-buchstabenvarianten">
   <link rel="stylesheet" href="guided-learning.css?v=20261113-portions">
+  <link rel="stylesheet" href="interest-practice.css?v=20261113-practice">
 </head>
 
 <body>
@@ -2188,7 +2189,22 @@
   <section id="flashcards" class="view" aria-label="Satzbau">
     <div id="sentenceTopics" class="panel">
       <h2 class="section-title">Satzbau</h2>
+      <div id="practiceModes" class="practice-modes" role="group"></div>
       <div id="sentenceTopicList" class="sentence-topics"></div>
+    </div>
+    <div id="interestPractice" class="learn-mode">
+      <button id="practiceBack" class="learn-back" type="button">← Satzbau</button>
+      <div class="sentence-game-card">
+        <div id="practiceCaption" class="practice-caption"></div>
+        <h2 id="practicePrompt" tabindex="-1"></h2>
+        <p id="practiceStorage" role="status" hidden></p>
+        <div id="practiceBody"></div>
+        <p id="practiceFeedback" role="status" aria-live="polite"></p>
+        <button id="practiceKeep" class="practice-link" type="button" hidden>Ungeprüft behalten</button>
+        <div id="practiceActions"></div>
+      </div>
+      <div id="practiceKeyboard" class="custom-keyboard" hidden></div>
+      <div id="practiceAnswer" class="typing-answer" role="textbox" aria-label="Antwort" aria-multiline="true" tabindex="0" inputmode="none" hidden></div>
     </div>
     <div id="sentenceBuilder" class="learn-mode">
       <button id="sentenceBackButton" class="learn-back" onclick="leaveSentenceArea()">← Satzbau</button>
@@ -2278,6 +2294,7 @@
 <script src="lib/learning-path.js?v=20261009-guided"></script>
 <script src="lib/course-learning.js?v=20261005-interests"></script>
 <script src="lib/guided-learning.js?v=20261113-portions"></script>
+<script src="lib/interest-practice.js?v=20261113-practice"></script>
 <script src="lib/word-preparation.js?v=20261113-portions"></script>
 <script src="lib/motion.js?v=20261005-interests"></script>
 <script src="lib/app-keyboard.js?v=20261021-buchstabenvarianten"></script>
@@ -2564,6 +2581,7 @@
   }
 
   function openSentenceTest(theme){
+    if(window.SkillPractice && SkillPractice.mode !== 'build') return SkillPractice.open(theme);
     if(theme !== undefined) window.SentenceGame?.engine.selectTheme(theme);
     showView("flashcards", null);
     AndreMotion.cancel();
@@ -2603,6 +2621,7 @@
       AndreMotion.depart(exercise);
     }
     stopSentenceGame();
+    window.SkillPractice?.close();
     stopTypingGame();
     leaveQuiz();
     document.getElementById("sentenceBuilder").classList.remove("active");
@@ -3497,9 +3516,11 @@
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
 <script src="lib/dictionary.js?v=20261020-learnable"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="lib/sound.js?v=20261113-audit"></script>
-<script src="sentence-game.js?v=20261113-portions"></script>
+<script src="lib/sound.js?v=20261113-practice"></script>
+<script src="lib/speech-player.js?v=20261113-practice"></script>
+<script src="sentence-game.js?v=20261113-practice"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
 <script src="word-training.js?v=20261113-portions"></script>
+<script src="interest-practice.js?v=20261113-practice"></script>
 </body>
 </html>

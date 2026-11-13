@@ -22,7 +22,13 @@ Alle Lernstände und angefangenen Aufgaben bleiben im Browser. Es gibt keine Obe
 
 Ein kleines Notensymbol schaltet optionale Klänge, anschließend zusätzlich leise Musik und danach wieder alles aus. Anfangs ist der Ton aus; Musik pausiert im Hintergrund und endet beim Verlassen des Satzbaus.
 
-[Gesamtprüfung und nächste Verbesserungen](docs/kursaudit-2026-11-13.md) dokumentiert die Korrekturen, alle 160 Level und den Abgleich mit Kursquellen. Für einen vollständigen Sprachkurs fehlen insbesondere Hörverständnis, spontane Dialoge und freies Schreiben.
+[Gesamtprüfung und nächste Verbesserungen](docs/kursaudit-2026-11-13.md) dokumentiert die Korrekturen, alle 160 Level und den Abgleich mit Kursquellen. Der folgende Ausbau ergänzt erste eigene Hör-, Dialog- und Schreibübungen; spontane Gespräche und uneingeschränktes freies Schreiben bleiben Folgearbeit.
+
+## Mehr Abwechslung mit Andrés Interessen
+
+Über den Satzbau-Themen wechselt André zwischen Satzbau, Hören, Dialog und Schreiben. Hören und Dialog bieten kurze Runden mit bis zu drei Aufgaben. Schreiben sammelt je nach Stufe ein bis drei Sätze als persönliche Nachricht an Mert. Alle 23 Interessen verwenden bekannte Wörter und erlaubte Formen; neue Runden kombinieren den vorhandenen Wortschatz neu.
+
+Die zusätzlichen Übungen speichern eigene Nachweise und verändern den Kurslevel nicht. Audio-Ersatz mit sichtbarem Text zählt nicht als Hörleistung. Freie Formulierungen außerhalb des begrenzten lokalen Prüfkatalogs werden neutral behandelt und können ungeprüft gespeichert werden. Gemeinsame Tastatur, Darkmode und angefangene Aufgaben bleiben erhalten. [Ablauf, Grenzen und Prüfung](docs/hoeren-dialog-schreiben.md).
 
 ## Kleine Lernportionen
 
@@ -44,6 +50,7 @@ Kein Build und keine Paketinstallation nötig. Module und DOM-Adapter werden ohn
 node --test tests/*.test.cjs
 node tools/audit-guided-path.cjs
 node tools/audit-experience.cjs
+node tools/audit-interest-practice.cjs
 ```
 
 Die automatischen Prüfungen ersetzen weder eine echte Handybedienung noch eine unabhängige türkische Gesamtprüfung. Live-Tests führt auf Nutzerwunsch der Nutzer selbst durch.
