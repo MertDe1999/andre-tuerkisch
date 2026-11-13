@@ -2016,7 +2016,7 @@
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
   <link rel="stylesheet" href="keyboard.css?v=20261021-buchstabenvarianten">
-  <link rel="stylesheet" href="guided-learning.css?v=20261021-auto-next">
+  <link rel="stylesheet" href="guided-learning.css?v=20261113-audit">
 </head>
 
 <body>
@@ -2040,7 +2040,7 @@
         </div>
       </div>
 
-      <div class="profile-stats">
+      <div class="profile-stats"><span id="profileSoundSlot"></span>
         <div class="profile-chip level">
           <span class="profile-chip-label">Gelernt</span>
           <span id="learnedWordsValue" class="profile-chip-value">0 / 0</span>
@@ -2201,6 +2201,7 @@
             </div>
             <span id="sentenceTaskLabel" class="sentence-task-label">A1</span>
             <span id="sentenceModeLabel" class="sentence-mode-label"></span>
+            <span id="sentenceSoundSlot"></span>
           </div>
           <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
           <div class="sentence-prompt"><div id="sentencePromptDirection" class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div></div>
@@ -2261,21 +2262,21 @@
 <script src="data/lexicon.js?v=20261005-interests"></script>
 <script src="data/interests.js?v=20261005-interests"></script>
 <script src="data/words.js?v=20261005-interests"></script>
-<script src="lib/turkish.js?v=20261005-interests"></script>
+<script src="lib/turkish.js?v=20261113-audit"></script>
 <script src="lib/building-blocks.js?v=20261005-interests"></script>
 <script src="lib/curriculum.js?v=20261005-interests"></script>
 <script src="lib/grammar.js?v=20261005-interests"></script>
 <script src="lib/learning.js?v=20261005-interests"></script>
 <script src="data/course-data.js?v=20261005-interests"></script>
 <script src="lib/course.js?v=20261009-guided"></script>
-<script src="data/interest-references.js?v=20261005-interests"></script>
+<script src="data/interest-references.js?v=20261113-audit"></script>
 <script src="lib/interest-generator.js?v=20261005-interests"></script>
 <script src="lib/course-grammar.js?v=20261005-interests"></script>
 <script src="data/learning-packages.js?v=20261005-interests"></script>
 <script src="lib/course-progress.js?v=20261005-interests"></script>
 <script src="lib/learning-path.js?v=20261009-guided"></script>
 <script src="lib/course-learning.js?v=20261005-interests"></script>
-<script src="lib/guided-learning.js?v=20261009-guided"></script>
+<script src="lib/guided-learning.js?v=20261113-audit"></script>
 <script src="lib/word-preparation.js?v=20261020-choice-feedback"></script>
 <script src="lib/motion.js?v=20261005-interests"></script>
 <script src="lib/app-keyboard.js?v=20261021-buchstabenvarianten"></script>
@@ -3495,8 +3496,9 @@
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
 <script src="lib/dictionary.js?v=20261020-learnable"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="sentence-game.js?v=20261009-guided"></script>
+<script src="lib/sound.js?v=20261113-audit"></script>
+<script src="sentence-game.js?v=20261113-audit"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
-<script src="word-training.js?v=20261021-auto-next"></script>
+<script src="word-training.js?v=20261113-audit"></script>
 </body>
 </html>

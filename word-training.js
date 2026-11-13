@@ -19,7 +19,7 @@
   const queue=[{text:word.tr,lang:'tr-TR'},{text:word.de,lang:'de-DE'}];
   const next=()=>{if(!active||token!==session||current()!==cur||index===queue.length)return;
    const part=queue[index++],u=new root.SpeechSynthesisUtterance(part.text);u.lang=part.lang;u.rate=.82;const voice=synth.getVoices().find(v=>v.lang.toLowerCase().startsWith(part.lang.slice(0,2)));if(voice)u.voice=voice;
-   u.onend=()=>root.setTimeout(next,300);u.onerror=()=>{if(!active||token!==session)return;feedback('Audio nicht verfügbar.');};synth.speak(u);
+   u.onend=()=>root.setTimeout(next,300);u.onerror=()=>{if(!active||token!==session)return;feedback('Audio nicht verfügbar.');};try{synth.speak(u);}catch{u.onerror();}
   };next();
  }
  function next(){cancelAdvance();cancelSpeech();const raw=root.getUnlockProgress();let pending=false;for(const id of target()){const p=model.progress(id);if(p.tr&&p.de){raw[id]={toTurkish:true,toGerman:true};pending=true;}}if(pending&&!root.saveUnlockProgress(raw)){feedback(root.unlockStorageError);return;}model.next(target(),engine.unlocked());draw();root.refreshUnlockUI();}
