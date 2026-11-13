@@ -129,11 +129,18 @@
   }
   const reading=make('div','sentence-reading');reading.id='sentenceReading';reading.hidden=true;const readingAnswer=make('div','typing-answer empty','Antwort tippen …');readingAnswer.id='sentenceReadingAnswer';readingAnswer.tabIndex=0;readingAnswer.setAttribute('role','textbox');readingAnswer.setAttribute('aria-label','Deutsche Übersetzung');readingAnswer.setAttribute('aria-readonly','true');const readingKeyboard=make('div','custom-keyboard');readingKeyboard.id='sentenceReadingKeyboard';readingKeyboard.hidden=true;reading.append(readingAnswer);el('sentenceBuilder').append(readingKeyboard);el('sentenceGameActive').insertBefore(reading,el('sentenceFeedback'));
   const readingOptions=make('div','sentence-reading-options','');reading.append(readingOptions);
+  const stageBreak=el('sentenceStageBreak');stageBreak.hidden=true;
+  function showStageBreak(){const stage=engine.stageSummary();clearDrag();readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);el('sentenceGameActive').style.display='none';el('sentenceComplete').classList.remove('show');stageBreak.hidden=false;stageBreak.replaceChildren();
+    stageBreak.append(make('div','study-progress','Level '+engine.flow.level+' · Etappe '+stage.number),make('h2','','Etappe geschafft'),make('p','portion-detail',stage.correct+' von '+stage.done+' direkt richtig'));
+    const proceed=make('button','study-button primary','Nächste Etappe');proceed.type='button';proceed.addEventListener('click',()=>{if(running&&engine.continueStage())next();});
+    const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
+  }
   function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished||cur.readingMode==='choice')return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
   function topicProgress(){const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status&&x)status.textContent=engine.flow.finished?'›':(Number(x.tr)+Number(x.de))+' / 2';}}
   root.refreshSentenceTopics=topicProgress;
   function render(){
     root.updateProfileLevel();
+    if(!stageBreak.hidden)return;
     const cur=current(),t=task();if(!cur||!t)return;
     const sameTask=renderedTask===cur.id;
     const oldPrompt=!sameTask?AndreMotion.snapshot(el('sentencePrompt')):null;
@@ -146,7 +153,7 @@
     el('sentenceLevelBadge').hidden=false;
     el('sentenceTaskLabel').textContent=t.cefr+(t.register==='colloquial'?' · Alltag':'');
     el('sentenceTaskLabel').setAttribute('aria-label','Aufgabe '+t.cefr+', '+(t.register==='colloquial'?'Alltagssprache':'Standard'));
-    const round=engine.roundSummary();el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated&&!cur.finished?'Korrektur':cur.free?'Freies Üben':cur.kind==='intro'?'Einführung '+Math.min(2,engine.round().intro+(cur.finished?0:1))+' / 2':cur.practice?'Freies Üben':round.done<46?'Runde '+round.done+' / 46':'Formen festigen';
+    const stage=engine.stageSummary();el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated&&!cur.finished?'Korrektur':cur.free?'Freies Üben':cur.roundLevel!==engine.flow.level?'Runde beendet':cur.kind==='intro'?'Einführung '+Math.min(2,engine.round().intro+(cur.finished?0:1))+' / 2':cur.practice?'Freies Üben':'Etappe '+stage.number+' · '+stage.done+' / '+stage.total;
     el('sentenceModeLabel').title='Alle 23 Themen in beide Richtungen; 80 % direkt richtig und neue Formen dreimal je Richtung.';
     el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
     reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');const options=cur.direction==='de'?engine.readingChoices(cur):[];el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished&&!options.length);readingAnswer.hidden=options.length>0;readingOptions.hidden=!options.length;readingOptions.replaceChildren();for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished;choice.setAttribute('aria-pressed',String(cur.draft===text));choice.addEventListener('click',()=>{if(cur.finished)return;cur.draft=text;save();check(false);});readingOptions.append(choice);}
@@ -213,6 +220,8 @@
     if(!running)return;
 
     clearTimeout(advanceTimer);advanceTimer=null;selected=null;pendingCard=null;activeGroup=null;bankPage=0;
+    if(engine.wordsReady()&&engine.stageSummary().complete){showStageBreak();return;}
+    stageBreak.hidden=true;
     const cur=engine.next();
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);

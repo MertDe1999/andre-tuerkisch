@@ -24,6 +24,12 @@ Ein kleines Notensymbol schaltet optionale Klänge, anschließend zusätzlich le
 
 [Gesamtprüfung und nächste Verbesserungen](docs/kursaudit-2026-11-13.md) dokumentiert die Korrekturen, alle 160 Level und den Abgleich mit Kursquellen. Für einen vollständigen Sprachkurs fehlen insbesondere Hörverständnis, spontane Dialoge und freies Schreiben.
 
+## Kleine Lernportionen
+
+Die 24 Startwörter werden in sechs Portionen mit je vier Wörtern gelernt. Jede Portion enthält zuerst die Wortauswahl, dann beide Schreibrichtungen. Nach dem Abschluss kann André pausieren oder die nächste Portion starten. Auch spätere Wortpakete sind auf höchstens vier neue Wörter begrenzt.
+
+Satzbau zeigt Etappen mit höchstens sechs gewerteten Sätzen und einen festen Pausenpunkt. Offene Themen folgen innerhalb der Etappe automatisch; ausdrücklich wieder geöffnete fertige Themen bleiben freies Üben. Die Anforderungen gelten weiter für das gesamte Level. Entwürfe, Freischaltungen und Nachweise bleiben beim Pausieren erhalten. [Ablauf und Übernahme alter Lernstände](docs/kleine-lernportionen.md).
+
 ## Neue Wörter und Aufgaben
 
 564 Wörter/Namen, 23 Themen und persönliche Referenzen bilden die Grundlage. Der Generator kombiniert Rollen und Flexion zu neuen Aufgaben. Mit begrenztem Wortschatz wiederholen sich Kombinationen; der Aufgabenbestand ist nicht auf160 Sätze beschränkt. Neue Wörter brauchen stabile IDs, Wortarten, deutsche Flexionsdaten, türkische Besonderheiten und Themen/Rollen. Neue Wörter benötigen keine Bilddaten: Die Auswahl nutzt die deutsche Bedeutung als Text, anschließend bleiben beide Schreibübersetzungen Pflicht. Neue Wörter vergrößern abgeschlossene Pflichtpakete nicht nachträglich. Neue Varianten bereits eingeführter Regeln können weiter geübt und freigeschaltet werden.

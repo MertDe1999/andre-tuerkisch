@@ -2,8 +2,8 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const {app}=require('./helpers/app.cjs'),Prep=require('../lib/word-preparation'),W=require('../data/words');
 const Path=require('../lib/learning-path');
 
-test('new words show German text with Turkish choices and the whole choice group precedes typing',()=>{
- const a=app();a.run('openLearnMode("typing")');const group=a.json('SentenceGame.engine.missingWords().map(w=>w.id)');
+test('new words show German text with Turkish choices and the whole four-word portion precedes typing',()=>{
+ const a=app();a.run('openLearnMode("typing")');const group=a.json('WordTrainer.model.state.portion.ids');assert.equal(group.length,4);
  assert.doesNotMatch(a.el('wordStudy').textContent,/Aussprache|Sprechen|Selbst prüfen/);
  for(let i=0;i<group.length;i++){
   assert.equal(a.run('WordTrainer.model.state.current.phase'),'choice');assert.equal(a.el('wordStudy').querySelector('.study-prompt').textContent,a.run('AndreWords.byId[WordTrainer.model.state.current.id].de'));assert.equal(a.el('wordStudy').querySelector('.word-picture'),null);assert.doesNotMatch(a.el('wordStudy').textContent,/\p{Extended_Pictographic}/u);assert.equal(a.el('wordStudy').querySelector('.typing-answer'),null);assert.equal(a.el('wordStudy').querySelector('.study-audio'),null);

@@ -22,7 +22,8 @@
    u.onend=()=>root.setTimeout(next,300);u.onerror=()=>{if(!active||token!==session)return;feedback('Audio nicht verfügbar.');};try{synth.speak(u);}catch{u.onerror();}
   };next();
  }
- function next(){cancelAdvance();cancelSpeech();const raw=root.getUnlockProgress();let pending=false;for(const id of target()){const p=model.progress(id);if(p.tr&&p.de){raw[id]={toTurkish:true,toGerman:true};pending=true;}}if(pending&&!root.saveUnlockProgress(raw)){feedback(root.unlockStorageError);return;}model.next(target(),engine.unlocked());draw();root.refreshUnlockUI();}
+ function next(){cancelAdvance();cancelSpeech();const raw=root.getUnlockProgress();let pending=false;for(const id of target()){const p=model.progress(id);if(p.tr&&p.de){raw[id]={toTurkish:true,toGerman:true};pending=true;}}if(pending&&!root.saveUnlockProgress(raw)){feedback(root.unlockStorageError);return;}const portion=model.portion(target(),engine.unlocked(),engine.preparationLevel());model.next(portion?.ids||[],engine.unlocked());draw();root.refreshUnlockUI();}
+ function continuePortion(){if(!active)return;if(model.continuePortion(target(),engine.unlocked(),engine.preparationLevel()))next();}
  function unknown(){const cur=current();if(!active||!cur||cur.done||cur.reveal)return;model.skip();draw();if(cur.phase!=='typing'){feedback('');say();}}
  function type(key){const cur=current();if(!active||cur?.phase!=='typing'||cur.done||cur.reveal)return;AndreAnswerEditor.edit(cur,key,200);model.save();AndreAnswerEditor.draw(el('wordStudyAnswer'),cur,{animate:true});el('wordStudyAnswer').classList.toggle('empty',!cur.draft);feedback('');}
  function check(){const cur=current();if(!active||!cur||cur.done||cur.reveal||cur.phase!=='typing'||!cur.draft.trim())return;
@@ -36,12 +37,17 @@
   result.append(heading,make('p','study-result-answer',(correct?'':'Richtig ist: ')+word.tr+' = '+word.de));
   if(!correct)result.append(make('p','study-result-hint','Dieses Wort kommt noch einmal.'));
  }
- function draw(){const context=[current()?.id,current()?.phase,current()?.direction,current()?.done,current()?.reveal].join('|'),changed=context!==lastKey;lastKey=context;panel.replaceChildren();el('customKeyboard').style.display='none';const cur=current(),words=target();
+ function draw(){const context=[current()?.id,current()?.phase,current()?.direction,current()?.done,current()?.reveal].join('|'),changed=context!==lastKey;lastKey=context;panel.replaceChildren();el('customKeyboard').style.display='none';const cur=current(),portion=model.portionSummary(engine.unlocked()),words=portion?.ids||[];
   panel.classList.toggle('has-result',Boolean(cur&&(cur.done||cur.reveal)));
   if(cur&&(cur.done||cur.reveal))AndreKeyboard.cancel(el('customKeyboard'));
-  if(!cur){panel.append(make('h2','','Wörter bereit'),button('Zur Grammatik',()=>{close();root.showView('grammar',null);}));return;}
+  if(!cur){AndreKeyboard.cancel(el('customKeyboard'));panel.classList.add('portion-break');const more=target().length>0;
+   panel.append(make('div','study-progress',portion?'Portion '+portion.index+' / '+portion.total:''),make('h2','',more?'Portion geschafft':'Wörter bereit'));
+   if(portion)panel.append(make('p','portion-detail',portion.ids.length+' Wörter freigeschaltet'));
+   const proceed=button(more?'Nächste Portion':'Zur Grammatik',more?continuePortion:()=>{close();root.showView('grammar',null);},'study-button primary');panel.append(proceed,button('Für heute fertig',()=>root.backToLearnHome()));proceed.focus({preventScroll:true});return;}
+  panel.classList.remove('portion-break');
   const word=W.byId[cur.id],title={choice:'Wortauswahl',typing:cur.direction==='tr'?'Deutsch → Türkisch':'Türkisch → Deutsch'}[cur.phase];
-  panel.append(make('div','study-progress','Level '+engine.preparationLevel()+' · '+title));
+  panel.append(make('div','study-progress','Portion '+portion.index+' / '+portion.total+' · '+title));
+  const meter=make('progress','portion-progress');meter.max=words.length*3;meter.value=words.reduce((sum,id)=>{const p=model.progress(id);return sum+Number(p.choice)+Number(p.tr)+Number(p.de);},0);meter.setAttribute('aria-label','Fortschritt dieser Wortportion');panel.append(meter);
   if(cur.phase==='choice'){const prompt=make('div','study-prompt study-word',word.de);prompt.setAttribute('lang','de');panel.append(prompt);}
   if(cur.phase==='typing'){panel.append(make('div','study-prompt',cur.direction==='tr'?word.de:word.tr));const answer=make('div','typing-answer'+(!cur.draft?' empty':''),cur.draft||'Antwort tippen …');answer.id='wordStudyAnswer';answer.tabIndex=0;answer.setAttribute('role','textbox');answer.setAttribute('aria-readonly','true');panel.append(answer);answer._saveCaret=()=>model.save();AndreAnswerEditor.draw(answer,cur,{editable:!cur.done&&!cur.reveal});
    if(cur.reveal){const solution=make('div','study-solution incorrect');solution.setAttribute('role','status');solution.append(make('strong','study-result-title','Falsch'),make('span','study-language','Türkisch'),make('strong','',word.tr),make('span','study-language','Deutsch'),make('strong','',word.de));panel.append(solution,button('Anhören',say));}
@@ -63,7 +69,7 @@
  function open(){cancelSpeech();active=true;panel.hidden=false;const legacy=document.querySelector('#typingTrainer .typing-game-card');if(legacy)legacy.hidden=true;el('typingGameActive').style.display='none';el('typingComplete').classList.remove('show');
   const raw=root.getUnlockProgress();for(const id of target()){const p=model.progress(id),old=raw[id];if(old){p.tr||=old.toTurkish===true;p.de||=old.toGerman===true;}}next();}
  function close(){if(!active)return;cancelAdvance();cancelSpeech();active=false;panel.hidden=true;AndreKeyboard.cancel(el('customKeyboard'));el('customKeyboard').style.display='none';model.save();}
- root.startTypingGame=open;root.stopTypingGame=close;root.WordTrainer={open,close,next,type,check,unknown,say,model,get active(){return active;}};
+ root.startTypingGame=open;root.stopTypingGame=close;root.WordTrainer={open,close,next,continuePortion,type,check,unknown,say,model,get active(){return active;}};
  document.addEventListener('keydown',event=>{if(!active||current()?.phase!=='typing'||event.isComposing||event.ctrlKey||event.metaKey||event.altKey||event.target.closest?.('input,textarea,select,[contenteditable=true]'))return;if(['Enter',' '].includes(event.key)&&event.target.closest?.('button'))return;
   if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();type(event.key);}else if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check();}else if(event.key==='Backspace'){event.preventDefault();type('BACKSPACE');}else if(/^[\p{L}\p{N} '’-]$/u.test(event.key)){event.preventDefault();type(event.key);}});
  root.addEventListener('pagehide',close);
