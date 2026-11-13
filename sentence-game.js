@@ -28,13 +28,13 @@
     if(!fits(token,card)){message('Diese Endung passt hier nicht.');return;}
     const joining=animateJoin?AndreMotion.snapshot([...el('wordBank').children].find(n=>n.dataset.turkishBlock===card.text)):null;
     if(!B.apply(token,card)){joining?.remove();message('Diese Endung passt hier nicht.');return;}
-    pendingCard=null;selected=token.id;if(token.group)activeGroup=token.group;saveAndRender(token.id);message('');
+    root.AndreSound?.effect('click');pendingCard=null;selected=token.id;if(token.group)activeGroup=token.group;saveAndRender(token.id);message('');
     AndreMotion.land(joining,el('sentenceToken-'+token.id));
   }
   function moveToken(id,groupId,beforeId=null){
     if(!running||current()?.finished)return;
     const token=current().tokens.find(t=>t.id===id);if(!token)return;
-    token.group=groupId;selected=id;if(groupId)activeGroup=groupId;
+    root.AndreSound?.effect('click');token.group=groupId;selected=id;if(groupId)activeGroup=groupId;
     const items=current().tokens;items.splice(items.indexOf(token),1);
     const index=beforeId?items.findIndex(t=>t.id===beforeId):-1;
     items.splice(index<0?items.length:index,0,token);bankPage=0;
@@ -195,7 +195,7 @@
     const pager=el('sentenceBankPages');pager.replaceChildren();pager.hidden=pages===1||cur.finished;
     for(const [label,step] of [['‹',-1],['›',1]]){
       const button=make('button','sentence-icon',label);button.type='button';button.setAttribute('aria-label',step<0?'Vorherige Wörter':'Weitere Wörter');button.disabled=step<0?bankPage===0:bankPage===pages-1;
-      button.addEventListener('click',()=>{bankPage+=step;render();el('sentenceBankPages').children[step<0?0:2]?.focus({preventScroll:true});});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
+      button.addEventListener('click',()=>{root.AndreSound?.effect('page');bankPage+=step;render();el('sentenceBankPages').children[step<0?0:2]?.focus({preventScroll:true});});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
     }
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
     el('checkSentenceButton').hidden=cur.finished||cur.direction==='de';el('sentenceUnknownButton').hidden=cur.finished||(cur.direction==='de'&&!options.length);
@@ -244,7 +244,7 @@
     if(result.ignored)return;
     render();
     if(result.correct){
-      message(task().answer,'ok');root.AndreSound?.effect(result.delta>0?'level':'correct');
+      message(task().answer,'ok');root.AndreSound?.effect(result.transition?.pass||result.delta>0?'level':'correct');
       AndreMotion.feedback(el('answerZone'),true);
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);

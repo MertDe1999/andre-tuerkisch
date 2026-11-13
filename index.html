@@ -2016,7 +2016,7 @@
   <link rel="stylesheet" href="grammar-course.css?v=20261005-einstieg">
   <link rel="stylesheet" href="motion.css?v=20261005-reference-keyboard">
   <link rel="stylesheet" href="keyboard.css?v=20261021-buchstabenvarianten">
-  <link rel="stylesheet" href="guided-learning.css?v=20261113-portions">
+  <link rel="stylesheet" href="guided-learning.css?v=20261113-feedback">
   <link rel="stylesheet" href="interest-practice.css?v=20261113-practice">
 </head>
 
@@ -2296,8 +2296,8 @@
 <script src="lib/guided-learning.js?v=20261113-portions"></script>
 <script src="lib/interest-practice.js?v=20261113-practice"></script>
 <script src="lib/word-preparation.js?v=20261113-portions"></script>
-<script src="lib/motion.js?v=20261005-interests"></script>
-<script src="lib/app-keyboard.js?v=20261021-buchstabenvarianten"></script>
+<script src="lib/motion.js?v=20261113-feedback"></script>
+<script src="lib/app-keyboard.js?v=20261113-feedback"></script>
 <script src="lib/answer-editor.js?v=20261009-guided"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
@@ -3191,6 +3191,7 @@
   }
 
   function nextCard(){
+    window.AndreSound?.effect("page");
     return AndreMotion.change(document.getElementById("quizCard"), nextCardNow);
   }
 
@@ -3256,6 +3257,7 @@
       return;
     }
 
+    window.AndreSound?.effect("page");
     cardEl.classList.add("revealed");
     cardEl.setAttribute("aria-expanded", "true");
     AndreMotion.enter(cardEl.querySelector(".quiz-answer"));
@@ -3469,10 +3471,10 @@
 
   function vibrateButtonPress(event){
     const button = event.target.closest("button");
-    if(!button || button.disabled) return;
+    if(!button || button.disabled || button.closest(".custom-keyboard")) return;
 
     if(typeof navigator.vibrate === "function"){
-      navigator.vibrate(button.classList.contains("key") ? 8 : 14);
+      try{navigator.vibrate(10);}catch{}
     }
   }
 
@@ -3500,6 +3502,7 @@
 
   function handleAppClick(event){
     vibrateButtonPress(event);
+    window.AndreSound?.interact(event.target);
 
     // Browser erlauben Fullscreen erst nach einer echten Nutzerinteraktion.
     // Dadurch startet die App beim ersten Tippen im Vollbild und kehrt
@@ -3516,11 +3519,11 @@
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
 <script src="lib/dictionary.js?v=20261020-learnable"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="lib/sound.js?v=20261113-practice"></script>
+<script src="lib/sound.js?v=20261113-feedback"></script>
 <script src="lib/speech-player.js?v=20261113-practice"></script>
-<script src="sentence-game.js?v=20261113-practice"></script>
+<script src="sentence-game.js?v=20261113-feedback"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
-<script src="word-training.js?v=20261113-portions"></script>
+<script src="word-training.js?v=20261113-feedback"></script>
 <script src="interest-practice.js?v=20261113-practice"></script>
 </body>
 </html>
