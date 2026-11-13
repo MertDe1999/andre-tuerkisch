@@ -15,7 +15,7 @@
   const fits=(token,card)=>B.fits(token,card);
   function selectTarget(card){
     const cur=current();
-    return cur.tokens.find(t=>t.id===selected&&fits(t,card))||cur.tokens.filter(t=>t.group===activeGroup&&fits(t,card)).at(-1);
+    const chosen=cur.tokens.find(t=>t.id===selected&&fits(t,card));if(chosen)return chosen;const candidates=cur.tokens.filter(t=>t.group===activeGroup&&fits(t,card));return candidates.length===1?candidates[0]:null;
   }
   function save(){return engine.save();}
   function saveAndRender(focusId){save();render();if(focusId)el('sentenceToken-'+focusId)?.focus({preventScroll:true});}
@@ -128,7 +128,8 @@
     button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',()=>{if(drag?.button===button)clearDrag();});
   }
   const reading=make('div','sentence-reading');reading.id='sentenceReading';reading.hidden=true;const readingAnswer=make('div','typing-answer empty','Antwort tippen …');readingAnswer.id='sentenceReadingAnswer';readingAnswer.tabIndex=0;readingAnswer.setAttribute('role','textbox');readingAnswer.setAttribute('aria-label','Deutsche Übersetzung');readingAnswer.setAttribute('aria-readonly','true');const readingKeyboard=make('div','custom-keyboard');readingKeyboard.id='sentenceReadingKeyboard';readingKeyboard.hidden=true;reading.append(readingAnswer);el('sentenceBuilder').append(readingKeyboard);el('sentenceGameActive').insertBefore(reading,el('sentenceFeedback'));
-  function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
+  const readingOptions=make('div','sentence-reading-options','');reading.append(readingOptions);
+  function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished||cur.readingMode==='choice')return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
   function topicProgress(){const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status&&x)status.textContent=engine.flow.finished?'›':(Number(x.tr)+Number(x.de))+' / 2';}}
   root.refreshSentenceTopics=topicProgress;
   function render(){
@@ -148,8 +149,8 @@
     const round=engine.roundSummary();el('sentenceModeLabel').textContent=cur.assisted?'Mit Hilfe':cur.rated&&!cur.finished?'Korrektur':cur.free?'Freies Üben':cur.kind==='intro'?'Einführung '+Math.min(2,engine.round().intro+(cur.finished?0:1))+' / 2':cur.practice?'Freies Üben':round.done<46?'Runde '+round.done+' / 46':'Formen festigen';
     el('sentenceModeLabel').title='Alle 23 Themen in beide Richtungen; 80 % direkt richtig und neue Formen dreimal je Richtung.';
     el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
-    reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished);
-    if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
+    reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');const options=cur.direction==='de'?engine.readingChoices(cur):[];el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished&&!options.length);readingAnswer.hidden=options.length>0;readingOptions.hidden=!options.length;readingOptions.replaceChildren();for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished;choice.setAttribute('aria-pressed',String(cur.draft===text));choice.addEventListener('click',()=>{if(cur.finished)return;cur.draft=text;save();check(false);});readingOptions.append(choice);}
+    if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished||options.length>0;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
     topicProgress();
     const zone=el('answerZone');zone.replaceChildren();
     const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
@@ -167,7 +168,7 @@
     const bank=el('wordBank'),cards=allowedCards().flatMap(card=>Array(card.count).fill(card)),words=cur.tokens.filter(t=>!t.group);
     // Keep the word being inflected visible while paging through further endings.
     const anchor=words.find(t=>t.id===selected),remaining=words.filter(t=>t!==anchor),items=[];
-    const wordOrder=B.shuffle(remaining,(()=>{let seed=cur.bankSeed||cur.id||1;return()=>((seed=seed*16807%2147483647)-1)/2147483646;})());
+    const wordOrder=B.shuffle(cur.tokens,(()=>{let seed=cur.bankSeed||cur.id||1;return()=>((seed=seed*16807%2147483647)-1)/2147483646;})()).filter(t=>!t.group&&t!==anchor);
     for(let i=0;i<Math.max(wordOrder.length,cards.length);i++){if(wordOrder[i])items.push({token:wordOrder[i]});if(cards[i])items.push({card:cards[i]});}
     bank.parentElement.hidden=cur.finished||cur.direction==='de';
     const short=root.matchMedia('(max-height:700px)').matches,height=bank.getBoundingClientRect().height;
@@ -190,7 +191,7 @@
       button.addEventListener('click',()=>{bankPage+=step;render();el('sentenceBankPages').children[step<0?0:2]?.focus({preventScroll:true});});pager.append(button);if(step<0)pager.append(make('span','',String(bankPage+1)+' / '+pages));
     }
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
-    el('checkSentenceButton').hidden=cur.finished||cur.direction==='de';el('sentenceUnknownButton').hidden=cur.finished||cur.direction==='de';
+    el('checkSentenceButton').hidden=cur.finished||cur.direction==='de';el('sentenceUnknownButton').hidden=cur.finished||(cur.direction==='de'&&!options.length);
     el('sentenceNextButton').hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=engine.storageError;
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
@@ -201,11 +202,11 @@
     }
   }
   function start(){
-    stop();running=true;sentenceGameRunning=true;
+    stop();running=true;sentenceGameRunning=true;root.AndreSound?.session(true);
     next();
   }
   function stop(){
-    readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
+    readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;root.AndreSound?.session(false);clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
     if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
@@ -221,8 +222,8 @@
       const button=el('sentenceUnlockNeededButton');button.textContent='Benötigte Wörter freischalten';button.onclick=()=>openTypingFromFloating();
       return;
     }
-    message(cur.attempts?'Korrigiere weiter.':'');render();
-    (cur.direction==='de'?readingAnswer:el('sentencePrompt')).focus({preventScroll:true});
+    message(cur.finished?(cur.direction==='de'?cur.task.de:cur.task.answer):cur.attempts?'Korrigiere weiter.':'');render();
+    (cur.finished?el('sentenceNextButton'):cur.direction==='de'?(readingOptions.hidden?readingAnswer:readingOptions.children[0]):el('sentencePrompt')).focus({preventScroll:true});
     const needed=engine.missingWords();
     if(cur.kind!=='current'&&needed.length&&C.bandAt(engine.state.level).start>1)message('Wiederholung · neue Wörter im Worttrainer freischalten.');
   }
@@ -234,17 +235,17 @@
     if(result.ignored)return;
     render();
     if(result.correct){
-      message('Richtig!','ok');
+      message(task().answer,'ok');root.AndreSound?.effect(result.delta>0?'level':'correct');
       AndreMotion.feedback(el('answerZone'),true);
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
-      const duration=milestone?celebrateCorrectAnswer():800;
-      advanceTimer=setTimeout(()=>{if(running)next();},Math.max(1000,duration));
+      if(milestone)celebrateCorrectAnswer();
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
       if(unknown){message('Lösung: '+(current().direction==='de'?task().de:task().answer)+'. Weiter zum nächsten Satz.','bad');return;}
+      root.AndreSound?.effect('retry');
       const issue=result.issue;
-      const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:'Prüfe die Endungen.'};
+      const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:current().direction==='de'?'Prüfe die Bedeutung.':'Prüfe die Endungen.'};
       message((hints[issue?.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
       AndreMotion.feedback(el('answerZone'),false);
     }

@@ -29,3 +29,9 @@ learning-path definiert die eingefrorenen Schritte. guided-learning erweitert de
 Der Generator verwendet zweisprachige Satzbäume, Wortrollen und Morphologie. Bei knappen Pflichtformen erweitern geprüfte lexikalische Ersetzungen und Anreden wie „Mert, …“ die verfügbaren Anwendungen. Grammatikbedarfe unveränderter Aufgaben werden gecacht. Quellen für Wörter und persönliche Themen bleiben data/words, lexicon, interests und interest-references; neue Wort-IDs erweitern freiwillige Übungen, nicht rückwirkend den Pflichtweg.
 
 Prüfungen: Modelle, vollständige Runden,160 Schritte/alle23 Themen, konkrete Formen, Migration, Erstwertung, Tastatur/Gesten, simulierte Audioereignisse und vollständiges Wörterlernen ohne Mikrofon-API. Keine Live-App- oder Handytests durch Codex. Darstellung auf dem Handy, Stimmen und unabhängige Sprachabnahme bleiben externe Prüfungen.
+
+## Ergänzung vom 13.11.2026
+
+Neue deutsche Satzaufgaben nutzen überwiegend Bedeutungsauswahl und regelmäßig die bisherige schriftliche Eingabe. Alte Schreibentwürfe bleiben erhalten. Erfolge durch Auswahl sind rezeptive Nachweise; die türkische Richtung bleibt aktiver Satzbau. Runde, Quoten und der aktuelle Worttrainer (Textauswahl, dann beide Schreibrichtungen mit automatischer Fortsetzung) bleiben erhalten. Fertige Satzbauaufgaben wechseln erst nach Weiter. Optionale Klänge/Musik speichern ihren Modus unter andreSoundModeV1, beginnen nicht beim Laden und pausieren im Hintergrund.
+
+Die Prüfung hat konkrete Form- und Zuordnungsfehler korrigiert. Kurslücken, lange Einstiegsgruppen, der zu breite Automatismus für Eigennamen und Empfehlungen zu allen Abschnitten sind im [Kursaudit](kursaudit-2026-11-13.md) dokumentiert. Frühere Angaben, jede deutsche Satzaufgabe müsse geschrieben werden, sind damit überholt.

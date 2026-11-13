@@ -125,7 +125,7 @@ test('an open picker replaces the optional preview and both cancel without typin
 
 test('sentence translation accepts accented names and Turkish letters and saves them as a draft',()=>{
  const a=app();require('./helpers/progress.cjs').learnTo(a,1);
- a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.render()');
+ a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.current.readingMode="writing";SentenceGame.render()');
  const keyboard=a.el('sentenceReadingKeyboard'),before=a.json('SentenceGame.engine.grammar.state.unlocked');
  key(keyboard,'shift').click();letter(keyboard,'a').click();letter(keyboard,'n').click();letter(keyboard,'d').click();letter(keyboard,'r').click();
  select(a,keyboard,'e','é');key(keyboard,'space').click();

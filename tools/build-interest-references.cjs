@@ -26,6 +26,9 @@ for(const pair of pairs){const tokens=normalize(pair.tr).split(/\s+/),slots=[];l
   // Explicit semantic decisions for homographs in this authored collection.
   if(text==='ben')candidates=candidates.filter(s=>W.byId[s.lemma].type===([17].includes(pair.level)?'noun':'pronoun'));
   if(/^ben[']/.test(text))candidates=candidates.filter(s=>W.byId[s.lemma].properName);
+  // These references use names as objects/possessors, never "my Mert".
+  // Ben'i is accusative and Mert'in genitive, not homographic possession.
+  candidates=candidates.filter(s=>!W.byId[s.lemma].properName||!s.features.poss);
   if(text==='erkeğin'&&[133,134].includes(pair.level))candidates=candidates.filter(s=>s.features.case==='genitive'&&!s.features.poss);
   if(text==='gözlerini'&&pair.level===143)candidates=candidates.filter(s=>s.features.poss==='sen'&&s.features.plural&&s.features.case==='accusative');
   if(text==='gözleri'&&[34,134].includes(pair.level))candidates=candidates.filter(s=>s.features.poss==='o'&&s.features.plural);
