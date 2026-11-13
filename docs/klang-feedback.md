@@ -1,5 +1,7 @@
 # Klang und Tastaturfeedback · QA53 · 13.11.2026
 
+> Historischer QA53-Stand. QA54 ersetzt die anfängliche Stummschaltung durch standardmäßig eingeschaltete Effekte und automatische Wort-Aussprache; siehe [aktueller Ablauf](wort-aussprache.md).
+
 Der Lautsprecher zeigt jetzt Ton aus, Ton an oder Ton + Musik als Symbol und knappe Beschriftung. Antippen schaltet weiter. Der vorhandene gespeicherte Tonmodus bleibt erhalten; neue Sitzungen beginnen weiterhin stumm. „Ton an“ aktiviert die Interaktionsklänge, die dritte Einstellung zusätzlich die bestehende Musik im Satzbau. Ausdrücklich angeforderte Sprachbeispiele bleiben unabhängig davon nutzbar.
 
 Kurze synthetische Klänge begleiten Buttons, Filter, Tastatur, gesetzte Bausteine und Rücknahme. Ein leises gefiltertes Rauschen begleitet Ansichts- und Bankseitenwechsel sowie Karteikarten. Richtig/falsch unterscheiden sich, ein bestandenes Level bekommt einen kurzen aufsteigenden Klang, einschließlich Level160. Allgemeine Klicks werden unterdrückt, wenn dieselbe Interaktion bereits eine speziellere Rückmeldung ausgelöst hat. Keine heruntergeladenen oder fremden Soundaufnahmen.

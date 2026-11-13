@@ -27,7 +27,7 @@ test('a wrong choice shows selected and correct answers even without audio and n
 test('an audio playback error cannot replace the visible wrong-answer result',()=>{
  const a=app();a.run(`window.utterances=[];window.speechSynthesis={getVoices:()=>[],speak:u=>utterances.push(u),cancel(){}};window.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};openLearnMode('typing');`);
  const id=a.run('WordTrainer.model.state.current.id');options(a).find(b=>b.dataset.wordId!==id).click();
- a.run('utterances[0].onerror()');assert.equal(a.el('wordStudy').querySelector('.study-result').querySelector('strong').textContent,'Falsch');assert.match(a.el('wordStudyFeedback').textContent,/Audio nicht verfügbar/);assert.ok(options(a).some(b=>b.classList.contains('is-incorrect')));
+ a.advance(180);a.run('utterances[0].onerror()');assert.equal(a.el('wordStudy').querySelector('.study-result').querySelector('strong').textContent,'Falsch');assert.match(a.el('wordStudyFeedback').textContent,/Audio nicht verfügbar/);assert.ok(options(a).some(b=>b.classList.contains('is-incorrect')));
 });
 
 test('leaving cancels automatic progression and stale callbacks cannot advance a later answer',()=>{
