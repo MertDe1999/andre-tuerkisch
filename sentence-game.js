@@ -136,7 +136,7 @@
     const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
   }
   function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished||cur.readingMode==='choice')return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
-  function topicProgress(){const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status&&x)status.textContent=engine.flow.finished?'›':(Number(x.tr)+Number(x.de))+' / 2';}}
+  function topicProgress(){if(root.SkillPractice&&root.SkillPractice.mode!=='build'){root.SkillPractice.refreshTopics();return;}const summary=engine.roundSummary();for(const b of el('sentenceTopicList').children){const x=summary.topics.find(t=>t.id===b.dataset.sentenceTopic);const status=b.querySelector('.sentence-topic-arrow');if(status)status.textContent=x&&!engine.flow.finished?(Number(x.tr)+Number(x.de))+' / 2':'›';}}
   root.refreshSentenceTopics=topicProgress;
   function render(){
     root.updateProfileLevel();
