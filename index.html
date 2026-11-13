@@ -739,6 +739,16 @@
       overflow:hidden;
     }
 
+    .word-listen{width:44px;height:44px;display:grid;place-items:center;padding:10px;border:0;border-radius:50%;color:var(--text);background:rgba(128,128,128,.12);cursor:pointer;touch-action:manipulation;transition:background 120ms ease,transform 120ms ease}
+    .word-listen[hidden]{display:none}
+    .word-listen svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .word-listen.is-playing{background:rgba(128,128,128,.25)}
+    .word-listen:active{transform:scale(.94)}
+    .word-listen:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+    .word-audio-status{display:block;margin-top:4px;font-size:.76rem;color:var(--muted)}
+    .word-row .word-note{text-align:left;margin-top:4px}
+    @media(prefers-reduced-motion:reduce){.word-listen{transition:none}.word-listen:active{transform:none}}
+
     .word-row.locked > *{
       filter:blur(6px);
       opacity:.42;
@@ -3517,13 +3527,13 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
-<script src="lib/dictionary.js?v=20261020-learnable"></script>
+<script src="lib/dictionary.js?v=20261113-word-audio"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="lib/sound.js?v=20261113-feedback"></script>
-<script src="lib/speech-player.js?v=20261113-practice"></script>
+<script src="lib/sound.js?v=20261113-word-audio"></script>
+<script src="lib/speech-player.js?v=20261113-word-audio"></script>
 <script src="sentence-game.js?v=20261113-feedback"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
-<script src="word-training.js?v=20261113-feedback"></script>
+<script src="word-training.js?v=20261113-word-audio"></script>
 <script src="interest-practice.js?v=20261113-practice"></script>
 </body>
 </html>

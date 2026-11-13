@@ -35,7 +35,7 @@ test('reading buttons replace the keyboard, allow correction, and then wait for 
  assert.ok(options.children.every(b=>b.disabled));assert.equal(a.el('sentenceNextButton').hidden,false);const id=a.run('SentenceGame.current.id');a.advance(60000);assert.equal(a.run('SentenceGame.current.id'),id);
 });
 test('a thrown speech-output error does not block the text word trainer or grant progress',()=>{
- const a=app();a.run('window.speechSynthesis={cancel(){},getVoices(){return [];},speak(){throw Error("Audio unavailable");}};window.SpeechSynthesisUtterance=class{};openLearnMode("typing");WordTrainer.unknown()');
+ const a=app();a.run('window.speechSynthesis={cancel(){},getVoices(){return [];},speak(){throw Error("Audio unavailable");}};window.SpeechSynthesisUtterance=class{};openLearnMode("typing");WordTrainer.unknown()');a.advance(180);
  assert.equal(a.run('WordTrainer.model.state.current.phase'),'choice');assert.equal(a.run('WordTrainer.model.progress(WordTrainer.model.state.current.id).choice'),false);assert.match(a.el('wordStudyFeedback').textContent,/Audio nicht verfügbar/);a.advance(2000);assert.equal(a.run('WordTrainer.model.state.current.done'),false);
 });
 test('a correct built sentence remains until Weiter, even after a minute',()=>{
@@ -43,8 +43,8 @@ test('a correct built sentence remains until Weiter, even after a minute',()=>{
  const id=a.run('SentenceGame.current.id');assert.equal(a.run('SentenceGame.current.finished'),true);assert.equal(a.el('sentenceNextButton').hidden,false);a.advance(60000);assert.equal(a.run('SentenceGame.current.id'),id);
  a.run('SentenceGame.next()');assert.notEqual(a.run('SentenceGame.current.id'),id);
 });
-test('audio is opt-in, missing audio APIs are harmless, and preference persists',()=>{
- const a=app();assert.equal(a.run('AndreSound.mode'),0);a.el('soundToggle').click();assert.equal(a.run('AndreSound.mode'),1);a.el('soundToggle').click();assert.equal(a.run('AndreSound.mode'),2);
+test('sound starts enabled, music remains optional, and preference persists',()=>{
+ const a=app();assert.equal(a.run('AndreSound.mode'),1);a.el('soundToggle').click();assert.equal(a.run('AndreSound.mode'),2);
  const restored=app({storage:a.storage});assert.equal(restored.run('AndreSound.mode'),2);restored.run('AndreSound.session(true)');assert.equal(restored.run('typeof window.AudioContext'),'undefined');a.el('soundToggle').click();assert.equal(a.run('AndreSound.mode'),0);
 });
 test('music stops when hidden and on leaving, and does not start on load',()=>{
