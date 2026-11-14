@@ -3,6 +3,7 @@
   'use strict';
   const W=AndreWords,B=TurkishBlocks,C=AndreCourse,L=AndreCourseLearning,G=AndreCourseGrammar;
   const engine=new L.Engine();
+  const duel=root.AndreDuelView.create(engine);
   let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0,renderedTask=null,landingToken=null;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
@@ -133,6 +134,7 @@
   function showStageBreak(){const stage=engine.stageSummary();clearDrag();readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);el('sentenceGameActive').style.display='none';el('sentenceComplete').classList.remove('show');stageBreak.hidden=false;stageBreak.replaceChildren();
     stageBreak.append(make('div','study-progress','Level '+engine.flow.level+' · Etappe '+stage.number),make('h2','','Etappe geschafft'),make('p','portion-detail',stage.correct+' von '+stage.done+' direkt richtig'));
     const proceed=make('button','study-button primary','Nächste Etappe');proceed.type='button';proceed.addEventListener('click',()=>{if(running&&engine.continueStage())next();});
+    duel.checkpoint(stageBreak);
     const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
   }
   function typeReading(key){const cur=current();if(!running||cur?.direction!=='de'||cur.finished||cur.readingMode==='choice')return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
@@ -158,6 +160,7 @@
     el('sentencePrompt').textContent=cur.direction==='de'?t.answer:t.de;el('sentencePromptDirection').textContent=cur.direction==='de'?'Türkisch → Deutsch':'Deutsch → Türkisch';
     reading.hidden=cur.direction!=='de';el('sentenceGameActive').classList.toggle('reading-mode',cur.direction==='de');const options=cur.direction==='de'?engine.readingChoices(cur):[];el('sentenceGameActive').classList.toggle('reading-writing',cur.direction==='de'&&!cur.finished&&!options.length);readingAnswer.hidden=options.length>0;readingOptions.hidden=!options.length;readingOptions.replaceChildren();for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished;choice.setAttribute('aria-pressed',String(cur.draft===text));choice.addEventListener('click',()=>{if(cur.finished)return;cur.draft=text;save();check(false);});readingOptions.append(choice);}
     if(cur.direction==='de'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished||options.length>0;root.renderAppKeyboard('de',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
+    duel.render(el('sentenceGameActive'));
     topicProgress();
     const zone=el('answerZone');zone.replaceChildren();
     const tabs=make('div','sentence-group-tabs','');tabs.hidden=t.groups.length===1;
@@ -200,7 +203,7 @@
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
     el('checkSentenceButton').hidden=cur.finished||cur.direction==='de';el('sentenceUnknownButton').hidden=cur.finished||(cur.direction==='de'&&!options.length);
     el('sentenceNextButton').hidden=!cur.finished;
-    el('sentenceStorageWarning').textContent=engine.storageError;
+    el('sentenceStorageWarning').textContent=[engine.storageError,duel.model.storageError].filter(Boolean).join(' ');
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
     AndreMotion.cards(before,[...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')].filter(node=>node.dataset.modernToken!==landingToken));
     if(!sameTask){
@@ -213,7 +216,7 @@
     next();
   }
   function stop(){
-    readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;root.AndreSound?.session(false);clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
+    duel.hide();readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;root.AndreSound?.session(false);clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
     if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
@@ -226,7 +229,7 @@
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
-      document.querySelector('#sentenceComplete h2').textContent='Noch keine Wörter freigeschaltet';
+      duel.hide();document.querySelector('#sentenceComplete h2').textContent='Noch keine Wörter freigeschaltet';
       document.querySelector('#sentenceComplete p').textContent='Schalte zuerst Wörter frei, damit sie hier erscheinen';
       const button=el('sentenceUnlockNeededButton');button.textContent='Benötigte Wörter freischalten';button.onclick=()=>openTypingFromFloating();
       return;
@@ -240,23 +243,24 @@
     if(!running||!current()||current().finished)return;
     const previousSection=engine.state.opened;
     const previousHighest=engine.state.highestLevel;
+    const duelBefore=duel.capture();
     const result=engine.check({unknown,answer:current().draft});
     if(result.ignored)return;
-    render();
+    const cue=duel.record(duelBefore,result,{unknown});render();duel.animate(cue);
+    const sounds={hit:'duelHit',assist:'duelHit',win:'duelWin',hurt:'duelHurt',help:'duelHelp'};
+    root.AndreSound?.effect(result.transition?.pass||result.delta>0?'level':sounds[cue?.action]||(result.correct?'correct':'retry'));
     if(result.correct){
-      message(task().answer,'ok');root.AndreSound?.effect(result.transition?.pass||result.delta>0?'level':'correct');
-      AndreMotion.feedback(el('answerZone'),true);
+      message(task().answer,'ok');
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
       if(milestone)celebrateCorrectAnswer();
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
       if(unknown){message('Lösung: '+(current().direction==='de'?task().de:task().answer)+'. Weiter zum nächsten Satz.','bad');return;}
-      root.AndreSound?.effect('retry');
       const issue=result.issue;
       const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:current().direction==='de'?'Prüfe die Bedeutung.':'Prüfe die Endungen.'};
       message((hints[issue?.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
-      AndreMotion.feedback(el('answerZone'),false);
+      // Error motion belongs to the arena; the answer stays still.
     }
   }
   function reset(){
@@ -270,7 +274,7 @@
   }
   root.leaveSentenceArea=()=>root.closeSentenceTest();
   root.startSentenceGame=start;root.stopSentenceGame=stop;root.nextSentence=next;root.checkSentence=()=>check(false);root.resetSentence=reset;
-  root.SentenceGame={engine,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,typeReading,topicProgress,get training(){return false;},get current(){return current();},get task(){return task();}};
+  root.SentenceGame={engine,duel,start,stop,next,render,check,moveToken,apply,reset,allowedCards,removeSelected,typeReading,topicProgress,get training(){return false;},get current(){return current();},get task(){return task();}};
   const topicList=el('sentenceTopicList');
   const mixed=make('button','sentence-topic test','');mixed.id='sentenceTestButton';mixed.type='button';
   mixed.append(make('span','','Alles gemischt'),make('span','sentence-topic-arrow','›'));
