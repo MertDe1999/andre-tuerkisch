@@ -1,6 +1,6 @@
 # Duell mit André und Ben
 
-Seit dem Auftrag vom 14.11.2026 begleitet eine kompakte Arena den bestehenden Satzbau. André hat Locken, grüne Augen und ein Tanktop; Ben ist ein stilisierter Hund an seiner Seite. Vier eigene Vektorfiguren wechseln als Gegner: Matcha-Blob, Protein-Pudding, Tintenflummi und Sofa-Geist. Farben folgen dem bestehenden Hell-/Darkmode. Seit dem ergänzenden Auftrag begleitet dieselbe Arena alle vier automatisch wechselnden Aufgabenarten; siehe [automatische Duellrunde](automatische-duellrunde.md).
+Seit dem Auftrag vom 14.11.2026 begleitet eine kompakte Arena den bestehenden Satzbau. André hat Locken, grüne Augen und ein Tanktop; Ben ist nach dem vom Nutzer bereitgestellten Foto gestaltet: dunkelgraues wuscheliges Fell, dunkle Schlappohren, braune Augen und beige Abzeichen an Brauen, Schnauze und Pfoten. Das Foto selbst wird nicht mit der App ausgeliefert. Vier eigene Vektorfiguren wechseln als Gegner: Matcha-Blob, Protein-Pudding, Tintenflummi und Sofa-Geist. Farben folgen dem bestehenden Hell-/Darkmode. Seit dem ergänzenden Auftrag begleitet dieselbe Arena alle vier automatisch wechselnden Aufgabenarten; siehe [automatische Duellrunde](automatische-duellrunde.md).
 
 ## Ablauf
 
