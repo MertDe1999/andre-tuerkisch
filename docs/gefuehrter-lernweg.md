@@ -1,5 +1,7 @@
 # Geführter Lernweg, 09.10.2026
 
+Aktualisierung vom 14.11.2026: [Die automatische Duellrunde](automatische-duellrunde.md) ersetzt die manuelle Themen-/Moduswahl und deutsche Schreibantworten. Die hier beschriebenen älteren Eingabeabläufe bleiben als Historie erhalten; Kursanforderungen und gespeicherte Nachweise gelten weiter.
+
 Dieser vom Nutzer freigegebene Ablauf ersetzt die frühere Berechnung des Levels ausschließlich aus Freischaltungen. Historische Berichte bleiben erhalten.
 
 ## Ablauf und Wertung

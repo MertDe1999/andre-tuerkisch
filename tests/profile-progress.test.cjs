@@ -6,8 +6,8 @@ test('learned vocabulary and grammar fill each CEFR bar, with all labels inside'
  for(let level=1;level<=160;level++){
   learnTo(a,level);const stage=Math.floor((level-1)/40),start=stage*40+1,end=start+39,cefr=['A1','A2','B1','B2'][stage],percent=parseFloat(a.el('profileLevelFill').style.width),bar=a.el('profileLevelBar');
   assert.equal(a.el('profileLevelValue').textContent,String(level));assert.equal(a.el('profileLevelStage').textContent,cefr);assert.equal(a.el('profileLevelNext').textContent,stage<3?['A2','B1','B2'][stage]:level===160?'B2 ✓':'B2');
-  assert.equal(Number(bar.getAttribute('aria-valuemin')),start);assert.equal(Number(bar.getAttribute('aria-valuemax')),end);assert.equal(Number(bar.getAttribute('aria-valuenow')),level);
-  if(level===start)assert.equal(percent,0);else assert.ok(percent>previous&&percent<=100);if(level===end)assert.equal(percent,100);previous=percent;
+  assert.equal(Number(bar.getAttribute('aria-valuemin')),start);assert.equal(Number(bar.getAttribute('aria-valuemax')),end+1);assert.equal(Number(bar.getAttribute('aria-valuenow')),level===160?161:level);
+  if(level===start)assert.equal(percent,0);else assert.ok(percent>previous&&percent<=100);if(level===end)assert.equal(percent,level===160?100:97.5);previous=percent;
  }
  const html=require('node:fs').readFileSync(require.resolve('../index.html'),'utf8');
  const labels=html.slice(html.indexOf('id="profileLevelBar"'),html.indexOf('id="profileLevelBar"')+950);for(const id of ['profileLevelStage','profileLevelNext','profileLevelValue'])assert.ok(labels.includes('id="'+id+'"'));

@@ -1,5 +1,7 @@
 # Hören, Dialog und kleine Nachrichten
 
+Aktualisierung vom 14.11.2026: [Die automatische Duellrunde](automatische-duellrunde.md) ersetzt die manuelle Themen-/Moduswahl und deutsche Schreibantworten. Die hier beschriebenen älteren Eingabeabläufe bleiben als Historie erhalten; Kursanforderungen und gespeicherte Nachweise gelten weiter.
+
 Stand: 13. November 2026. Dieser Ausbau ergänzt die kurzen Lernportionen. Er ändert weder die Wortfreischaltung noch die bisherigen Pflichtnachweise und Auf-/Abstiegsregeln.
 
 ## Einstieg und Oberfläche

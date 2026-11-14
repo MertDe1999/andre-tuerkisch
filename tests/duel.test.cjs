@@ -6,7 +6,7 @@ const ctx=(task,overrides={})=>({task,key:'course:1:0:0',mode:'course',level:1,n
 function ready(){const storage=store();storage.setItem(L.UNLOCK,JSON.stringify(Object.fromEntries(P.wordIds(1).map(id=>[id,{toTurkish:true,toGerman:true}]))));const e=new L.Engine({storage,random:()=>.37});e.round().intro=2;return {storage,e};}
 function solve(e){const cur=e.state.current;cur.tokens=cur.task.groups.flatMap(g=>g.slots.map((s,i)=>({...C.copy(s),id:g.id+i,group:g.id})));return e.check({answer:cur.task.de});}
 function open(options={}){const a=app(options);a.run('saveUnlockProgress(Object.fromEntries(AndreLearningPath.wordIds(1).map(id=>[id,{toTurkish:true,toGerman:true}])));SentenceGame.engine.round().intro=2;openSentenceTest(null)');return a;}
-function answer(a){a.run('SentenceGame.current.tokens=SentenceGame.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:g.id+i,group:g.id})));SentenceGame.current.draft=SentenceGame.task.de;SentenceGame.check()');}
+function answer(a){a.run('SentenceGame.current.tokens=SentenceGame.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:g.id+i,group:g.id})));SentenceGame.current.draft=SentenceGame.current.direction==="de"?SentenceGame.task.de:SentenceGame.task.answer;SentenceGame.current.delivery.text=true;SentenceGame.check()');}
 
 test('only one hit and one first-error counterattack per sentence, including repeated callbacks',()=>{
  const storage=store(),d=new D.Duel(storage),c=ctx(1),bad={correct:false};assert.equal(d.record(c,bad).action,'hurt');assert.equal(d.record(c,bad),null);assert.equal(d.record({...c,first:false},bad),null);assert.equal(d.view(c).hearts,2);assert.equal(d.view(c).hp,6);

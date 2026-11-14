@@ -27,7 +27,7 @@ test('legacy reading drafts keep writing and a one-sentence pool has no bogus ch
 });
 test('reading buttons replace the keyboard, allow correction, and then wait for Weiter',()=>{
  const a=app();require('./helpers/progress.cjs').learnTo(a,1);
- a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.current.readingMode="mixed";SentenceGame.render()');
+ a.run('startSentenceGame();SentenceGame.current.direction="de";SentenceGame.current.readingMode="mixed";SentenceGame.render();SentenceGame.current.delivery.text=true;SentenceGame.render()');
  const options=a.el('sentenceReading').querySelector('.sentence-reading-options'),correct=a.run('SentenceGame.task.de');
  assert.ok(options.children.length>=2);assert.equal(a.el('sentenceReadingKeyboard').hidden,true);
  options.children.find(b=>b.textContent!==correct).click();assert.equal(a.run('SentenceGame.current.finished'),false);

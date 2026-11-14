@@ -60,7 +60,7 @@ test('a selected open topic flows into other pending topics; deliberately reopen
 
 test('sentence checkpoint hides keyboard, does not time out, and resumes after a pause',()=>{
  const a=app();a.run(`saveUnlockProgress(Object.fromEntries(AndreLearningPath.wordIds(1).map(id=>[id,{toTurkish:true,toGerman:true}])));SentenceGame.engine.round().intro=2;openSentenceTest(null);`);
- for(let i=0;i<6;i++){a.run(`{const cur=SentenceGame.current;cur.tokens=cur.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:g.id+i,group:g.id})));cur.draft=cur.task.de;SentenceGame.check();}`);a.el('sentenceNextButton').click();}
+ for(let i=0;i<6;i++){a.run(`{const cur=SentenceGame.current;cur.tokens=cur.task.groups.flatMap(g=>g.slots.map((s,i)=>({...AndreCourse.copy(s),id:g.id+i,group:g.id})));cur.draft=cur.direction==='de'?cur.task.de:cur.task.answer;cur.delivery.text=true;SentenceGame.check();}`);a.el('sentenceNextButton').click();}
  assert.equal(a.el('sentenceStageBreak').hidden,false);assert.equal(a.el('sentenceGameActive').style.display,'none');assert.equal(a.el('sentenceReadingKeyboard').hidden,true);a.advance(60000);assert.equal(a.run('SentenceGame.engine.roundSummary().done'),6);
  a.el('sentenceStageBreak').querySelectorAll('button').find(b=>b.textContent==='Für heute fertig').click();a.run('openSentenceTest(null)');assert.equal(a.el('sentenceStageBreak').hidden,false);
  a.el('sentenceStageBreak').querySelectorAll('button').find(b=>b.textContent==='Nächste Etappe').click();assert.equal(a.el('sentenceStageBreak').hidden,true);assert.equal(a.run('SentenceGame.engine.stageSummary().number'),2);assert.equal(a.run('SentenceGame.current.finished'),false);
