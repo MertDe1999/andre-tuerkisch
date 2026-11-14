@@ -15,8 +15,8 @@ test('both correct and wrong choices wait for Turkish AND German before advancin
  }
 });
 
-test('written answers in either direction pronounce the solution on success and failure',()=>{
- for(const direction of ['tr','de'])for(const correct of [true,false]){const a=study({direction});installAudio(a);const cur=a.json('WordTrainer.model.state.current'),w=a.json('AndreWords.byId[WordTrainer.model.state.current.id]');type(a,correct?(direction==='tr'?w.tr:w.deAnswers[0]):'Quatsch');a.run('WordTrainer.check()');a.advance(3000);assert.equal(a.run('WordTrainer.model.state.current.id'),cur.id);assert.equal(a.run('utterances[0].lang'),'tr-TR');assert.equal(a.run('utterances[0].text'),w.tr);assert.equal(a.run('WordTrainer.model.state.current.assisted'),!correct);finishPair(a);assert.equal(a.run('utterances[1].text'),w.de);
+test('Turkish writing and German choices pronounce the solution on success and failure',()=>{
+ for(const direction of ['tr','de'])for(const correct of [true,false]){const a=study({direction});installAudio(a);const cur=a.json('WordTrainer.model.state.current'),w=a.json('AndreWords.byId[WordTrainer.model.state.current.id]');if(direction==='tr'){type(a,correct?w.tr:'Quatsch');a.run('WordTrainer.check()');}else a.el('wordStudy').querySelectorAll('.study-option').find(b=>(b.dataset.wordId===cur.id)===correct).click();a.advance(3000);assert.equal(a.run('WordTrainer.model.state.current.id'),cur.id);assert.equal(a.run('utterances[0].lang'),'tr-TR');assert.equal(a.run('utterances[0].text'),w.tr);assert.equal(a.run('WordTrainer.model.state.current.assisted'),!correct);finishPair(a);assert.equal(a.run('utterances[1].text'),w.de);
  }
 });
 

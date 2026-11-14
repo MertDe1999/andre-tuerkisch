@@ -79,7 +79,7 @@ test('literal spelling and undo history survive export/import and retain first r
 test('all 160 levels render only Turkish word/affix cards and solve through actual paged controls',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');
  for(const task of C.tasks){
-  a.run('SentenceGame.engine.state.level='+task.min+';SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.render();');
+  a.run('SentenceGame.engine.state.level='+task.min+';SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
   const cur=a.json('SentenceGame.engine.state.current');
   for(const group of task.groups)for(const slot of group.slots){
    const token=cur.tokens.find(t=>t.lemma===slot.lemma&&!t.used);token.used=true;
@@ -108,7 +108,7 @@ test('introductions and all authored tasks receive unlocked same-part-of-speech 
 });
 test('long suffixes remain reachable with an anchored word in a one-row bank',()=>{
  const a=app({bankHeight:80});a.unlock();a.run('startSentenceGame()');
- a.run('SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="ability-gelmek-siz"),"older");SentenceGame.render();');
+ a.run('SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="ability-gelmek-siz"),"older");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  const token=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma==='w013');
  const card=bankItem(a,b=>b.dataset.turkishBlock==='-ebilirsiniz');assert.ok(card);assert.ok(card.classList.contains('sentence-wide-card'));card.click();
  bankItem(a,b=>b.dataset.modernToken===token.id).click();

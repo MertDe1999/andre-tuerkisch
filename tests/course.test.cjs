@@ -66,7 +66,7 @@ test('all 188 new reference tasks can be solved using the visible paged word and
   else next.click();
  }return null;}
  for(const task of C.tasks){
-  a.run('SentenceGame.engine.begin(AndreCourse.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.render();');
+  a.run('SentenceGame.engine.begin(AndreCourse.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
   const cur=a.json('SentenceGame.current');
   for(const slot of task.groups[0].slots){const token=cur.tokens.find(t=>t.lemma===slot.lemma&&!t.used);token.used=true;
    const word=item(b=>b.dataset.modernToken===token.id);assert.ok(word,task.id+' word');word.click();

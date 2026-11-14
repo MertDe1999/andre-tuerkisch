@@ -1,5 +1,7 @@
 # Kleine Lernportionen · 13.11.2026
 
+Aktualisierung vom 14.11.2026: [Die automatische Duellrunde](automatische-duellrunde.md) ersetzt die manuelle Themen-/Moduswahl und deutsche Schreibantworten. Die hier beschriebenen älteren Eingabeabläufe bleiben als Historie erhalten; Kursanforderungen und gespeicherte Nachweise gelten weiter.
+
 ## Verhalten
 
 Die 24 Startwörter werden in sechs feste Portionen mit je vier Wörtern aufgeteilt. Auch spätere Wortpakete werden in höchstens vier neue Wörter geteilt. Jede Portion durchläuft zuerst die gesamte türkische Textauswahl, danach beide Schreibrichtungen. Erst danach beginnt auf ausdrücklichen Klick die nächste Portion. Kleine Restgruppen behalten weniger Auswahlmöglichkeiten; bekannte oder spätere Wörter werden nicht ergänzt.

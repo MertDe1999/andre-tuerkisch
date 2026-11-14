@@ -2029,6 +2029,7 @@
   <link rel="stylesheet" href="guided-learning.css?v=20261113-feedback">
   <link rel="stylesheet" href="interest-practice.css?v=20261113-practice">
 <link rel="stylesheet" href="duel.css?v=20261114-duel">
+<link rel="stylesheet" href="journey.css?v=20261114-journey">
 </head>
 
 <body>
@@ -2304,9 +2305,9 @@
 <script src="lib/course-progress.js?v=20261005-interests"></script>
 <script src="lib/learning-path.js?v=20261009-guided"></script>
 <script src="lib/course-learning.js?v=20261005-interests"></script>
-<script src="lib/guided-learning.js?v=20261113-portions"></script>
-<script src="lib/interest-practice.js?v=20261113-practice"></script>
-<script src="lib/word-preparation.js?v=20261113-portions"></script>
+<script src="lib/guided-learning.js?v=20261114-journey"></script>
+<script src="lib/interest-practice.js?v=20261114-journey"></script>
+<script src="lib/word-preparation.js?v=20261114-journey"></script>
 <script src="lib/motion.js?v=20261113-feedback"></script>
 <script src="lib/app-keyboard.js?v=20261113-feedback"></script>
 <script src="lib/answer-editor.js?v=20261009-guided"></script>
@@ -2468,7 +2469,8 @@
     const start = bands?.[0]?.start ?? 1;
     const end = bands?.at(-1)?.end ?? 40;
     const next = course?.bands.find(band => band.start > end)?.cefr ?? (course ? null : "A2");
-    const percent = Math.max(0, Math.min(100, (level - start) / (end - start) * 100));
+    const detail = window.AndreLessonDelivery?.progress(window.SentenceGame?.engine);
+    const percent = detail?.percent ?? Math.max(0, Math.min(100, (level - start) / (end - start) * 100));
     const complete = !next && window.SentenceGame?.engine.flow.finished === true;
     document.getElementById("profileLevelValue").textContent = level;
     const chip = document.getElementById("profileLevelChip");
@@ -2476,12 +2478,13 @@
     chip.dataset.complete = String(complete);
     document.getElementById("profileLevelStage").textContent = cefr;
     document.getElementById("profileLevelNext").textContent = next || (complete ? "B2 ✓" : "B2");
-    document.getElementById("profileLevelFill").style.width = percent + "%";
+    if(window.AndreJourneyRewards) AndreJourneyRewards.paint(percent);
+    else document.getElementById("profileLevelFill").style.width = percent + "%";
     const bar = document.getElementById("profileLevelBar");
     bar.setAttribute("aria-valuemin", start);
-    bar.setAttribute("aria-valuemax", end);
-    bar.setAttribute("aria-valuenow", level);
-    bar.setAttribute("aria-valuetext", "Level " + level + " · " + cefr + " · " + (next ? "nächstes Ziel " + next : complete ? "B2-Ziel erreicht" : "Ziel Level " + end));
+    bar.setAttribute("aria-valuemax", detail ? end + 1 : end);
+    bar.setAttribute("aria-valuenow", detail ? (complete ? end + 1 : level + detail.fraction) : level);
+    bar.setAttribute("aria-valuetext", "Level " + level + (detail ? " · Levelaufgaben " + Math.round(detail.fraction * 100) + " Prozent" : "") + " · " + cefr + " · " + (next ? "nächstes Ziel " + next : complete ? "B2-Ziel erreicht" : "Ziel Level " + end));
   }
 
   function updateLearnedWordsDisplay(){
@@ -2592,14 +2595,15 @@
   }
 
   function openSentenceTest(theme){
-    if(window.SkillPractice && SkillPractice.mode !== 'build') return SkillPractice.open(theme);
-    if(theme !== undefined) window.SentenceGame?.engine.selectTheme(theme);
+    if(theme) window.SentenceGame?.engine.selectTheme(theme);
+    else window.AndreLessonDelivery?.mixed(SentenceGame.engine);
     showView("flashcards", null);
     AndreMotion.cancel();
     AndreMotion.depart(document.getElementById("sentenceTopics"));
     document.getElementById("sentenceTopics").hidden = true;
     document.body.classList.add("learning-games-view", "game-mode-active");
     document.getElementById("sentenceBuilder").classList.add("active");
+    document.body.classList.add("sentence-journey-active");
     startSentenceGame();
     AndreMotion.enter(document.getElementById("sentenceBuilder"));
     document.getElementById("sentenceBackButton").focus({preventScroll:true});
@@ -2640,7 +2644,7 @@
     document.getElementById("typingTrainer").classList.remove("active");
     document.getElementById("dictionaryPanel").hidden = false;
     typingRemaining = [];typingCurrentIndex = -1;typedAnswer = "";
-    document.body.classList.remove("learning-games-view", "game-mode-active");
+    document.body.classList.remove("learning-games-view", "game-mode-active", "sentence-journey-active");
 
     const currentView = document.querySelector(".view.active");
     const currentId = currentView?.id || "dictionary";
@@ -3530,14 +3534,16 @@
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
 <script src="lib/dictionary.js?v=20261113-word-audio"></script>
 <script src="lib/dictionary-search.js?v=20261005-interests"></script>
-<script src="lib/sound.js?v=20261114-duel"></script>
+<script src="lib/sound.js?v=20261114-journey"></script>
 <script src="lib/speech-player.js?v=20261113-word-audio"></script>
 <script src="lib/duel.js?v=20261114-duel"></script>
 <script src="lib/duel-art.js?v=20261114-duel"></script>
 <script src="duel-view.js?v=20261114-duel"></script>
-<script src="sentence-game.js?v=20261114-duel"></script>
+<script src="lib/lesson-delivery.js?v=20261114-journey"></script>
+<script src="journey-rewards.js?v=20261114-journey"></script>
+<script src="sentence-game.js?v=20261114-journey"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
-<script src="word-training.js?v=20261113-word-audio"></script>
-<script src="interest-practice.js?v=20261113-practice"></script>
+<script src="word-training.js?v=20261114-journey"></script>
+<script src="interest-practice.js?v=20261114-journey"></script>
 </body>
 </html>

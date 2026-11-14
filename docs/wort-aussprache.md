@@ -12,4 +12,4 @@ Die gemeinsame Sprachausgabe verwendet ausdrücklich tr-TR beziehungsweise de-DE
 
 Keine Live-Tests. Automatisierte Offline-Prüfungen verwenden simulierte Stimmen und Zeitgeber. Reale Aussprachequalität, Browser-Audiorechte und Haptik bleiben geräteabhängig; keine tatsächliche Handy-Abnahme behauptet.
 
-Die diskutierte Kampf-/Spielbibliothek ist ein gesonderter Entwurf und nicht Bestandteil dieser Änderung.
+Historischer Umfang dieser Audioänderung: noch keine Kampfansicht. Das Duell wurde am 14.11.2026 ergänzt; die nachfolgende automatische Runde ersetzt deutsche Schreibantworten durch Bedeutungsauswahl. Aussprache und Ergebnispausen gelten auch dafür.

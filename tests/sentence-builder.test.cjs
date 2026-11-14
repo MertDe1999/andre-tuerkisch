@@ -132,8 +132,8 @@ test('invalid persisted JSON is archived before replacement; failed archive prev
 
 test('immediate correction keeps the later error review and corrected scoring feedback is neutral',()=>{
  const {e}=game();e.begin(byId('object-görmek-sen-w004'),'current');e.error({area:'grammar',skill:'accusative'});const deadline=e.stat('skills','accusative').errorSequence;e.success('skills','accusative','example',false);assert.equal(e.stat('skills','accusative').errorSequence,deadline);
- const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.level=16;SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();checkSentence();');
- assert.equal(a.el('sentenceModeLabel').textContent,'Korrektur');a.run('SentenceGame.engine.state.current.tokens=AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004").groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:"test"+i,group:g.id})));checkSentence();');
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.level=16;SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();checkSentence();');
+ assert.equal(a.el('sentenceModeLabel').textContent,'Satzbau · Korrektur');a.run('SentenceGame.engine.state.current.tokens=AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004").groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:"test"+i,group:g.id})));checkSentence();');
  assert.equal(a.run('SentenceGame.engine.state.level'),160);assert.equal(a.el('sentenceFeedback').textContent,a.run('SentenceGame.task.answer'));assert.equal(a.el('wordBank').parentElement.hidden,true);
 });
 
@@ -153,7 +153,7 @@ test('browser adapter composes words by keyboard clicks and waits for explicit c
 test('browser adapter builds nominalized verb suffix chains through Turkish cards',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');
  for(const task of C.tasks.filter(t=>t.skills.includes('nominalDik')).slice(0,4)){
-  a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.render();');
+  a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==='+JSON.stringify(task.id)+'),"older");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
   const cur=a.json('SentenceGame.engine.state.current');
   for(const group of task.groups)for(const slot of group.slots){
    const available=cur.tokens.find(t=>t.lemma===slot.lemma&&!t.consumed);available.consumed=true;
@@ -169,12 +169,12 @@ test('browser adapter builds nominalized verb suffix chains through Turkish card
 
 test('pointer cancellation does not move a modern token and selected-word focus survives inflection',()=>{
  const a=app();a.unlock();a.run('startSentenceGame()');const token=a.el('wordBank').children[0];token.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});token.dispatchEvent({type:'pointermove',clientX:30,clientY:20});token.dispatchEvent({type:'pointercancel'});assert.equal(token.parentElement,a.el('wordBank'));
- a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"older");SentenceGame.render();');
+ a.run('SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"older");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;a.run('SentenceGame.moveToken('+JSON.stringify(id)+',"main");');bankCard(a,'-yı').click();assert.equal(a.document.activeElement,a.el('sentenceToken-'+id));assert.equal(a.document.activeElement.textContent,'arabayı');
 });
 
 test('old tap gesture removes the last ending, then returns the word without changing scoring',()=>{
- const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  const id=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.araba.id).id;
  a.el('sentenceToken-'+id).click();bankCard(a,'-yı').click();assert.equal(a.el('sentenceToken-'+id).textContent,'arabayı');
  a.el('sentenceToken-'+id).click();assert.equal(a.el('sentenceToken-'+id).textContent,'araba');
@@ -183,7 +183,7 @@ test('old tap gesture removes the last ending, then returns the word without cha
 });
 
 test('pointer drags move, reorder and return words, apply endings, and clean up cancelled ghosts',()=>{
- const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  const tokens=a.json('SentenceGame.engine.state.current.tokens'),noun=tokens.find(t=>t.lemma===W.byLemma.araba.id),pronoun=tokens.find(t=>t.lemma===W.byLemma.sen.id);
  const drag=(button,target,{x=20,cancel=false}={})=>{a.document.pointerTarget=target;button.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});button.dispatchEvent({type:'pointermove',clientX:x,clientY:40,pointerId:1});assert.ok(a.document.body.querySelector('.drag-ghost'));button.dispatchEvent({type:cancel?'pointercancel':'pointerup',clientX:x,clientY:40,pointerId:1});assert.equal(a.document.body.querySelector('.drag-ghost'),null);};
  const group=()=>a.el('answerZone').children.find(e=>e.dataset.sentenceGroup==='main');
@@ -197,7 +197,7 @@ test('pointer drags move, reorder and return words, apply endings, and clean up 
 });
 
 test('the single bank combines concrete endings in both drag directions',()=>{
- const a=app({bankHeight:700});a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="poss-case-ben-ev"),"current");SentenceGame.render();');
+ const a=app({bankHeight:700});a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="poss-case-ben-ev"),"current");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  const noun=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.lemma===W.byLemma.ev.id);
  const drag=(button,target,cancel=false)=>{a.document.pointerTarget=target;button.dispatchEvent({type:'pointerdown',button:0,clientX:0,clientY:0,pointerId:1});button.dispatchEvent({type:'pointermove',clientX:20,clientY:40,pointerId:1});assert.ok(target.classList.contains('case-drop-over'));button.dispatchEvent({type:cancel?'pointercancel':'pointerup',clientX:20,clientY:40,pointerId:1});assert.equal(target.classList.contains('case-drop-over'),false);};
  const root=bankItem(a,b=>b.dataset.modernToken===noun.id);
@@ -215,7 +215,7 @@ test('the single bank combines concrete endings in both drag directions',()=>{
 });
 
 test('ending clicks can inflect a bank word and saved bank forms survive reopening',()=>{
- const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.render();');
+ const a=app();a.unlock();a.run('startSentenceGame();SentenceGame.engine.state.introduced=AndreCurriculum.skills.map(s=>s.id);SentenceGame.engine.begin(AndreCurriculum.tasks.find(t=>t.id==="object-görmek-sen-w004"),"current");SentenceGame.current.direction="tr";SentenceGame.current.delivery={version:1,mode:"build",options:[]};SentenceGame.render();');
  bankCard(a,'-üyon').click();
  const root=bankItem(a,b=>b.dataset.modernToken&&b.textContent==='görmek');root.click();
  const token=a.json('SentenceGame.engine.state.current.tokens').find(t=>t.features.tense==='present');assert.ok(token);assert.equal(token.group,null);

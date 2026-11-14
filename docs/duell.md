@@ -1,12 +1,12 @@
 # Duell mit André und Ben
 
-Seit dem Auftrag vom 14.11.2026 begleitet eine kompakte Arena den bestehenden Satzbau. André hat Locken, grüne Augen und ein Tanktop; Ben ist ein stilisierter Hund an seiner Seite. Vier eigene Vektorfiguren wechseln als Gegner: Matcha-Blob, Protein-Pudding, Tintenflummi und Sofa-Geist. Farben folgen dem bestehenden Hell-/Darkmode. Andere Spielmodi sind nicht Teil dieser Umsetzung.
+Seit dem Auftrag vom 14.11.2026 begleitet eine kompakte Arena den bestehenden Satzbau. André hat Locken, grüne Augen und ein Tanktop; Ben ist ein stilisierter Hund an seiner Seite. Vier eigene Vektorfiguren wechseln als Gegner: Matcha-Blob, Protein-Pudding, Tintenflummi und Sofa-Geist. Farben folgen dem bestehenden Hell-/Darkmode. Seit dem ergänzenden Auftrag begleitet dieselbe Arena alle vier automatisch wechselnden Aufgabenarten; siehe [automatische Duellrunde](automatische-duellrunde.md).
 
 ## Ablauf
 
 - Die zwei unbewerteten Einführungen bilden eine eigene kurze Begegnung. Danach gehört jeweils eine Begegnung zur vorhandenen Etappe mit höchstens sechs Aufgaben; die achte reguläre Etappe hat vier Aufgaben. Zusätzliche Nachweisaufgaben behalten ihre eigenen Etappen. Freies Üben hat kosmetische Begegnungen mit sechs Aufgaben je Thema.
 - Jeder vollständig gelöste Satz verursacht genau einen Treffer, auch eine richtige Korrektur. Das macht eine assistierte Antwort ausdrücklich nicht zu einem direkten Lernerfolg.
-- Nur der erste Fehler pro Satz kostet eines der drei Begegnungsherzen. Weitere Korrekturversuche kosten keine zusätzlichen Herzen. Beim dritten Fehler hilft Ben und füllt die Herzen wieder auf. Es gibt keine neue Lernsperre und keinen zusätzlichen Levelabzug.
+- Nur der erste Fehler pro Satz (auch direktes „Keine Ahnung“) kostet eines der drei Begegnungsherzen. Weitere Korrekturversuche kosten keine zusätzlichen Herzen. Beim dritten Fehler hilft Ben und füllt die Herzen wieder auf. Es gibt keine neue Lernsperre und keinen zusätzlichen Levelabzug.
 - „Keine Ahnung“ zählt weiter nach den bisherigen Lernregeln, verursacht aber keinen Treffer. Bleiben am Etappenende gegnerische Lebenspunkte übrig, zieht der Gegner weiter. Der normale Pausenpunkt bleibt erreichbar.
 - Der vorhandene Etappenzähler zeigt erledigte Aufgaben; der kleine gegnerische Balken zeigt Lebenspunkte. Diese Werte sind bei übersprungenen Aufgaben bewusst verschieden. Ein besiegter Gegner bedeutet nicht automatisch einen bestandenen Level.
 - Der fertige Satz bleibt bis „Weiter“ sichtbar. Am Etappenende bleiben „Nächste Etappe“ und „Für heute fertig“. Kein Timer, keine automatisch gestartete nächste Aufgabe, keine abzuwartende Animation.
@@ -21,7 +21,7 @@ Bei einem bestehenden Spielstand mitten in einer Etappe hat der erste neue Gegne
 
 ## Bewegung und Ton
 
-Kurzes Atmen, Blinzeln und Bens Schwanzbewegung halten die Figuren lebendig. Treffer, Bens Hilfe und ein besiegter Gegner haben kurze eigene Animationen und synthetisierte Klänge. Nur die dekorative Szene wackelt um zwei Pixel; Wortbank, Eingabe und Bedienfelder bleiben still. Die vorhandene Tonwahl gilt weiter, ein Levelabschluss behält seinen Levelklang. Aussprache und Hintergrundzustand werden respektiert.
+Kurzes Atmen, Blinzeln und Bens Schwanzbewegung halten die Figuren lebendig. Treffer, Bens Hilfe und ein besiegter Gegner haben kurze eigene Animationen und synthetisierte Klänge. Die dekorative Szene wackelt um zwei Pixel; nach dem ergänzenden Auftrag reagiert auch der Levelbalken kurz auf ankommende Siegpunkte; Wortbank, Eingabe und Bedienfelder bleiben still. Die vorhandene Tonwahl gilt weiter, ein Levelabschluss behält seinen Levelklang. Aussprache und Hintergrundzustand werden respektiert.
 
 Reduzierte Bewegung schaltet die bewegten Effekte ab; Lebenspunkte, Herzen und kurze Zustandsanzeigen bleiben sichtbar. Navigation, Hintergrund, Größenwechsel und geänderte Bewegungseinstellung brechen Animationen ab. Kein Animationsende vergibt einen Lernnachweis oder startet eine Aufgabe. Die Arena verkleinert sich bei geringer Höhe und wird beim Schreiben im Querformat seitlich angeordnet.
 
