@@ -36,6 +36,8 @@ Die 24 Startwörter werden in sechs Portionen mit je vier Wörtern gelernt. Jede
 
 Satzbau zeigt Etappen mit höchstens sechs gewerteten Sätzen und einen festen Pausenpunkt. Offene Themen folgen innerhalb der Etappe automatisch; ausdrücklich wieder geöffnete fertige Themen bleiben freies Üben. Die Anforderungen gelten weiter für das gesamte Level. Entwürfe, Freischaltungen und Nachweise bleiben beim Pausieren erhalten. [Ablauf und Übernahme alter Lernstände](docs/kleine-lernportionen.md).
 
+Eine kleine Duell-Arena begleitet den Satzbau: André und Ben begegnen Matcha-Blob, Protein-Pudding, Tintenflummi und Sofa-Geist. Gelöste Sätze verursachen Treffer, der erste Fehler kostet ein Begegnungsherz; nach drei Fehlern hilft Ben. Es gibt kein Zeitlimit und keine zusätzliche Levelbedingung. Die bestehende Lernwertung, Etappen und Gesten bleiben erhalten. [Ablauf, Speicherung und Offline-Prüfung](docs/duell.md).
+
 ## Neue Wörter und Aufgaben
 
 564 Wörter/Namen, 23 Themen und persönliche Referenzen bilden die Grundlage. Der Generator kombiniert Rollen und Flexion zu neuen Aufgaben. Mit begrenztem Wortschatz wiederholen sich Kombinationen; der Aufgabenbestand ist nicht auf160 Sätze beschränkt. Neue Wörter brauchen stabile IDs, Wortarten, deutsche Flexionsdaten, türkische Besonderheiten und Themen/Rollen. Neue Wörter benötigen keine Bilddaten: Die Auswahl nutzt die deutsche Bedeutung als Text, anschließend bleiben beide Schreibübersetzungen Pflicht. Neue Wörter vergrößern abgeschlossene Pflichtpakete nicht nachträglich. Neue Varianten bereits eingeführter Regeln können weiter geübt und freigeschaltet werden.
@@ -51,6 +53,7 @@ node --test tests/*.test.cjs
 node tools/audit-guided-path.cjs
 node tools/audit-experience.cjs
 node tools/audit-interest-practice.cjs
+node tools/audit-duel.cjs
 ```
 
 Die automatischen Prüfungen ersetzen weder eine echte Handybedienung noch eine unabhängige türkische Gesamtprüfung. Live-Tests führt auf Nutzerwunsch der Nutzer selbst durch.
