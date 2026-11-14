@@ -30,9 +30,9 @@ test('mid-stage upgrade starts with only the remaining tasks; full and final sho
 test('free practice cycles its own encounters after six answers and keeps each theme on return',()=>{
  const d=new D.Duel(store()),c=ctx(1,{key:'practice:160:T02',mode:'practice'});const first=d.view(c).key;for(let i=1;i<=6;i++)d.record({...c,task:i},{correct:true,direct:true});assert.equal(d.view({...c,task:6,finished:true}).key,first);const second=d.view({...c,task:7});assert.notEqual(second.key,first);assert.equal(second.hp,6);const another=d.view({...c,key:'practice:160:T03',task:8});assert.notEqual(another.key,second.key);assert.equal(d.view({...c,task:7}).key,second.key);
 });
-test('post-B2 free practice captures the selected theme even without a roundTheme field',()=>{
+test('post-B2 free practice follows the selected mode, not the changing task theme in mixed practice',()=>{
  const e={state:{started:200,current:{id:200,free:true,roundLevel:160},selectedTheme:'T02'},flow:{level:160,finished:true,round:null}};
- assert.equal(D.capture(e).key,'practice:160:T02');e.state.selectedTheme='T03';assert.equal(D.capture(e).key,'practice:160:T03');e.state.selectedTheme=null;assert.equal(D.capture(e).key,'practice:160:mixed');
+ assert.equal(D.capture(e).key,'practice:160:T02');e.state.selectedTheme='T03';assert.equal(D.capture(e).key,'practice:160:T03');e.state.selectedTheme=null;assert.equal(D.capture(e).key,'practice:160:mixed');e.state.current.roundTheme='T07';assert.equal(D.capture(e).key,'practice:160:mixed');e.state.current.roundTheme='T12';assert.equal(D.capture(e).key,'practice:160:mixed');
 });
 test('corrupt or unavailable cosmetic storage cannot write learning keys or prevent play',()=>{
  const storage=store();storage.setItem(D.KEY,'{bad');let d=new D.Duel(storage);d.record(ctx(1),{correct:true,direct:true});assert.deepEqual([...storage.map.keys()],[D.KEY]);
