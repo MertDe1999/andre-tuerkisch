@@ -3,7 +3,7 @@
  const el=id=>document.getElementById(id),make=(tag,cls,text='')=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;return e;};
  const ADVANCE_DELAY=2000;
  let speechTimer=null,resultTask=null,resultStatus='idle';
- let active=false,session=0,lastKey='',advanceTimer=null,advanceTask=null,advanceToken=0;
+ let active=false,resumeAfterPageShow=false,session=0,lastKey='',advanceTimer=null,advanceTask=null,advanceToken=0;
  const panel=make('section','word-study');panel.id='wordStudy';panel.hidden=true;el('typingTrainer').append(panel);
  function button(label,action,cls='study-button'){const b=make('button',cls,label);b.type='button';b.addEventListener('click',()=>{if(!b.disabled)action();});return b;}
  const target=()=>engine.flow.finished?W.words.filter(w=>!engine.unlocked().has(w.id)).map(w=>w.id):engine.missingWords().map(w=>w.id),current=()=>model.state.current;
@@ -82,8 +82,9 @@
  function close(){if(!active)return;cancelAdvance();cancelSpeech();active=false;panel.hidden=true;AndreKeyboard.cancel(el('customKeyboard'));el('customKeyboard').style.display='none';model.save();}
  root.startTypingGame=open;root.stopTypingGame=close;root.WordTrainer={open,close,next,continuePortion,type,check,unknown,say,soundChanged,model,get active(){return active;}};
  document.addEventListener('keydown',event=>{if(!active||current()?.phase!=='typing'||current()?.direction!=='tr'||event.isComposing||event.ctrlKey||event.metaKey||event.altKey||event.target.closest?.('input,textarea,select,[contenteditable=true]'))return;if(['Enter',' '].includes(event.key)&&event.target.closest?.('button'))return;
-  if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();type(event.key);}else if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check();}else if(event.key==='Backspace'){event.preventDefault();type('BACKSPACE');}else if(/^[\p{L}\p{N} '’-]$/u.test(event.key)){event.preventDefault();type(event.key);}});
- root.addEventListener('pagehide',close);
+  if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();type(event.key);}else if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check();}else if(event.key==='Backspace'||event.key==='Delete'){event.preventDefault();type(event.key==='Delete'?'DELETE':'BACKSPACE');}else if(/^[\p{L}\p{N} '’-]$/u.test(event.key)){event.preventDefault();type(event.key);}});
+ root.addEventListener('pagehide',event=>{resumeAfterPageShow=event.persisted===true&&active;close();});
+ root.addEventListener('pageshow',event=>{const resume=event.persisted===true&&resumeAfterPageShow;resumeAfterPageShow=false;if(!resume||!el('typingTrainer').classList.contains('active'))return;active=true;panel.hidden=false;draw();root.refreshUnlockUI();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAdvance();cancelSpeech();}else scheduleAdvance();});
  const oldUpdate=root.updateUnlockButtons;root.updateUnlockButtons=function(){oldUpdate();const b=el('unlockFloatingButton');const required=target();b.hidden=currentMainView!=='dictionary'||el('cardsLearning').classList.contains('active')||el('typingTrainer').classList.contains('active');b.disabled=!required.length;b.textContent=engine.flow.finished&&required.length?'Weitere Wörter freischalten':'Wörter für Level '+engine.preparationLevel()+(required.length?' freischalten':' freigeschaltet');el('grammarUnlockFloatingButton').hidden=true;document.body.classList.toggle('without-unlock-button',b.hidden);};
  root.refreshUnlockUI();

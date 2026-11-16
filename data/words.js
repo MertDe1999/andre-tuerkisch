@@ -931,6 +931,7 @@
   const existing=words.find(w=>w.tr===proposal.tr&&w.type===proposal.type);
   if(existing){existing.themes=[...new Set([...(existing.themes||[]),...proposal.themes])];existing.interest=true;existing.interestFrame=proposal.deGrammar?.frame;
    existing.deGrammar||=proposal.deGrammar;existing.semantic||=proposal.semantic;if(proposal.voice)existing.voice={...existing.voice,...proposal.voice};existing.deAnswers=[...new Set([...(existing.deAnswers||[]),...proposal.deAnswers])];
+   for(const key of ['objectTypes','objectLemmas'])if(proposal[key])existing[key]=[...proposal[key]];
   }else words.push({...proposal});
  }
  const byId = Object.assign(Object.create(null),Object.fromEntries(words.map(w=>[w.id,w])));

@@ -1712,7 +1712,17 @@
       },
       "stem": "inşa et",
       "progressiveStem": "inşa ed",
-      "vowelStem": "inşa ed"
+      "vowelStem": "inşa ed",
+      "objectTypes": [
+        "place"
+      ],
+      "objectLemmas": [
+        "ev",
+        "köprü",
+        "kule",
+        "masa",
+        "dolap"
+      ]
     },
     {
       "id": "iw036",
@@ -1772,7 +1782,8 @@
         "singular": "Gewicht",
         "plural": "Gewichte"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "ağırlığ"
     },
     {
       "id": "iw039",
@@ -2455,7 +2466,8 @@
         "singular": "Wahrscheinlichkeit",
         "plural": "Wahrscheinlichkeiten"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "olasılığ"
     },
     {
       "id": "iw071",
@@ -2493,7 +2505,8 @@
         "singular": "Quelle",
         "plural": "Quellen"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "kaynağ"
     },
     {
       "id": "iw073",
@@ -2531,7 +2544,8 @@
         "singular": "Kaiserreich",
         "plural": "Kaiserreiche"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "imparatorluğ"
     },
     {
       "id": "iw075",
@@ -2656,10 +2670,10 @@
         "infinitive": "berechnen",
         "present": [
           "berechne",
-          "berechnst",
-          "berechnt",
+          "berechnest",
+          "berechnet",
           "berechnen",
-          "berechnt",
+          "berechnet",
           "berechnen"
         ],
         "participle": "berechnet",
@@ -2667,7 +2681,16 @@
         "frame": "object"
       },
       "stem": "hesapla",
-      "progressiveStem": "hesapl"
+      "progressiveStem": "hesapl",
+      "objectLemmas": [
+        "fiyat",
+        "indirim",
+        "kalori",
+        "yüzde",
+        "alan",
+        "olasılık",
+        "kesir"
+      ]
     },
     {
       "id": "iw080",
@@ -2871,7 +2894,8 @@
         "singular": "Hähnchen",
         "plural": "Hähnchen"
       },
-      "semantic": "food"
+      "semantic": "food",
+      "soften": "tavuğ"
     },
     {
       "id": "iw090",
@@ -3071,7 +3095,21 @@
         "frame": "object"
       },
       "stem": "paylaş",
-      "progressiveStem": "paylaş"
+      "progressiveStem": "paylaş",
+      "objectTypes": [
+        "food",
+        "drink",
+        "media",
+        "game"
+      ],
+      "objectLemmas": [
+        "fotoğraf",
+        "dosya",
+        "yorum",
+        "hatıra",
+        "tarif",
+        "bağlantı"
+      ]
     },
     {
       "id": "iw097",
@@ -3496,7 +3534,8 @@
         "singular": "Schwanz",
         "plural": "Schwänze"
       },
-      "semantic": "body"
+      "semantic": "body",
+      "soften": "kuyruğ"
     },
     {
       "id": "iw118",
@@ -3960,7 +3999,8 @@
         "singular": "Abonnement",
         "plural": "Abonnements"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "aboneliğ"
     },
     {
       "id": "iw140",
@@ -4114,7 +4154,15 @@
         "frame": "object"
       },
       "stem": "yükle",
-      "progressiveStem": "yükl"
+      "progressiveStem": "yükl",
+      "objectTypes": [
+        "game"
+      ],
+      "objectLemmas": [
+        "uygulama",
+        "dosya",
+        "video"
+      ]
     },
     {
       "id": "iw145",
@@ -4529,7 +4577,8 @@
         "singular": "Kopfhörer",
         "plural": "Kopfhörer"
       },
-      "semantic": "device"
+      "semantic": "device",
+      "soften": "kulaklığ"
     },
     {
       "id": "iw165",
@@ -4644,7 +4693,8 @@
         "singular": "virtuelle Realität",
         "plural": "virtuelle Realitäten"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "sanal gerçekliğ"
     },
     {
       "id": "iw171",
@@ -4665,10 +4715,10 @@
         "infinitive": "öffnen",
         "present": [
           "öffne",
-          "öffnst",
-          "öffnt",
+          "öffnest",
+          "öffnet",
           "öffnen",
-          "öffnt",
+          "öffnet",
           "öffnen"
         ],
         "participle": "geöffnet",
@@ -4676,7 +4726,26 @@
         "frame": "object"
       },
       "stem": "aç",
-      "progressiveStem": "aç"
+      "progressiveStem": "aç",
+      "objectLemmas": [
+        "kapı",
+        "kutu",
+        "dolap",
+        "kitap",
+        "dosya",
+        "uygulama",
+        "televizyon",
+        "program",
+        "video",
+        "telefon",
+        "bilgisayar",
+        "konsol",
+        "PS5",
+        "Nintendo Switch",
+        "Nintendo Switch 2",
+        "Book 5",
+        "Samsung Galaxy S25+"
+      ]
     },
     {
       "id": "iw172",
@@ -4707,7 +4776,26 @@
         "frame": "object"
       },
       "stem": "kapat",
-      "progressiveStem": "kapat"
+      "progressiveStem": "kapat",
+      "objectLemmas": [
+        "kapı",
+        "kutu",
+        "dolap",
+        "kitap",
+        "dosya",
+        "uygulama",
+        "televizyon",
+        "program",
+        "video",
+        "telefon",
+        "bilgisayar",
+        "konsol",
+        "PS5",
+        "Nintendo Switch",
+        "Nintendo Switch 2",
+        "Book 5",
+        "Samsung Galaxy S25+"
+      ]
     },
     {
       "id": "iw173",
@@ -5384,7 +5472,31 @@
         "frame": "object"
       },
       "stem": "al",
-      "progressiveStem": "al"
+      "progressiveStem": "al",
+      "objectTypes": [
+        "food",
+        "drink",
+        "device",
+        "clothing",
+        "game",
+        "vehicle"
+      ],
+      "objectLemmas": [
+        "kitap",
+        "bilet",
+        "hediye",
+        "bitki",
+        "oyuncak",
+        "masa",
+        "dolap",
+        "kutu",
+        "kaşık",
+        "fincan",
+        "tabak",
+        "tencere",
+        "tava",
+        "abonelik"
+      ]
     },
     {
       "id": "iw203",
@@ -5414,7 +5526,10 @@
         "frame": "object"
       },
       "stem": "öde",
-      "progressiveStem": "öd"
+      "progressiveStem": "öd",
+      "objectLemmas": [
+        "fiyat"
+      ]
     },
     {
       "id": "iw204",
@@ -5531,7 +5646,8 @@
         "singular": "Reis",
         "plural": "Reis"
       },
-      "semantic": "food"
+      "semantic": "food",
+      "soften": "pirinc"
     },
     {
       "id": "iw209",
@@ -5703,7 +5819,8 @@
         "singular": "Wein",
         "plural": "Weine"
       },
-      "semantic": "drink"
+      "semantic": "drink",
+      "soften": "şarab"
     },
     {
       "id": "iw218",
@@ -5783,7 +5900,8 @@
         "singular": "Erdbeere",
         "plural": "Erdbeeren"
       },
-      "semantic": "food"
+      "semantic": "food",
+      "soften": "çileğ"
     },
     {
       "id": "iw222",
@@ -5899,7 +6017,7 @@
         "frame": "food-object"
       },
       "stem": "tat",
-      "progressiveStem": "tat",
+      "progressiveStem": "tad",
       "vowelStem": "tad"
     },
     {
@@ -6015,7 +6133,8 @@
         "singular": "Geschmack",
         "plural": "Geschmäcker"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "tad"
     },
     {
       "id": "iw232",
@@ -6608,7 +6727,7 @@
         ],
         "participle": "fotografiert",
         "auxiliary": "haben",
-        "frame": "object"
+        "frame": "simple"
       },
       "stem": "fotoğraf çek",
       "progressiveStem": "fotoğraf çek"
@@ -6788,7 +6907,8 @@
         "singular": "Knoblauch",
         "plural": "Knoblauch"
       },
-      "semantic": "food"
+      "semantic": "food",
+      "soften": "sarımsağ"
     },
     {
       "id": "iw266",
@@ -6864,7 +6984,8 @@
         "singular": "Löffel",
         "plural": "Löffel"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "kaşığ"
     },
     {
       "id": "iw270",
@@ -7179,7 +7300,29 @@
       "voice": {
         "passive": "temizlen",
         "causative": "temizlet"
-      }
+      },
+      "objectTypes": [
+        "clothing",
+        "body",
+        "vehicle",
+        "device",
+        "place"
+      ],
+      "objectLemmas": [
+        "masa",
+        "ayna",
+        "zemin",
+        "raf",
+        "dolap",
+        "kutu",
+        "tencere",
+        "tava",
+        "tabak",
+        "kaşık",
+        "kase",
+        "fincan",
+        "havlu"
+      ]
     },
     {
       "id": "iw284",
@@ -7323,8 +7466,8 @@
         "infinitive": "tragen",
         "present": [
           "trage",
-          "tragst",
-          "tragt",
+          "trägst",
+          "trägt",
           "tragen",
           "tragt",
           "tragen"
@@ -7482,8 +7625,8 @@
         "infinitive": "tragen",
         "present": [
           "trage",
-          "tragst",
-          "tragt",
+          "trägst",
+          "trägt",
           "tragen",
           "tragt",
           "tragen"
@@ -7608,7 +7751,8 @@
         "to": "zu der Küche",
         "from": "aus der Küche"
       },
-      "semantic": "place"
+      "semantic": "place",
+      "soften": "mutfağ"
     },
     {
       "id": "iw302",
@@ -8144,7 +8288,23 @@
         "frame": "object"
       },
       "stem": "yıka",
-      "progressiveStem": "yık"
+      "progressiveStem": "yık",
+      "objectTypes": [
+        "clothing",
+        "body",
+        "food",
+        "vehicle"
+      ],
+      "objectLemmas": [
+        "havlu",
+        "tabak",
+        "tencere",
+        "tava",
+        "kaşık",
+        "bıçak",
+        "kase",
+        "fincan"
+      ]
     },
     {
       "id": "iw325",
@@ -8224,7 +8384,8 @@
         "singular": "Socke",
         "plural": "Socken"
       },
-      "semantic": "clothing"
+      "semantic": "clothing",
+      "soften": "çorab"
     },
     {
       "id": "iw328",
@@ -8339,7 +8500,8 @@
         "singular": "Schrank",
         "plural": "Schränke"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "dolab"
     },
     {
       "id": "iw334",
@@ -8520,7 +8682,8 @@
         "singular": "Kindheit",
         "plural": "Kindheiten"
       },
-      "semantic": "thing"
+      "semantic": "thing",
+      "soften": "çocukluğ"
     },
     {
       "id": "iw343",
@@ -9626,7 +9789,7 @@
         ],
         "participle": "angerufen",
         "auxiliary": "haben",
-        "frame": "person-object",
+        "frame": "person-dative",
         "separable": "an"
       },
       "stem": "telefon et",
@@ -11945,7 +12108,25 @@
       "interest": true,
       "voice": {
         "passive": "toplan"
-      }
+      },
+      "objectTypes": [
+        "food",
+        "device",
+        "clothing"
+      ],
+      "objectLemmas": [
+        "kitap",
+        "oyuncak",
+        "bitki",
+        "fotoğraf",
+        "kutu",
+        "kaşık",
+        "tabak",
+        "fincan",
+        "havlu",
+        "yıldız",
+        "hazine"
+      ]
     },
     {
       "id": "irc7bf75f5c7",
@@ -12327,7 +12508,18 @@
       "voice": {
         "passive": "okun",
         "causative": "okut"
-      }
+      },
+      "objectLemmas": [
+        "kitap",
+        "metin",
+        "altyazı",
+        "yorum",
+        "liste",
+        "tarif",
+        "menü",
+        "söz",
+        "cevap"
+      ]
     }
   ],
   "references": [
