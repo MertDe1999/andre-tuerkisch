@@ -31,5 +31,5 @@ for(const lesson of P.lessons){
  for(const id of lesson.targets)e.grammar.state.unlocked[id]=true;e.grammar.save();
  if(lesson.level%40===0)console.log('Audited level '+lesson.level);
 }
-const output=path.join(root,'docs/level-audit-2026-11-13.json');fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
+const output=process.argv[2]?path.resolve(process.argv[2]):path.join(root,'docs/level-audit-2026-11-13.json');fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
 console.log('PASS: '+report.references+' authored references, '+report.scripts.length+' scripts, 160 levels, 23 themes each.');

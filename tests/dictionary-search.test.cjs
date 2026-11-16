@@ -44,6 +44,33 @@ test('DE/TR layouts preserve search text, language-specific letters and Delete p
  assert.equal(a.el('search').value,'äöüßçğıöşü ');
 });
 
+test('search finds Turkish capitals, decomposed accents and plain-keyboard spellings without exposing locked words',()=>{
+ const a=app();a.unlock(['içmek','öğretmen','çay','yıkamak'],{grammar:false});
+ for(const [query,word] of [['İÇMEK','içmek'],['ic\u0327mek','içmek'],['ICMEK','içmek'],['ogretmen','öğretmen'],['cay','çay'],['YIKAMAK','yıkamak']]){
+  a.el('search').value=query;a.run('AndreDictionary.filter()');assert.ok(visible(a).includes(word),query);
+ }
+ a.el('search').value='GİTMEK';a.run('AndreDictionary.filter()');assert.deepEqual(visible(a),[]);
+ a.unlock(['gitmek'],{grammar:false});a.run('AndreDictionary.filter()');assert.ok(visible(a).includes('gitmek'));
+});
+
+test('a search announces its result count and explains an empty filtered result',()=>{
+ const a=app();a.unlock(['ev','gitmek'],{grammar:false});const status=a.el('wordSearchStatus');assert.equal(status.hidden,true);
+ a.el('search').value='Haus';a.run('AndreDictionary.filter()');assert.equal(status.hidden,false);assert.equal(status.textContent,'1 passendes Wort.');
+ a.el('wordTypeFilters').children.find(b=>b.dataset.wordType==='verb').click();assert.match(status.textContent,/Keine freigeschalteten Wörter gefunden/);assert.match(status.textContent,/andere Wortart/);
+ a.el('clearWordSearch').click();assert.equal(status.hidden,true);assert.equal(status.textContent,'');
+});
+
+test('pasting into the readonly search replaces the selection, stays bounded and never changes learning progress',()=>{
+ const a=app(),search=a.el('search');a.unlock(['içmek'],{grammar:false});const saved=[...a.storage];
+ const paste=text=>{const event={type:'paste',clipboardData:{getData:format=>format==='text/plain'?text:''},preventDefault(){this.prevented=true;}};search.dispatchEvent(event);return event;};
+ search.value='altes Wort';search.setSelectionRange(0,10);assert.equal(paste('İÇMEK').prevented,true);
+ assert.equal(search.value,'İÇMEK');assert.ok(visible(a).includes('içmek'));assert.equal(a.el('clearWordSearch').hidden,false);
+ search.setSelectionRange(0,5);paste('ev\nve\tçay');assert.equal(search.value,'ev ve çay');
+ search.setSelectionRange(0,search.value.length);paste('😀'.repeat(130));assert.equal(Array.from(search.value).length,120);
+ assert.equal(search.selectionStart,search.value.length);assert.deepEqual([...a.storage],saved);
+ a.run('showView("grammar",null)');const before=search.value;assert.equal(paste('ev').prevented,undefined);assert.equal(search.value,before);
+});
+
 test('hardware input edits the selection, protects shortcuts/composition, and ignores other fields and button activation',()=>{
  const a=app(),search=a.el('search');a.el('search').click();
  for(const char of 'ev')assert.equal(hardware(a,char).prevented,true);

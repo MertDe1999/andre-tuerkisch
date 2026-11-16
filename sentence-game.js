@@ -5,7 +5,7 @@
   const engine=new L.Engine();
   const duel=root.AndreDuelView.create(engine),delivery=root.AndreLessonDelivery;
   let audioState="",audioGeneration=0;
-  let running=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0,renderedTask=null,landingToken=null;
+  let running=false,resumeAfterPageShow=false,activeGroup=null,selected=null,pendingCard=null,drag=null,advanceTimer=null,suppressUntil=0,bankPage=0,renderedTask=null,landingToken=null;
   const el=id=>document.getElementById(id);
   const make=(tag,classes,text)=>{const e=document.createElement(tag);e.className=classes;e.textContent=text;return e;};
   const task=()=>engine.task();
@@ -153,7 +153,7 @@
     const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
   }
   function typeReading(key){const cur=current();if(!running||cur?.delivery?.mode!=='write'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
-  function topicProgress(){const button=el('sentenceTestButton');if(button)button.setAttribute('aria-label','Mit André und Ben · alle Themen gemischt · '+(engine.state.started?'Weiterlernen':'Los geht’s'));}
+  function topicProgress(){const button=el('sentenceTestButton');if(button){const label=engine.state.started?'Weiterlernen':'Los geht’s';button.setAttribute('aria-label','Mit André und Ben · alle Themen gemischt · '+label);const caption=button.querySelector('.journey-start-label');if(caption)caption.textContent=label;}}
 
   root.refreshSentenceTopics=topicProgress;
   function render(){
@@ -313,7 +313,7 @@
   const hero=make('span','journey-hero');hero.setAttribute('aria-hidden','true');
   for(const [name,svg] of [['andre',AndreDuelArt.andre],['ben',AndreDuelArt.ben]]){const figure=make('span','journey-hero-'+name);figure.innerHTML=svg;hero.append(figure);}
   mixed.classList.add('journey-start');mixed.append(hero,make('strong','journey-title','Mit André & Ben'),make('span','journey-subtitle','Alle Themen · gemeinsam üben'),make('span','journey-start-label','Los geht’s'));
-  mixed.addEventListener('click',()=>root.openSentenceTest(null));topicList.replaceChildren(mixed);
+  mixed.addEventListener('click',()=>root.openSentenceTest(null));topicList.replaceChildren(mixed);topicProgress();
   root.updateProfileLevel();
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
   el('sentenceNextButton').addEventListener('click',next);
@@ -322,8 +322,9 @@
   // bank height after render; fit its pages to the settled layout as well.
   if(root.ResizeObserver)new root.ResizeObserver(()=>{if(running&&!drag)render();}).observe(el('wordBank'));
   document.addEventListener('keydown',event=>{if(!running||current()?.delivery?.mode!=='write'||current().finished||event.isComposing||event.ctrlKey||event.metaKey||event.altKey)return;if(event.target?.closest?.('button')&&['Enter',' '].includes(event.key))return;
-    if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check(false);}else if(event.key==='Backspace'){event.preventDefault();typeReading('BACKSPACE');}else if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)||Array.from(event.key||'').length===1){event.preventDefault();typeReading(event.key);}
+    if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check(false);}else if(event.key==='Backspace'||event.key==='Delete'){event.preventDefault();typeReading(event.key==='Delete'?'DELETE':'BACKSPACE');}else if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)||Array.from(event.key||'').length===1){event.preventDefault();typeReading(event.key);}
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAudio();else if(running)render();});
-  root.addEventListener('pagehide',()=>{stop();engine.save();});
+  root.addEventListener('pagehide',event=>{resumeAfterPageShow=event.persisted===true&&running;if(running)stop();engine.save();});
+  root.addEventListener('pageshow',event=>{const resume=event.persisted===true&&resumeAfterPageShow;resumeAfterPageShow=false;if(!resume||!el('sentenceBuilder').classList.contains('active'))return;running=true;sentenceGameRunning=true;root.AndreSound?.session(true);if(!stageBreak.hidden)showStageBreak();else if(current())render();else next();});
 })(window);

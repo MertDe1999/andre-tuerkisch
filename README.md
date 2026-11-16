@@ -24,6 +24,8 @@ Ein beschrifteter Lautsprecher zeigt Ton aus, Ton an oder Ton + Musik. Antippen 
 
 [Gesamtprüfung und nächste Verbesserungen](docs/kursaudit-2026-11-13.md) dokumentiert die Korrekturen, alle 160 Level und den Abgleich mit Kursquellen. Der folgende Ausbau ergänzt erste eigene Hör-, Dialog- und Schreibübungen; spontane Gespräche und uneingeschränktes freies Schreiben bleiben Folgearbeit.
 
+[App-Prüfung vom 16. November 2026](docs/app-audit-2026-11-16.md) beschreibt weitere Korrekturen an Sprachformen, Satzgenerator, Fehlerwiederholung, Browser-Rückkehr, Suche und Tastatur sowie priorisierte Ideen für den Ausbau.
+
 ## Automatische Runde mit Andrés Interessen
 
 Eine einzige animierte Karte mit André und Ben startet alle Themen gemischt. Satzbau, Hören, geführte Dialogreaktionen und kurze türkische Schreibaufgaben wechseln automatisch. Alle vier Formate nutzen dasselbe Duell und dieselbe bisherige Kurswertung. Deutsche Wörter und Sätze werden ausgewählt, nicht abgetippt. Ähnliche Antworten verwenden nur bekannte Wörter und freigegebene Formen. Stummer Ton oder eine fehlende Stimme bieten einen Textweg, der nicht als Hörnachweis zählt.

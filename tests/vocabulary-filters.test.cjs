@@ -16,6 +16,13 @@ test('categories appear only after both word directions, and every represented t
  for(const button of chips(a)){assert.ok(button.classList.contains(button.dataset.wordType));assert.equal(button.tagName,'BUTTON');assert.equal(button.getAttribute('aria-pressed'),'false');}
 });
 
+test('locked translations are hidden from assistive technology until the word is unlocked',()=>{
+ const a=app(),row=lemma(a,'ev'),content=row.children[0];
+ assert.equal(content.getAttribute('aria-hidden'),'true');assert.equal(content.inert,true);assert.equal(row.querySelector('.word-listen').hidden,true);
+ a.unlock(['ev'],{grammar:false});assert.equal(content.getAttribute('aria-hidden'),'false');assert.equal(content.inert,false);assert.equal(row.querySelector('.word-listen').hidden,false);
+ a.run('resetUnlockDirections("ev")');assert.equal(content.getAttribute('aria-hidden'),'true');assert.equal(content.inert,true);
+});
+
 test('a category tap filters immediately, switching replaces it and a second tap restores the list',()=>{
  const a=app();a.unlock(['ev','gitmek'],{grammar:false});const saved=[...a.storage];
  chip(a,'noun').click();assert.ok(visible(a).length>1);assert.ok(visible(a).every(row=>row.classList.contains('noun')));

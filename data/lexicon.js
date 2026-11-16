@@ -51,6 +51,7 @@
    if(w.tr==='kitap')w.soften='kitab';
    if(w.tr==='okumak')w.voice={passive:'okun'};
    if(w.tr==='yazmak')w.voice={passive:'yazıl',causative:'yazdır'};
+   if(w.tr==='yazmak')w.objectLemmas=['kitap','metin','yorum','liste','tarif','cevap','söz','ödev'];
    if(w.tr==='gülmek')w.voice={causative:'güldür'};
    if(w.tr==='gitmek')w.vowelStem='gid';
    if(w.tr==='güzel')w.deGrammar={positive:'schön',comparative:'schöner',superlative:'schönsten'};

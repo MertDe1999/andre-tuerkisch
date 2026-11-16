@@ -2082,6 +2082,7 @@
         </button>
       </div>
 
+      <p id="wordSearchStatus" class="section-sub" role="status" aria-live="polite" hidden></p>
       <div id="wordList" class="word-list">
         <!-- Populated from data/words.js. -->
       </div>
@@ -2146,10 +2147,10 @@
       </div>
 
       <div id="completion" class="panel completion">
-        <div class="big">✓</div>
+        <div id="quizCompletionIcon" class="big" aria-hidden="true">✓</div>
         <h2>Runde geschafft</h2>
         <p>Du hast alle Karten dieser Runde angesehen.</p>
-        <button class="restart-btn" onclick="restartQuiz()">Nochmal starten</button>
+        <button id="quizCompletionAction" class="restart-btn" onclick="completeQuizAction()">Nochmal starten</button>
       </div>
     </div>
     </div>
@@ -2288,29 +2289,29 @@
 
 <div id="searchKeyboard" class="custom-keyboard search-keyboard" role="group" aria-label="App-Tastatur für die Wortschatzsuche" hidden inert></div>
 
-<script src="data/lexicon.js?v=20261005-interests"></script>
-<script src="data/interests.js?v=20261005-interests"></script>
-<script src="data/words.js?v=20261005-interests"></script>
-<script src="lib/turkish.js?v=20261113-audit"></script>
-<script src="lib/building-blocks.js?v=20261005-interests"></script>
+<script src="data/lexicon.js?v=20261116-audit"></script>
+<script src="data/interests.js?v=20261116-audit"></script>
+<script src="data/words.js?v=20261116-audit"></script>
+<script src="lib/turkish.js?v=20261116-audit"></script>
+<script src="lib/building-blocks.js?v=20261116-audit"></script>
 <script src="lib/curriculum.js?v=20261005-interests"></script>
-<script src="lib/grammar.js?v=20261005-interests"></script>
+<script src="lib/grammar.js?v=20261116-audit"></script>
 <script src="lib/learning.js?v=20261005-interests"></script>
 <script src="data/course-data.js?v=20261005-interests"></script>
 <script src="lib/course.js?v=20261009-guided"></script>
 <script src="data/interest-references.js?v=20261113-audit"></script>
-<script src="lib/interest-generator.js?v=20261005-interests"></script>
-<script src="lib/course-grammar.js?v=20261005-interests"></script>
+<script src="lib/interest-generator.js?v=20261116-audit"></script>
+<script src="lib/course-grammar.js?v=20261116-audit"></script>
 <script src="data/learning-packages.js?v=20261005-interests"></script>
 <script src="lib/course-progress.js?v=20261005-interests"></script>
 <script src="lib/learning-path.js?v=20261009-guided"></script>
-<script src="lib/course-learning.js?v=20261005-interests"></script>
-<script src="lib/guided-learning.js?v=20261114-journey"></script>
+<script src="lib/course-learning.js?v=20261116-audit"></script>
+<script src="lib/guided-learning.js?v=20261116-audit"></script>
 <script src="lib/interest-practice.js?v=20261114-journey"></script>
 <script src="lib/word-preparation.js?v=20261114-journey"></script>
 <script src="lib/motion.js?v=20261113-feedback"></script>
 <script src="lib/app-keyboard.js?v=20261113-feedback"></script>
-<script src="lib/answer-editor.js?v=20261009-guided"></script>
+<script src="lib/answer-editor.js?v=20261116-audit"></script>
 <script>
   const flashcards = AndreWords.cards.map(card=>({...card}));
   const typingWords = AndreWords.words.map(word=>({...word, deAnswers:[...word.deAnswers]}));
@@ -3136,12 +3137,21 @@
       document.getElementById("completion").classList.add("show");
       document.querySelector("#completion h2").textContent = "Noch keine Wörter freigeschaltet";
       document.querySelector("#completion p").textContent = "Schalte zuerst Wörter frei, damit sie hier erscheinen.";
+      document.getElementById("quizCompletionIcon").hidden = true;
+      document.getElementById("quizCompletionAction").textContent = "Wörter freischalten";
       return;
     }
 
     document.querySelector("#completion h2").textContent = "Runde geschafft";
     document.querySelector("#completion p").textContent = "Du hast alle Karten dieser Runde angesehen.";
+    document.getElementById("quizCompletionIcon").hidden = false;
+    document.getElementById("quizCompletionAction").textContent = "Nochmal starten";
     nextCard();
+  }
+
+  function completeQuizAction(){
+    if(!getAvailableFlashcards().length) return openLearnMode("typing");
+    restartQuiz();
   }
 
   function restartQuiz(){
@@ -3532,8 +3542,8 @@
   window.addEventListener("DOMContentLoaded", refreshUnlockUI);
 </script>
 <script src="lib/filter-layout.js?v=20261005-interests"></script>
-<script src="lib/dictionary.js?v=20261113-word-audio"></script>
-<script src="lib/dictionary-search.js?v=20261005-interests"></script>
+<script src="lib/dictionary.js?v=20261116-audit"></script>
+<script src="lib/dictionary-search.js?v=20261116-audit"></script>
 <script src="lib/sound.js?v=20261114-journey"></script>
 <script src="lib/speech-player.js?v=20261113-word-audio"></script>
 <script src="lib/duel.js?v=20261114-duel"></script>
@@ -3541,9 +3551,9 @@
 <script src="duel-view.js?v=20261114-duel"></script>
 <script src="lib/lesson-delivery.js?v=20261114-journey"></script>
 <script src="journey-rewards.js?v=20261114-journey"></script>
-<script src="sentence-game.js?v=20261114-journey"></script>
+<script src="sentence-game.js?v=20261116-audit"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
-<script src="word-training.js?v=20261114-journey"></script>
-<script src="interest-practice.js?v=20261114-journey"></script>
+<script src="word-training.js?v=20261116-audit"></script>
+<script src="interest-practice.js?v=20261116-audit"></script>
 </body>
 </html>

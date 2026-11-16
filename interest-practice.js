@@ -70,8 +70,8 @@
   if(t.text)feedback.textContent=feedback.textContent?feedback.textContent+' · Textübung':'Textübung · kein Hörnachweis';
  }
  $('practiceBack').addEventListener('click',()=>root.closeSentenceTest());$('practiceKeep').addEventListener('click',()=>{if(model.keep())render();});
- document.addEventListener('keydown',event=>{const t=model.task(),s=model.current;if(!active||!s||s.finished||!t||t.done||!(s.mode==='write'||t.options.length<2)||(s.mode==='listen'&&!t.heard&&!t.text)||event.ctrlKey||event.metaKey||event.altKey)return;
-  if(event.key==='Enter'){event.preventDefault();check(t.draft);}else if(event.key==='Backspace'){event.preventDefault();edit('BACKSPACE');}else if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)||Array.from(event.key||'').length===1){event.preventDefault();edit(event.key);}
+ document.addEventListener('keydown',event=>{const t=model.task(),s=model.current;if(!active||!s||s.finished||!t||t.done||!(s.mode==='write'||t.options.length<2)||(s.mode==='listen'&&!t.heard&&!t.text)||event.isComposing||event.ctrlKey||event.metaKey||event.altKey||event.target?.closest?.('input,textarea,select,[contenteditable=true]'))return;if(event.target?.closest?.('button')&&['Enter',' '].includes(event.key))return;
+  if(event.key==='Enter'){event.preventDefault();if(!event.repeat)check(t.draft);}else if(event.key==='Backspace'||event.key==='Delete'){event.preventDefault();edit(event.key==='Delete'?'DELETE':'BACKSPACE');}else if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)||Array.from(event.key||'').length===1){event.preventDefault();edit(event.key);}
  });
  root.SkillPractice={model,open,close,render,check,next,refreshTopics,get active(){return active;},get mode(){return model.mode();}};modes();
 })(window);
