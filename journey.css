@@ -51,3 +51,67 @@ body.sentence-journey-active #sentenceGameActive .sentence-bank-area{min-height:
 .sentence-reading-options .study-option.is-incorrect::after{content:' ×';font-weight:900}
 .journey-replay{flex:0 0 42px!important;width:42px;padding:8px!important}.journey-replay svg{width:20px;height:20px;display:block;margin:auto}.journey-replay[aria-pressed="true"]{background:var(--lavender);color:var(--lavender-dark)}
 .duel-remaining{font-size:9px;line-height:1;white-space:nowrap}.duel-foe-label{gap:3px}
+
+/* The chat occupies the existing prompt area, including while the keyboard is open. */
+body.sentence-journey-active .sentence-prompt.conversation-window {
+  display:grid;
+  align-content:start;
+  gap:4px;
+  min-width:0;
+  margin:0;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface-soft);
+  text-align:start;
+}
+#sentenceGameActive .conversation-window #sentencePromptDirection {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+}
+.conversation-window #sentencePromptDirection::before {
+  content:'M';
+  display:grid;
+  place-items:center;
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  background:var(--lavender);
+  color:var(--lavender-dark);
+}
+.conversation-window #sentencePrompt, .conversation-window .chat-bubble {
+  justify-self:start;
+  max-width:96%;
+  padding:5px 9px;
+  border-radius:12px 12px 12px 3px;
+  background:var(--surface);
+  color:var(--text);
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.conversation-window .outgoing {
+  justify-self:end;
+  border-radius:12px 12px 3px 12px;
+  background:var(--verb-soft);
+  color:var(--verb-dark);
+  font-size:clamp(12px,1.8dvh,15px);
+}
+.conversation-window #conversationCue:not([hidden]) {
+  display:block;
+  margin:0;
+  color:var(--muted);
+  font-size:clamp(11px,1.7dvh,13px);
+  line-height:1.25;
+}
+#sentenceGameActive.is-chat .sentence-reading-options .study-option {
+  border-radius:14px 14px 4px 14px;
+}
+@media (max-height:600px) {
+  body.sentence-journey-active .sentence-prompt.conversation-window {gap:2px;padding:4px 7px}
+  .conversation-window #sentencePromptDirection::before {width:15px;height:15px;font-size:10px}
+  .conversation-window #sentencePrompt,.conversation-window .chat-bubble {padding:3px 7px}
+}

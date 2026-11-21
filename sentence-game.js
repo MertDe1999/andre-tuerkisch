@@ -155,6 +155,10 @@
     const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
   }
   function typeReading(key){const cur=current();if(!running||cur?.delivery?.mode!=='write'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
+  function chooseChatReply(){
+    if(!running||!root.AndreStudyRounds.showPicks(engine))return;
+    message('');render();readingOptions.children[0]?.focus({preventScroll:true});
+  }
   function topicProgress(){const button=el('sentenceTestButton');if(!button)return;const missing=engine.missingWords().length,label=missing?'Wörter lernen':engine.state.started?'Weiterlernen':'Los geht’s';button.setAttribute('aria-label','Mit André und Ben · '+label);const action=button.querySelector('.journey-start-label'),subtitle=button.querySelector('.journey-subtitle');if(action)action.textContent=label;if(subtitle)subtitle.textContent=missing?missing+' Wörter für Level '+engine.preparationLevel():engine.flow.finished?'Alle Themen · frei üben':'Level '+engine.flow.level+' · alle Themen gemischt';}
 
   root.refreshSentenceTopics=topicProgress;
@@ -164,7 +168,14 @@
     const cur=current(),t=task();if(!cur||!t)return;
     const format=delivery.prepare(engine),mode=format.mode,options=format.options;
     const sameTask=renderedTask===cur.id;
-    const oldPrompt=!sameTask?AndreMotion.snapshot(el('sentencePrompt')):null;
+    const chat=(!cur.extra&&mode==='dialog')||cur.extra?.kind==='dialog';
+    const panel=el('sentencePromptPanel');
+    const chatKey=cur.extra?.kind==='dialog'?'thread-'+cur.extra.key:'task-'+cur.id;
+    const enteringChat=chat && panel.dataset.thread!==chatKey;
+    panel.classList.toggle('conversation-window',chat);
+    el('sentenceGameActive').classList.toggle('is-chat',chat);
+    panel.dataset.thread=chat?chatKey:'';
+    const oldPrompt=!chat&&!sameTask?AndreMotion.snapshot(el('sentencePrompt')):null;
     const before=sameTask?AndreMotion.captureCards([...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')]):new Map();
     renderedTask=cur.id;
     if(!t.groups.some(g=>g.id===activeGroup))activeGroup=t.groups[0].id;
@@ -182,29 +193,38 @@
     el('sentencePrompt').textContent=listening?(cur.finished||format.text?t.answer:'Hör genau hin'):t.de;
     el('sentencePromptDirection').textContent=listening?(format.text?'Türkisch → Deutsch':'Türkisch hören'):mode==='dialog'?'Mert · '+scene:mode==='write'?'An Mert · auf Türkisch':'Deutsch → Türkisch';
     const cue=el('conversationCue');
-    cue.hidden=cur.extra?.kind!=='dialog';
+    cue.hidden=!chat||cur.finished;
+    if(chat)cue.textContent='Antworte auf Türkisch.';
     if(cur.extra){
       const extra=cur.extra;
       const label=extra.kind==='dialog'?'Gespräch':'Wiederholung';
       el('sentenceModeLabel').textContent=label+' · '+(extra.index+1)+' / '+extra.total;
       el('sentenceModeLabel').title=label;
       if(extra.kind==='dialog'){
-        el('sentencePromptDirection').textContent=extra.title+(extra.previous?(extra.defaultPick?' · Merts Vorschlag: ':' · André: ')+extra.previous:'');
-        el('sentencePrompt').textContent='Mert: '+extra.prompt;
+        el('sentencePromptDirection').textContent='Mert · '+extra.title;
+        el('sentencePrompt').textContent=extra.prompt;
         cue.textContent=extra.cue;
       }else el('sentencePromptDirection').textContent=extra.card.kind==='skills'?(G.byId[extra.card.id]?.label||'Form üben'):extra.card.kind==='words'?'Wort auf Türkisch':'Satz noch einmal bauen';
     }
+    const sent=chat && cur.finished && format.sentText;
+    const previous=chat && !sent && !cur.extra?.defaultPick ? cur.extra?.previous : '';
+    for(const [id,text] of [['conversationPrevious',previous],['conversationSent',sent]]){
+      const bubble=el(id);bubble.hidden=!text;bubble.textContent=text||'';
+      if(text)bubble.setAttribute('aria-label','André: '+text);
+    }
+    el('sentencePrompt').setAttribute('lang',cur.extra?.kind==='dialog'||(listening&&(format.text||cur.finished))?'tr':'de');
+    if(enteringChat)AndreMotion.play(panel,[{opacity:0,transform:'translateY(6px) scale(.985)'},{opacity:1,transform:'none'}],{duration:150,slot:'chat'});
     reading.hidden=mode==='build';el('sentenceGameActive').classList.toggle('reading-mode',mode!=='build');
     el('sentenceGameActive').classList.toggle('reading-writing',mode==='write'&&!cur.finished);
     listenActions.hidden=!listening||cur.finished;listenButton.disabled=['loading','playing'].includes(audioState);
     listenButton.textContent=audioState==='loading'?'Lädt …':audioState==='playing'?'Wird vorgelesen …':format.heard?'Noch einmal hören':'Anhören';textButton.hidden=format.text;
-    readingAnswer.hidden=mode!=='write';readingOptions.hidden=!options.length;readingOptions.replaceChildren();
+    readingAnswer.hidden=mode!=='write'||Boolean(sent);readingOptions.hidden=!options.length||Boolean(sent);readingOptions.replaceChildren();
     for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished||!canAnswer||format.rejected?.includes(text);choice.setAttribute('lang',cur.direction==='de'?'de':'tr');choice.setAttribute('aria-pressed',String(cur.draft===text));
       if(format.rejected?.includes(text)){choice.classList.add('is-incorrect');choice.setAttribute('aria-label',text+' · Noch nicht richtig');}
       if(cur.finished&&text===(cur.direction==='de'?t.de:t.answer))choice.classList.add('is-correct');
       choice.addEventListener('click',()=>{if(choice.disabled)return;cur.draft=text;save();check(false);});readingOptions.append(choice);
     }
-    if(mode==='write'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('tr',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}
+    if(mode==='write'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('tr',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:cur.extra?.openReply?chooseChatReply:()=>check(true),skipLabel:cur.extra?.openReply?'Auswählen':'Keine Ahnung',checkLabel:cur.extra?.openReply?'Nachricht senden':'Antwort prüfen',reset:!sameTask,contextKey:cur.id});}
     else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
     duel.render(el('sentenceGameActive'));
     topicProgress();
@@ -253,7 +273,7 @@
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
     AndreMotion.cards(before,[...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')].filter(node=>node.dataset.modernToken!==landingToken));
     if(!sameTask){
-      AndreMotion.enter(el('sentencePrompt'));
+      if(!enteringChat)AndreMotion.enter(el('sentencePrompt'));
       if(oldPrompt)AndreMotion.play(oldPrompt,[{opacity:1},{opacity:0}],{duration:160,cleanup:()=>oldPrompt.remove()});
     }
   }
@@ -262,7 +282,7 @@
     next();
   }
   function stop(){
-    cancelAudio();root.AndreJourneyRewards?.cancel();duel.hide();readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;root.AndreSound?.session(false);clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
+    el('sentencePromptPanel').dataset.thread='';cancelAudio();root.AndreJourneyRewards?.cancel();duel.hide();readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);running=false;sentenceGameRunning=false;root.AndreSound?.session(false);clearTimeout(advanceTimer);advanceTimer=null;clearDrag();stopConfettiCelebration();
     if(root.GrammarTrainer?.active)root.GrammarTrainer.close(false);
   }
   function next(){
@@ -295,13 +315,14 @@
     const duelBefore=duel.capture();
     const beforeProgress=root.AndreJourneyRewards?.capture();
     const result=delivery.check(engine,{unknown,answer:current().draft});
+    if(result.unrecognized){message('Die Antwort kenne ich noch nicht. Versuch es kürzer oder tippe auf „Auswählen“.');return;}
     if(result.ignored)return;
     cancelAudio();const cue=duel.record(duelBefore,result,{unknown});render();duel.animate(cue);root.AndreJourneyRewards?.victory(cue,beforeProgress);
     const sounds={hit:'duelHit',assist:'duelHit',win:'duelWin',hurt:'duelHurt',help:'duelHelp'};
     root.AndreSound?.effect(result.transition?.pass||result.delta>0?'level':sounds[cue?.action]||(result.correct?'correct':'retry'));
     const transition=result.transition,roundNote=!transition?'':transition.pass?(engine.flow.finished?'B2-Runde geschafft!':'Level '+transition.from+' geschafft · Weiter mit Level '+transition.to+'.'):'Runde beendet · Level '+transition.to+' üben. '+(transition.reason==='forms'?'Neue Formen brauchen noch Übung.':'Mehr direkt richtige Antworten nötig.');
     if(result.correct){
-      message(task().answer+(roundNote?' · '+roundNote:''),'ok');
+      message((current().delivery.sentText?'':task().answer)+(roundNote?' · '+roundNote:''),'ok');
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
       if(milestone)celebrateCorrectAnswer();
