@@ -2029,7 +2029,7 @@
   <link rel="stylesheet" href="guided-learning.css?v=20261113-feedback">
   <link rel="stylesheet" href="interest-practice.css?v=20261113-practice">
 <link rel="stylesheet" href="duel.css?v=20261114-duel">
-<link rel="stylesheet" href="journey.css?v=20261121-ux">
+<link rel="stylesheet" href="journey.css?v=20261121-chat">
 </head>
 
 <body>
@@ -2232,7 +2232,7 @@
             <span id="sentenceSoundSlot"></span>
           </div>
           <div id="sentenceStorageWarning" class="sentence-storage-warning" role="status" hidden></div>
-          <div class="sentence-prompt"><div id="sentencePromptDirection" class="sentence-prompt-label">Deutsch → Türkisch</div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div><div id="conversationCue" class="sentence-prompt-label" hidden></div></div>
+          <div class="sentence-prompt" id="sentencePromptPanel"><div id="sentencePromptDirection" class="sentence-prompt-label">Deutsch → Türkisch</div><div id="conversationPrevious" class="chat-bubble outgoing" lang="tr" hidden></div><div id="sentencePrompt" class="sentence-prompt-text" tabindex="-1"></div><div id="conversationSent" class="chat-bubble outgoing" lang="tr" hidden></div><div id="conversationCue" class="sentence-prompt-label" hidden></div></div>
           <div class="sentence-construction"><div class="sentence-zone-label">Dein Satz</div><div id="answerZone" class="drop-zone answer-zone" aria-label="Satzteile"></div></div>
           <div class="sentence-bank-area"><div class="sentence-bank-heading"><span class="sentence-zone-label">Wörter</span><div id="sentenceBankPages" class="sentence-pages" hidden></div></div><div id="wordBank" class="drop-zone word-bank" aria-label="Wörter, Endungen und Formen"></div></div>
           <div id="sentenceFeedback" class="sentence-feedback" role="status" aria-live="polite"></div>
@@ -2305,8 +2305,8 @@
 <script src="lib/course-progress.js?v=20261005-interests"></script>
 <script src="lib/learning-path.js?v=20261009-guided"></script>
 <script src="lib/course-learning.js?v=20261005-interests"></script>
-<script src="data/conversations.js?v=20261121-rounds"></script>
-<script src="lib/study-rounds.js?v=20261121-rounds"></script>
+<script src="data/conversations.js?v=20261121-chat"></script>
+<script src="lib/study-rounds.js?v=20261121-chat"></script>
 <script src="lib/guided-learning.js?v=20261121-rounds"></script>
 <script src="lib/interest-practice.js?v=20261114-journey"></script>
 <script src="lib/word-preparation.js?v=20261121-rounds"></script>
@@ -3541,9 +3541,9 @@
 <script src="lib/duel.js?v=20261121-rounds"></script>
 <script src="lib/duel-art.js?v=20261114-ben"></script>
 <script src="duel-view.js?v=20261121-ux"></script>
-<script src="lib/lesson-delivery.js?v=20261121-rounds"></script>
+<script src="lib/lesson-delivery.js?v=20261121-chat"></script>
 <script src="journey-rewards.js?v=20261114-journey"></script>
-<script src="sentence-game.js?v=20261121-rounds"></script>
+<script src="sentence-game.js?v=20261121-chat"></script>
 <script src="grammar-ui.js?v=20261009-guided"></script>
 <script src="word-training.js?v=20261114-journey"></script>
 <script src="interest-practice.js?v=20261114-journey"></script>

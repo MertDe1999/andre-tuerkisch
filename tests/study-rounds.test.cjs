@@ -105,3 +105,71 @@ test('the normal checkpoint opens a conversation, saves the branch and returns t
   buttons().find(b=>b.textContent===a.run('SentenceGame.task.answer')).click();a.el('sentenceNextButton').click();
   assert.equal(a.run('SentenceGame.current.extra'),undefined);assert.equal(a.run('SentenceGame.engine.stageSummary().done'),0);
 });
+
+test('every available topic has one turn per cycle and written chats are spaced from B1',()=>{
+  for(const level of [1,80,81,160]){
+    const e=learner(level),seen=new Set(),written=[];
+    for(let i=0;i<23;i++){
+      boundary(e,3);const c=S.next(e),run=e.state.studyRun;
+      assert.equal(run.kind,'dialog');assert.ok(!seen.has(c.roundTheme),'repeated '+c.roundTheme);seen.add(c.roundTheme);
+      if(c.extra.openReply){
+        written.push(i);
+        const reply=run.branches[1].replies.at(-1).answer;
+        assert.ok(A.check(e,{answer:reply}).correct);
+        assert.equal(S.next(e).extra.previous,reply);
+      }else{
+        assert.ok(A.check(e,{answer:run.branches[0].pick.answer}).correct);S.next(e);
+      }
+      assert.ok(A.check(e,{answer:e.task().answer}).correct);assert.equal(S.next(e),null);
+    }
+    assert.equal(seen.size,23);
+    if(level<81)assert.equal(written.length,0);
+    else {assert.ok(written.length>0);assert.ok(written.every((n,i)=>!i||n-written[i-1]>=3));}
+  }
+});
+
+test('unrecognized chat text stays ungraded, a restored natural reply selects its own branch',()=>{
+  const e=learner(81);boundary(e,3);
+  const first=S.next(e);assert.equal(first.extra.openReply,true);
+  const b=e.state.studyRun.branches[1],typed=b.replies.at(-1).answer+'!';
+  assert.deepEqual(A.prepare(e).options,[]);
+  assert.ok(A.check(e,{answer:'Bunu istemiyorum.'}).unrecognized);
+  assert.equal(first.attempts,0);
+  first.draft=typed;e.save();const restored=new L.Engine({storage:e.storage});
+  assert.equal(S.next(restored).draft,typed);assert.equal(A.check(restored).correct,true);
+  const second=S.next(restored);assert.equal(second.extra.previous,typed);
+  assert.equal(second.task.answer,b.answer.answer);assert.equal(second.extra.defaultPick,false);
+});
+
+test('chat panel enters once and the keyboard can switch to branch choices',()=>{
+  const a=app({reducedMotion:false});learnTo(a,81);
+  a.run('openSentenceTest(null);{const e=SentenceGame.engine,r=e.round();r.intro=2;r.items=Array.from({length:12},()=>({direct:true}));r.stage={start:6,number:2};e.state.current.finished=true;SentenceGame.next();}');
+  a.el('sentenceStageBreak').querySelectorAll('button').find(b=>b.textContent==='Nächste Etappe').click();
+  const panel=a.el('sentencePromptPanel');
+  assert.ok(panel.classList.contains('conversation-window'));
+  assert.equal(a.el('sentenceReadingKeyboard').hidden,false);
+  const pops=()=>a.animations.filter(x=>x.target===panel).length;
+  assert.equal(pops(),1);
+  const skip=a.el('sentenceReadingKeyboard').querySelectorAll('button').find(b=>b.dataset.action==='skip');
+  assert.equal(skip.textContent,'Auswählen');skip.click();
+  const buttons=()=>a.el('sentenceReading').querySelectorAll('.study-option');
+  assert.ok(a.el('sentenceReadingKeyboard').hidden);assert.equal(buttons().length,2);
+  const chosen=buttons()[1].textContent;buttons()[1].click();
+  assert.equal(a.el('conversationSent').textContent,chosen);
+  a.el('sentenceNextButton').click();assert.equal(a.el('conversationPrevious').textContent,chosen);
+  assert.equal(pops(),1);buttons().find(b=>b.textContent===a.run('SentenceGame.task.answer')).click();
+  a.el('sentenceNextButton').click();assert.ok(a.el('conversationPrevious').hidden);
+});
+
+test('also recalls correctly unlocked words in spaced writing and never credits choosing a spelling',()=>{
+  const e=learner();boundary(e,4);const first=S.next(e),id=first.extra.card.id;
+  assert.equal(first.extra.mode,'write');assert.ok(!P.auto.has(id));
+  assert.equal(A.check(e,{answer:first.task.answer}).correct,true);
+  assert.equal(e.state.words[id].spellings,1);assert.equal(S.next(e),null);
+  boundary(e,4);assert.notEqual(S.next(e)?.extra?.card?.id,id);
+  const c=e.state.current;
+  if(!c.finished)A.check(e,{unknown:true});
+  const slot={lemma:id,features:{}},fake={id:1000,task:{groups:[{slots:[slot]}]}};
+  S.recordSpelling(e,fake,'ganz anderes Wort');assert.equal(e.state.words[id].spellings,1);
+  S.recordSpelling(e,fake,W.byId[id].tr);S.recordSpelling(e,fake,W.byId[id].tr);assert.equal(e.state.words[id].spellings,2);
+});
