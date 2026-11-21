@@ -120,7 +120,22 @@ test('every available topic has one turn per cycle and written chats are spaced 
       }else{
         assert.ok(A.check(e,{answer:run.branches[0].pick.answer}).correct);S.next(e);
       }
-      assert.ok(A.check(e,{answer:e.task().answer}).correct);assert.equal(S.next(e),null);
+      assert.ok(A.check(e,{answer:e.task().answer}).correct);
+      if(level>=81){
+        const decision=S.next(e);
+        assert.equal(decision.extra.mode,'dialog');
+        const selected=run.fork.choices[i%2];
+        assert.ok(A.check(e,{answer:selected.pick.answer}).correct);
+        const last=S.next(e);
+        assert.equal(last.extra.previous,selected.pick.answer);
+        assert.equal(last.extra.mode,'build');
+        assert.equal(last.task.answer,selected.answer.answer);
+        assert.ok(last.extra.prompt.toLocaleLowerCase('tr').includes(selected.question.answer.toLocaleLowerCase('tr')));
+        last.tokens=last.task.groups.flatMap(g=>g.slots.map((s,i)=>({...s,id:g.id+i,group:g.id})));
+        assert.ok(A.check(e).correct);
+        assert.equal(last.delivery.sentText,last.task.answer);
+      }
+      assert.equal(S.next(e),null);
     }
     assert.equal(seen.size,23);
     if(level<81)assert.equal(written.length,0);
@@ -158,7 +173,50 @@ test('chat panel enters once and the keyboard can switch to branch choices',()=>
   assert.equal(a.el('conversationSent').textContent,chosen);
   a.el('sentenceNextButton').click();assert.equal(a.el('conversationPrevious').textContent,chosen);
   assert.equal(pops(),1);buttons().find(b=>b.textContent===a.run('SentenceGame.task.answer')).click();
-  a.el('sentenceNextButton').click();assert.ok(a.el('conversationPrevious').hidden);
+  a.el('sentenceNextButton').click();assert.ok(!a.el('conversationPrevious').hidden);
+  buttons()[1].click();const decision=a.el('conversationSent').textContent;
+  a.el('sentenceNextButton').click();
+  assert.equal(a.el('conversationPrevious').textContent,decision);
+  assert.equal(a.run('SentenceGame.current.delivery.mode'),'build');
+  assert.equal(a.el('sentenceReadingKeyboard').hidden,true);
+  assert.ok(a.el('wordBank').children.length);
+  a.run('closeSentenceTest();openSentenceTest(null)');
+  assert.equal(a.el('conversationPrevious').textContent,decision);
+  assert.equal(a.run('SentenceGame.current.extra.index'),3);
+});
+
+test('the middle reply gets a contextual reaction and older two-turn saves still end after turn two',()=>{
+  const e=learner(81);boundary(e,3);
+  S.next(e);
+  assert.ok(A.check(e,{answer:e.state.studyRun.branches[0].pick.answer}).correct);
+  const second=S.next(e);
+  assert.ok(second.extra.reaction);
+  assert.ok(A.check(e,{answer:second.task.answer}).correct);
+  const saved=JSON.stringify(e.state.studyRun);
+  const loaded=new L.Engine({storage:e.storage});
+  assert.ok(S.next(loaded).extra.prompt.startsWith(second.extra.reaction+'. '));
+  e.state.studyRun=JSON.parse(saved);
+  delete e.state.studyRun.fork;e.state.studyRun.total=2;
+  assert.equal(S.next(e),null);
+});
+
+test('the cooking fork asks real Turkish yes/no questions and accepts the contrasting ingredients as blocks',()=>{
+  const e=learner(81);
+  const {fork}=S.dialogues(e).find(c=>c.scene.theme==='T20');
+  const [soup,sushi]=fork.choices;
+  assert.equal(soup.question.answer,'tencere var mı');
+  assert.equal(sushi.question.answer,'pirinç var mı');
+  assert.equal(sushi.answer.answer,'pirinç var ama somon yok');
+  assert.ok(e.requiredFor(sushi.question).some(id=>id.startsWith('predicate:')));
+  const exercise=e.begin(sushi.answer);
+  const group=exercise.task.groups[0];
+  for(const slot of group.slots){
+    const token=exercise.tokens.find(t=>!t.group && t.lemma===slot.lemma);
+    assert.ok(token);token.group=group.id;
+  }
+  exercise.extra={kind:'dialog',index:3,mode:'build'};
+  assert.ok(A.check(e).correct);
+  assert.equal(exercise.delivery.sentText,sushi.answer.answer);
 });
 
 test('also recalls correctly unlocked words in spaced writing and never credits choosing a spelling',()=>{

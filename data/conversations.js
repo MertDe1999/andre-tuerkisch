@@ -175,6 +175,144 @@
     const target=scenes.find(s=>s.title===title).branches.find(b=>b.pick===pick);
     target.followups=[{question,cue,answer,other}];
   }
+  // A second, open decision in the same conversation. Each possible message
+  // carries Mert's own follow-up and the sentence André can build in reply.
+  const at = word => noun(word,'locative');
+  const past = (word,person) => verb(word,'past',person);
+  const present = (word,person) => verb(word,'present',person);
+  const available = {question:true};
+  const isThere = word => [word,['var',available]];
+  const route = (pick,question,cue,answer) => ({pick,question,cue,answer});
+  const plans = {
+    T01: [['ne',past('beğenmek','sen')],
+      route('sunucu',['sunucu','komik', ['değil',available]],'Du magst die Sendung, weil der Moderator lustig ist.', [noun('program','accusative'),present('sevmek','ben'),'çünkü','sunucu','komik']),
+      route('yarışmacı',['yarışmacı',['komik',available]],'Du fandest den Kandidaten süß.', ['yarışmacı','sevimli'])],
+    T02: [['Zelda','için','ne',present('istemek','sen')],
+      route('kılıç',isThere('kılıç'),'Du hast ein neues Schwert entdeckt.', ['yeni','kılıç','var']),
+      route('kalkan',isThere('kalkan'),'Der Schild ist im Haus.', ['kalkan',at('ev')])],
+    T03: [['bugün','ne',present('istemek','sen')],
+      route('antrenman',['antrenman','bugün', ['değil',available]],'Das Training ist morgen.', ['antrenman','yarın']),
+      route('havuz',isThere('havlu'),'Dein Handtuch liegt im Auto.', ['havlu',at('araba')])],
+    T04: [['yarın','ne','var'],
+      route('sınav',isThere('soru'),'Die Frage ist leicht.', ['soru','kolay']),
+      route('ödev',['ödev',['kolay',available]],'Die Hausaufgabe ist kurz.', ['ödev','kısa'])],
+    T05: [['ne',present('istemek','sen')],
+      route('burger',isThere('sos'),'Es gibt scharfe Soße.', ['acı','sos','var']),
+      route('çorba',['çorba',['sıcak',available]],'Die Suppe ist warm.', ['çorba','sıcak'])],
+    T06: [['ne',present('giymek','sen')],
+      route('atlet',['atlet',['yeni',available]],'Das Tanktop ist neu.', ['atlet','yeni']),
+      route('kot pantolon',['kot pantolon',['yeni',available]],'Die Jeans ist ein Geschenk.', ['kot pantolon','bir','hediye'])],
+    T07: [['Ben','ne',present('istemek','o')],
+      route('top',['top',at('ev'),['değil',available]],'Bens Ball liegt im Auto.', ['top',at('araba')]),
+      route('mama',isThere('mama'),'Du hast das Futter im Auto.', ['mama',at('araba')])],
+    T08: [['ne', ['izlemek',{tense:'infinitive'}],present('istemek','sen')],
+      route('film',['film',['komik',available]],'Der Film ist kurz, aber lustig.', ['film','kısa','ama','komik']),
+      route('dizi',isThere('altyazı'),'Es gibt Untertitel.', ['altyazı','var'])],
+    T09: [['ne',past('beğenmek','sen')],
+      route('kahraman',['kahraman',['komik',available]],'Der Held ist stark und lustig.', ['kahraman','güçlü','ve','komik']),
+      route('düşman',['düşman',['komik',available]],'Der Gegner ist ein Roboter.', ['düşman','bir','robot'])],
+    T10: [['ne',present('istemek','sen')],
+      route('Quest 3',isThere('pil'),'Die Batterie liegt auf dem Tisch.', ['pil',at('masa')]),
+      route('PS5',isThere('kumanda'),'Der Controller ist zu Hause.', ['kumanda',at('ev')])],
+    T11: [['ne',present('istemek','sen')],
+      route('takım',['takım',['yeni',available]],'Das Team ist neu, aber stark.', ['takım','yeni','ama','güçlü']),
+      route('görev',['görev',['kolay',available]],'Die Mission ist kurz.', ['görev','kısa'])],
+    T12: [['ne',present('istemek','sen')],
+      route('ekmek',isThere('ekmek'),'Es gibt noch Brot.', ['ekmek','var']),
+      route('süt',isThere('süt'),'Die Milch ist aus.', ['süt','yok'])],
+    T13: [['ne',present('istemek','sen')],
+      route('kek',['kek',['tatlı',available]],'Der Kuchen ist süß.', ['kek','tatlı']),
+      route('muz',isThere('çikolata'),'Zur Banane ist noch Schokolade da.', ['çikolata','var'])],
+    T14: [['ne',present('istemek','sen')],
+      route('matcha',['matcha','Mert','için', ['değil',available]],'Der Matcha ist für Mert.', ['matcha','Mert','için']),
+      route('çay',isThere('süt'),'Für den Tee ist Milch da.', ['süt','var'])],
+    T15: [['bugün','ne', ['görmek',{tense:'infinitive'}],present('istemek','sen')],
+      route('müze',['müze',['güzel',available]],'Das Museum ist klein, aber schön.', ['müze','küçük','ama','güzel']),
+      route('köprü',['köprü',['güzel',available]],'Die Brücke ist schön.', ['köprü','güzel'])],
+    T16: [['ne',present('istemek','sen')],
+      route('Sriracha',['sos',['acı',available]],'Die Soße ist scharf.', ['sos','acı']),
+      route('Jalapeño',isThere('biber'),'Es gibt scharfe Paprika.', ['acı','biber','var'])],
+    T17: [['ne',present('istemek','sen')],
+      route('telefon',isThere('şarj'),'Das Handy hat keinen Akku mehr. Sag: Keine Ladung mehr.', ['şarj','yok']),
+      route('bilgisayar',isThere('klavye'),'Die Tastatur liegt auf dem Tisch.', ['klavye',at('masa')])],
+    T18: [['ne',past('beğenmek','sen')],
+      route('saç',['saç',['kıvırcık',available]],'Die Haare sind lockig.', ['saç','kıvırcık']),
+      route('gülüş',['gülüş',['güzel',available]],'Das Lächeln ist schön.', ['gülüş','güzel'])],
+    T19: [['ne',present('istemek','sen')],
+      route('çay',isThere('fincan'),'Die Tasse steht auf dem Tisch.', ['fincan',at('masa')]),
+      route('yemek',['anne','ne',past('pişirmek','o')],'Mama hat Suppe gekocht.', ['anne','çorba',past('pişirmek','o')])],
+    T20: [['ne',['pişirmek',{tense:'infinitive'}],present('istemek','sen')],
+      route('çorba',isThere('tencere'),'Der Topf steht auf dem Tisch.', ['tencere',at('masa')]),
+      route('suşi',isThere('pirinç'),'Reis ist da, aber der Lachs fehlt.', ['pirinç','var','ama','somon','yok'])],
+    T21: [['ne',past('beğenmek','sen')],
+      route('desen',['desen',['sevimli',available]],'Das Motiv ist süß.', ['desen','sevimli']),
+      route('renk',['renk',['güzel',available]],'Dir gefällt die Farbe.', ['renk','güzel'])],
+    T22: [['ne', ['pişirmek',{tense:'infinitive'}],present('istemek','sen')],
+      route('kek',isThere('yumurta'),'Die Eier stehen auf dem Tisch.', ['yumurta',at('masa')]),
+      route('çorba',isThere('tuz'),'Für die Suppe fehlt Salz.', ['tuz','yok'])],
+    T23: [['ne',past('beğenmek','sen')],
+      route('yorum',['yorum',['komik',available]],'Der Kommentar ist absurd, aber lustig.', ['yorum','saçma','ama','komik']),
+      route('röportaj',['röportaj',['kısa',available]],'Das Interview ist kurz und lustig.', ['röportaj','kısa','ve','komik'])]
+  };
+  for (const s of scenes) {
+    const [question,...routes]=plans[s.theme];
+    s.continuation={question,routes};
+  }
+  // Mert first responds to the detail André actually sent. Extra variants
+  // have their own reaction, since their subject can differ from the first.
+  const reactions={
+    'Spielabend':[['Luigi','komik'],['mürekkep','güzel']],
+    'Serienabend auf dem Sofa':[['Aang','güçlü'],['Gir','komik']],
+    'Euer Abendessen':[['bu','burger','güzel'],['burger','güzel']],
+    'Euer Wochenendtrip':[['Paris','güzel'],['ÁRO','güzel']],
+    'Die Runde mit Ben':[['Ben','sevimli'],['anne',at('ev')]],
+    'Die Einkaufsliste':[['çikolata','tatlı'],['Jalapeño','acı']],
+    'Schokolade oder scharfe Soße?':[['muz','var'],['domates','var']],
+    'Beim Serienquiz':[['Aang','güçlü'],['Gir','sevimli']],
+    'Nach dem Sport':[['havuz','güzel'],['park','güzel']],
+    'Was lief gestern?':[['film','güzel'],['dizi','güzel']],
+    'Morgen im Unterricht':[['matematik','güzel'],['tarih','güzel']],
+    'Ein freies Wochenende':[['Paris','güzel'],['Münster','güzel']],
+    'Die Fernbedienung beim Trash-TV':[['bu','program','komik'],['Dschungelcamp','komik']],
+    'Das Outfit fürs Date':[['atlet','güzel'],['kot pantolon','güzel']],
+    'Welche Konsole kommt mit?':[['kablo',at('ev')],['kablo','var']],
+    'Eine Runde Koop':[['Mio','güçlü'],['Salmon Run','güzel']],
+    'Etwas Süßes bei ÁRO':[['çilek','tatlı'],['kek','güzel']],
+    'Zwei Tassen für euch':[['matcha',present('sevmek','ben')],['süt','var']],
+    'Ladekabel gesucht':[['bilgisayar',at('ev')],['araba',at('ev')]],
+    'Was dir an André auffällt':[['göz','güzel'],['kıvırcık','saç','güzel']],
+    'Samstag in der Küche':[['domates','var'],['salata','güzel']],
+    'Socken für Mert':[['renk','güzel'],['kaplumbağa','sevimli']],
+    'Kochfernsehen mit Mama':[['çorba','güzel'],['aşçı','güçlü']],
+    'Kommentar vom Sofa':[['siyaset','saçma'],['skandal','büyük']],
+    'Erst Ben, dann der Abend':[['film','güzel'],['çay','sıcak']],
+    'Figurenwahl':[['Luigi','komik'],['ev','güzel']],
+    'Sporttasche':[['protein','var'],['Ben','sevimli']],
+    'Geschichtsstunde':[['ders','güzel'],['video','kısa']],
+    'Ein Kompliment':[['saç','güzel'],['André','yakışıklı']],
+    'Bildschirmzeit':[['video','kısa'],['Black Mirror','güzel']],
+    'Lieblingsfiguren':[['Aang','güçlü'],['Gir','komik']],
+    'Auf dem Sofa spielen':[['oyun','güzel'],['video','kısa']],
+    'An der Kuchentheke':[['çikolata','tatlı'],['market','büyük']],
+    'Merts Getränk':[['matcha',present('sevmek','ben')],['Red Bull','var']],
+    'Scharfe Bestellung':[['sos','acı'],['Jalapeño','güzel']],
+    'Unterwegs mit Technik':[['Münster','güzel'],['video','kısa']],
+    'Komplimente für André':[['saç','güzel'],['sen',['yakışıklı',{person:'sen'}]]],
+    'Besuch bei Mama':[['anne',at('ev')],['Ben','sevimli']],
+    'Wochenende zu zweit':[['sos','acı'],['sofra','güzel']],
+    'Ein Geschenk aussuchen':[['hediye','güzel'],['çikolata','tatlı']],
+    'Mit Mama vor dem Fernseher':[['program','güzel'],['çikolata','tatlı']],
+    'Kommentar zur Talkshow':[['drama','büyük'],['RTL','komik']]
+  };
+  const extraReactions=[
+    ['Korra','güçlü'],['Gir','sevimli'],['kruvasan','güzel'],['park','güzel'],
+    ['muz','tatlı'],['Sriracha','acı'],['süt','var'],['çay','sıcak'],
+    ['tencere',at('ev')],['limon','var'],['birlikte','daha','kolay'],['biz','bir',['takım',{person:'biz'}]]
+  ];
+  for (const s of scenes) s.branches.forEach((b,i)=>{b.reaction=reactions[s.title][i];});
+  followups.forEach(([title,pick],i)=>{
+    scenes.find(s=>s.title===title).branches.find(b=>b.pick===pick).followups[0].reaction=extraReactions[i];
+  });
   if (typeof module === 'object' && module.exports) module.exports = scenes;
   else root.AndreConversations = scenes;
 })(typeof globalThis === 'object' ? globalThis : this);
