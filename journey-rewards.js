@@ -14,9 +14,9 @@
   const amount=Math.max(2,Math.min(6,cue.summary.maxHp));let impacts=0,total=0,launching=true;
   for(let i=0;i<amount;i++){
    const dot=document.createElement('span');dot.className='journey-point';dot.setAttribute('aria-hidden','true');
-   const x=from.left+from.width/2,y=from.top+from.height/2;Object.assign(dot.style,{left:x+'px',top:y+'px'});document.body.append(dot);dots.add(dot);
+   const x=from.left+from.width/2,y=from.top+from.height/2;Object.assign(dot.style,{left:x+'px',top:y+'px',opacity:0});document.body.append(dot);dots.add(dot);
    const dx=to.left+to.width*(.3+.4*i/amount)-x,dy=to.top+to.height/2-y;
-   let a,arrived=false;const cleanup=()=>{dot.remove();dots.delete(dot);live.delete(a);if(!launching&&!dots.size&&held&&token===generation){held=null;root.updateProfileLevel();}};a=root.AndreMotion.play(dot,[{opacity:0,transform:'translate(0,0) scale(.4)'},{opacity:1,transform:'translate('+((i-(amount-1)/2)*11)+'px,12px) scale(1)',offset:.22},{opacity:1,transform:'translate('+(dx*.65)+'px,'+(dy-30)+'px)',offset:.72},{opacity:0,transform:'translate('+dx+'px,'+dy+'px) scale(.55)'}],{duration:620+i*45,cleanup,slot:'reward'});
+   let a,arrived=false;const cleanup=()=>{dot.remove();dots.delete(dot);live.delete(a);if(!launching&&!dots.size&&held&&token===generation){held=null;root.updateProfileLevel();}};a=root.AndreMotion.play(dot,[{opacity:0,transform:'translate(0,0) scale(.4)'},{opacity:1,transform:'translate('+((i-(amount-1)/2)*11)+'px,12px) scale(1)',offset:.22},{opacity:1,transform:'translate('+(dx*.65)+'px,'+(dy-30)+'px)',offset:.72},{opacity:0,transform:'translate('+dx+'px,'+dy+'px) scale(.55)'}],{duration:620+i*45,delay:root.AndreDuelView.impactMs,cleanup,slot:'reward'});
    if(!a)continue;live.add(a);total++;const finish=a.onfinish;
    a.onfinish=()=>{if(arrived)return;arrived=true;if(token===generation&&!document.hidden){impacts++;if(held){const begin=parseFloat(before.width||'0');fill().style.width=(begin+(held.target-begin)*impacts/total)+'%';}
      let impact;impact=root.AndreMotion.play(bar(),[{transform:'translateX(0) scale(1)'},{transform:'translateX(-1px) scale(1.025)',offset:.35},{transform:'translateX(1px) scale(1.01)',offset:.65},{transform:'translateX(0) scale(1)'}],{duration:180,slot:'reward-impact',cleanup:()=>live.delete(impact)});if(impact)live.add(impact);

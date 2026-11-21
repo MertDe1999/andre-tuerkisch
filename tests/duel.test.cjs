@@ -61,3 +61,21 @@ test('checkpoint retains the defeated enemy and starts a new one only on explici
 test('combat sounds respect the shared mute setting and speech hold',()=>{
  const a=app();a.run(`window.notes=0;window.AudioContext=class{currentTime=0;destination={};resume(){return Promise.resolve()}createGain(){return{gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},disconnect(){}}}createOscillator(){return{frequency:{},connect(){},disconnect(){},start(){notes++},stop(){}}}};AndreSound.effect('duelHit');AndreSound.effect('duelHelp');`);assert.equal(a.run('notes'),5);a.el('soundToggle').click();a.el('soundToggle').click();const n=a.run('notes');a.run("AndreSound.effect('duelWin')");assert.equal(a.run('notes'),n);a.el('soundToggle').click();a.run("AndreSound.hold(true);window.before=notes;AndreSound.effect('duelHurt')");assert.equal(a.run('notes'),a.run('before'));
 });
+
+test('each level has stable stage art and Ben travels to the monster below a separate scoreboard',()=>{
+ const a=open({reducedMotion:false}),stage=a.el('sentenceDuelScene'),dog=a.el('duelBen'),foe=a.el('duelEnemy');
+ const scenes=a.json('Array.from({length:160},(_,i)=>AndreDuelStages.forLevel(i+1))');
+ assert.equal(new Set(scenes.map(s=>s.svg+s.tint)).size,160);
+ assert.equal(new Set(scenes.map(s=>s.name)).size,16);
+ assert.deepEqual(a.json('AndreDuelStages.forLevel(1)'),scenes[0]);
+ assert.equal(a.el('duelStatus').parentElement,stage.parentElement.children[0]);
+ assert.equal(dog.parentElement,stage);
+ dog.getBoundingClientRect=()=>({left:50,width:40,height:44});
+ foe.getBoundingClientRect=()=>({left:240,width:55,height:60,top:20});
+ answer(a);
+ const leap=a.animations.find(m=>m.target===dog);
+ const atContact=leap.keyframes.find(f=>f.offset===.5);
+ assert.ok(Math.abs(parseFloat(atContact.transform.slice(10))-(240+55*.23-50-40*.83))<.01);
+ assert.equal(leap.keyframes.at(-1).transform,'translate(0px,0px) rotate(0deg)');
+ assert.equal(a.animations.find(m=>m.target===stage).options.delay,leap.options.duration/2);
+});

@@ -28,6 +28,8 @@ Zwischen Etappen erscheinen Gespräche als Chat mit Mert. Alle 23 Interessenthem
 
 Ab B1 kann André gelegentlich selbst auf Türkisch schreiben, etwa „Çikolata istiyorum“. Die App erkennt für die beiden Gesprächsrichtungen mehrere kurze Formulierungen. Über „Auswählen“ kann er jederzeit zu vorgeschlagenen Antworten wechseln. Zwischen zwei Schreibgesprächen liegen mindestens zwei andere Gespräche. Der Chat merkt sich den tatsächlichen Wortlaut und den Gesprächszweig beim Schließen.
 
+Ab Level 81 umfasst ein Gespräch mit dem vorbereiteten Wortpaket vier Nachrichten von Mert und vier Antworten von André. Nach der ersten Entscheidung greift Mert ein Detail auf. Später kann André wieder zwischen zwei Absichten wählen. Für jede hat Mert eine andere Rückfrage, auf die André mit türkischen Wort- und Suffixbausteinen antwortet.
+
 Eine Wiederholungsrunde umfasst bis zu drei fällige Aufgaben. Ein schwieriges Wort ruft André auf Türkisch ab. Eine schwierige Endung übt er in einem passenden Satz. Bei einem uneindeutigen Fehler kommt der ganze Satz wieder. Nach einem erfolgreichen ersten Versuch ist die Wiederholung nach 1, 3, 7 oder 21 Tagen erneut fällig. Nach einem Fehlversuch ist sie nach vier weiteren Kursantworten wieder möglich. Auch bereits sicher freigeschaltete Lernwörter kommen verteilt zum Schreiben zurück. Ziel sind zwei weitere direkt richtige Schreibgelegenheiten je Wort. Eine richtig selbst geschriebene Satzantwort kann für mehrere darin verwendete Wörter zählen. Bekannte Namen sind ausgenommen. Die App speichert Gesprächszweig, Entwurf und Wiederholungsstand lokal. Die Levelwertung erfolgt in den regulären Kursaufgaben.
 
 ## Automatische Runde mit Andrés Interessen
@@ -35,6 +37,8 @@ Eine Wiederholungsrunde umfasst bis zu drei fällige Aufgaben. Ein schwieriges W
 Eine einzige animierte Karte mit André und Ben startet alle Themen gemischt. Satzbau, Hören, geführte Dialogreaktionen und kurze türkische Schreibaufgaben wechseln automatisch. Alle vier Formate nutzen dasselbe Duell und dieselbe bisherige Kurswertung. Deutsche Wörter und Sätze werden ausgewählt, nicht abgetippt. Ähnliche Antworten verwenden nur bekannte Wörter und freigegebene Formen. Stummer Ton oder eine fehlende Stimme bieten einen Textweg, der nicht als Hörnachweis zählt.
 
 Die Headbar bleibt sichtbar; der Levelbalken hat eine eigene Zeile. Bei einem Sieg fliegen kleine Punkte zur Leiste, die kurz darauf reagiert. Der Balken zeigt echten Kursfortschritt einschließlich bereits geleisteter Levelaufgaben; Animationen vergeben keine zusätzlichen Level oder Grammatikfreigaben. [Ablauf, Duellregeln und Prüfung](docs/automatische-duellrunde.md).
+
+Die Kampffläche liegt unter einer eigenen Zeile für Herzen und Gegnerstatus. André gibt Ben ein Handzeichen. Ben läuft zum Gegner, trifft ihn mit der Pfote und springt zurück. Die 160 Level besuchen 16 Orte aus Andrés und Merts Alltag in zehn Licht- und Kulissenvarianten. Die Darstellung folgt der Bewegungseinstellung des Geräts.
 
 ## Flüssiger weiterlernen
 

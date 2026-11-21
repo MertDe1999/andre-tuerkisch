@@ -11,7 +11,6 @@ body.sentence-journey-active .sentence-game-card{padding:9px}
 body.sentence-journey-active #sentenceGameActive{gap:6px}
 body.sentence-journey-active #sentenceLevelBadge,body.sentence-journey-active #sentenceSoundSlot{display:none}
 body.sentence-journey-active .sentence-game-hud{min-height:20px;gap:6px}.sentence-mode-label{font-size:10px}
-body.sentence-journey-active #sentenceGameActive>.sentence-duel{flex-basis:clamp(48px,11dvh,94px);min-height:40px;max-height:94px}
 body.sentence-journey-active .sentence-prompt{padding:8px 10px;border-radius:14px}body.sentence-journey-active .sentence-prompt-text{font-size:clamp(14px,2.1dvh,18px)}
 body.sentence-journey-active .sentence-zone-label{font-size:10px;margin-bottom:4px}body.sentence-journey-active #answerZone{min-height:64px;padding:7px;gap:5px}
 body.sentence-journey-active #sentenceGameActive .sentence-bank-area{min-height:82px}body.sentence-journey-active .sentence-actions .sentence-btn{min-height:40px}
@@ -25,21 +24,15 @@ body.sentence-journey-active #sentenceGameActive .sentence-bank-area{min-height:
 .journey-hero{display:flex;align-items:flex-end;justify-content:center;gap:6px;height:clamp(90px,28dvh,220px);width:100%;pointer-events:none}
 .journey-hero>span{display:block;height:100%;aspect-ratio:12/13;transform-origin:center bottom}.journey-hero .journey-hero-ben{height:62%}.journey-hero svg{display:block;width:100%;height:100%}
 .journey-title{font-size:22px;line-height:1.2}.journey-subtitle{font-size:13px;color:var(--muted);text-align:center}.journey-start-label{margin-top:6px;padding:12px 25px;border-radius:16px;background:var(--surface);font-size:14px;font-weight:800}
-@media(prefers-reduced-motion:no-preference){#flashcards.active .journey-hero>span{animation:duel-breathe 3.6s ease-in-out infinite}#flashcards.active .journey-hero-ben{animation-delay:-1s}#flashcards.active .journey-hero .duel-tail{animation:duel-wag 1.8s ease-in-out infinite}}
 @media(max-height:720px){
  body.sentence-journey-active .profile-island{gap:5px;padding:6px 10px}.profile-name{font-size:15px}body.sentence-journey-active .profile-avatar{width:26px;height:26px}
  body.sentence-journey-active .profile-chip{padding:4px 7px}body.sentence-journey-active .profile-chip-label{font-size:9px;margin-bottom:3px}body.sentence-journey-active .profile-chip-value{font-size:12px}
  body.sentence-journey-active .profile-level-track{height:27px}body.sentence-journey-active header{padding-bottom:6px}
- body.sentence-journey-active #sentenceGameActive>.sentence-duel{flex-basis:54px;min-height:36px;max-height:54px}
- body.sentence-journey-active .duel-scene{inset:16px 65px 1px 62px}body.sentence-journey-active .duel-header{inset:4px 7px auto;font-size:8px}.duel-heart{width:9px;height:9px}
  body.sentence-journey-active .sentence-reading-options{gap:5px}body.sentence-journey-active .sentence-reading-options .study-option{padding:8px;min-height:38px;font-size:13px}
 }
 @media(min-width:600px) and (max-height:520px){
  body.sentence-journey-active .profile-island{grid-template-columns:minmax(100px,1fr) minmax(150px,2fr) auto;gap:12px;padding:5px 10px}
  body.sentence-journey-active .profile-level{grid-column:2;grid-row:1}body.sentence-journey-active .profile-stats{grid-column:3}.profile-island .sound-toggle span{font-size:9px}
- body.sentence-journey-active #sentenceGameActive>.sentence-duel{height:48px;max-height:48px;min-height:0}
- body.sentence-journey-active #sentenceGameActive.reading-writing>.sentence-duel{height:100%;max-height:none}
- body.sentence-journey-active #sentenceGameActive.reading-writing .duel-scene{inset:30px 0 5px}
  #sentenceGameActive.reading-mode:not(.reading-writing) .sentence-reading{justify-content:center;gap:5px}
  .journey-hero{height:95px}.journey-start{gap:5px;padding:10px}.journey-title{font-size:18px}.journey-start-label{padding:8px 18px}
 }
@@ -50,7 +43,8 @@ body.sentence-journey-active #sentenceGameActive .sentence-bank-area{min-height:
 .sentence-reading-options .study-option.is-incorrect{background:var(--rose);color:var(--rose-dark);border-color:var(--rose-dark);opacity:.72}
 .sentence-reading-options .study-option.is-incorrect::after{content:' ×';font-weight:900}
 .journey-replay{flex:0 0 42px!important;width:42px;padding:8px!important}.journey-replay svg{width:20px;height:20px;display:block;margin:auto}.journey-replay[aria-pressed="true"]{background:var(--lavender);color:var(--lavender-dark)}
-.duel-remaining{font-size:9px;line-height:1;white-space:nowrap}.duel-foe-label{gap:3px}
+.duel-remaining{line-height:1;white-space:nowrap}
+#sentenceGameActive.is-chat:has(#conversationSent:not([hidden])) .sentence-construction{display:none}
 
 /* The chat occupies the existing prompt area, including while the keyboard is open. */
 body.sentence-journey-active .sentence-prompt.conversation-window {
