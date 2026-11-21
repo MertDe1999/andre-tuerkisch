@@ -24,6 +24,10 @@ Ein beschrifteter Lautsprecher zeigt Ton aus, Ton an oder Ton + Musik. Antippen 
 
 [Gesamtprüfung und nächste Verbesserungen](docs/kursaudit-2026-11-13.md) dokumentiert die Korrekturen, alle 160 Level und den Abgleich mit Kursquellen. Der folgende Ausbau ergänzt erste eigene Hör-, Dialog- und Schreibübungen; spontane Gespräche und uneingeschränktes freies Schreiben bleiben Folgearbeit.
 
+Zwischen zwei Etappen kann André ein kurzes Gespräch mit Mert führen oder gezielt wiederholen. In jedem Gespräch entscheidet er sich zuerst für einen von zwei Vorschlägen. Merts Rückfrage und Andrés nächste Antwort hängen davon ab. Wörter und Formen beider Zweige müssen für das aktuelle Üben verfügbar sein.
+
+Eine Wiederholungsrunde umfasst bis zu drei fällige Aufgaben. Ein schwieriges Wort ruft André auf Türkisch ab. Eine schwierige Endung übt er in einem passenden Satz. Bei einem uneindeutigen Fehler kommt der ganze Satz wieder. Nach einem erfolgreichen ersten Versuch ist die Wiederholung nach 1, 3, 7 oder 21 Tagen erneut fällig. Nach einem Fehlversuch ist sie nach vier weiteren Kursantworten wieder möglich. Die App speichert Gesprächszweig, Entwurf und Wiederholungsstand lokal. Die Levelwertung erfolgt in den regulären Kursaufgaben.
+
 ## Automatische Runde mit Andrés Interessen
 
 Eine einzige animierte Karte mit André und Ben startet alle Themen gemischt. Satzbau, Hören, geführte Dialogreaktionen und kurze türkische Schreibaufgaben wechseln automatisch. Alle vier Formate nutzen dasselbe Duell und dieselbe bisherige Kurswertung. Deutsche Wörter und Sätze werden ausgewählt, nicht abgetippt. Ähnliche Antworten verwenden nur bekannte Wörter und freigegebene Formen. Stummer Ton oder eine fehlende Stimme bieten einen Textweg, der nicht als Hörnachweis zählt.

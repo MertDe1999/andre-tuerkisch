@@ -181,6 +181,19 @@
     const scene=root.AndreInterestPractice.scenes[cur.roundTheme]||'An Mert';
     el('sentencePrompt').textContent=listening?(cur.finished||format.text?t.answer:'Hör genau hin'):t.de;
     el('sentencePromptDirection').textContent=listening?(format.text?'Türkisch → Deutsch':'Türkisch hören'):mode==='dialog'?'Mert · '+scene:mode==='write'?'An Mert · auf Türkisch':'Deutsch → Türkisch';
+    const cue=el('conversationCue');
+    cue.hidden=cur.extra?.kind!=='dialog';
+    if(cur.extra){
+      const extra=cur.extra;
+      const label=extra.kind==='dialog'?'Gespräch':'Wiederholung';
+      el('sentenceModeLabel').textContent=label+' · '+(extra.index+1)+' / '+extra.total;
+      el('sentenceModeLabel').title=label;
+      if(extra.kind==='dialog'){
+        el('sentencePromptDirection').textContent=extra.title+(extra.previous?(extra.defaultPick?' · Merts Vorschlag: ':' · André: ')+extra.previous:'');
+        el('sentencePrompt').textContent='Mert: '+extra.prompt;
+        cue.textContent=extra.cue;
+      }else el('sentencePromptDirection').textContent=extra.card.kind==='skills'?(G.byId[extra.card.id]?.label||'Form üben'):extra.card.kind==='words'?'Wort auf Türkisch':'Satz noch einmal bauen';
+    }
     reading.hidden=mode==='build';el('sentenceGameActive').classList.toggle('reading-mode',mode!=='build');
     el('sentenceGameActive').classList.toggle('reading-writing',mode==='write'&&!cur.finished);
     listenActions.hidden=!listening||cur.finished;listenButton.disabled=['loading','playing'].includes(audioState);
@@ -259,7 +272,7 @@
     if(engine.wordsReady()&&engine.stageSummary().complete){showStageBreak();return;}
     stageBreak.hidden=true;
     if(engine.flow.automatic&&!engine.state.selectedTheme)delivery.mixed(engine);
-    const cur=engine.next();
+    const cur=root.AndreStudyRounds.next(engine)||engine.next();
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
