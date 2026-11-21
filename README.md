@@ -30,6 +30,10 @@ Eine einzige animierte Karte mit André und Ben startet alle Themen gemischt. Sa
 
 Die Headbar bleibt sichtbar; der Levelbalken hat eine eigene Zeile. Bei einem Sieg fliegen kleine Punkte zur Leiste, die kurz darauf reagiert. Der Balken zeigt echten Kursfortschritt einschließlich bereits geleisteter Levelaufgaben; Animationen vergeben keine zusätzlichen Level oder Grammatikfreigaben. [Ablauf, Duellregeln und Prüfung](docs/automatische-duellrunde.md).
 
+## Flüssiger weiterlernen
+
+Die gemeinsame Einstiegskarte führt direkt zum nächsten Schritt: fehlende Wörter lernen oder eine Runde fortsetzen. Falsche Satz-Auswahlen bleiben markiert und lassen sich sicher korrigieren; lange Antwortlisten werden kompakter. Gelöste Sätze können direkt angehört werden. Gegner zeigen die verbleibenden Treffer, und der Rundenschluss erklärt den nächsten Level. Die Aufgabenreihenfolge variiert zwischen Etappen bei unveränderten Lernanforderungen. [Befunde und Änderungen](docs/lernerlebnis-2026-11-21.md).
+
 ## Kleine Lernportionen
 
 Die 24 Startwörter werden in sechs Portionen mit je vier Wörtern gelernt. Jede Portion enthält zuerst die Wortauswahl, dann Türkisch schreiben und deutsche Bedeutungen auswählen. Nach dem Abschluss kann André pausieren oder die nächste Portion starten. Auch spätere Wortpakete sind auf höchstens vier neue Wörter begrenzt.
