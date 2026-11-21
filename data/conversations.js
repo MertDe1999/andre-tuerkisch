@@ -185,7 +185,7 @@
   const route = (pick,question,cue,answer) => ({pick,question,cue,answer});
   const plans = {
     T01: [['ne',past('beğenmek','sen')],
-      route('sunucu',['sunucu','komik', ['değil',available]],'Sag, dass der Moderator lustig war.', ['sunucu',['komik',{past:true}]]),
+      route('sunucu',['sunucu','komik', ['değil',available]],'Du magst die Sendung, weil der Moderator lustig ist.', [noun('program','accusative'),present('sevmek','ben'),'çünkü','sunucu','komik']),
       route('yarışmacı',['yarışmacı',['komik',available]],'Du fandest den Kandidaten süß.', ['yarışmacı','sevimli'])],
     T02: [['Zelda','için','ne',present('istemek','sen')],
       route('kılıç',isThere('kılıç'),'Du hast ein neues Schwert entdeckt.', ['yeni','kılıç','var']),
@@ -206,16 +206,16 @@
       route('top',['top',at('ev'),['değil',available]],'Bens Ball liegt im Auto.', ['top',at('araba')]),
       route('mama',isThere('mama'),'Du hast das Futter im Auto.', ['mama',at('araba')])],
     T08: [['ne', ['izlemek',{tense:'infinitive'}],present('istemek','sen')],
-      route('film',['film',['komik',available]],'Der Film ist lustig.', ['film','komik']),
+      route('film',['film',['komik',available]],'Der Film ist kurz, aber lustig.', ['film','kısa','ama','komik']),
       route('dizi',isThere('altyazı'),'Es gibt Untertitel.', ['altyazı','var'])],
     T09: [['ne',past('beğenmek','sen')],
-      route('kahraman',['kahraman',['güçlü',available]],'Der Held ist stark.', ['kahraman','güçlü']),
+      route('kahraman',['kahraman',['komik',available]],'Der Held ist stark und lustig.', ['kahraman','güçlü','ve','komik']),
       route('düşman',['düşman',['komik',available]],'Der Gegner ist ein Roboter.', ['düşman','bir','robot'])],
     T10: [['ne',present('istemek','sen')],
       route('Quest 3',isThere('pil'),'Die Batterie liegt auf dem Tisch.', ['pil',at('masa')]),
       route('PS5',isThere('kumanda'),'Der Controller ist zu Hause.', ['kumanda',at('ev')])],
     T11: [['ne',present('istemek','sen')],
-      route('takım',['takım',['güçlü',available]],'Euer Team ist stark.', ['takım','güçlü']),
+      route('takım',['takım',['yeni',available]],'Das Team ist neu, aber stark.', ['takım','yeni','ama','güçlü']),
       route('görev',['görev',['kolay',available]],'Die Mission ist kurz.', ['görev','kısa'])],
     T12: [['ne',present('istemek','sen')],
       route('ekmek',isThere('ekmek'),'Es gibt noch Brot.', ['ekmek','var']),
@@ -227,7 +227,7 @@
       route('matcha',['matcha','Mert','için', ['değil',available]],'Der Matcha ist für Mert.', ['matcha','Mert','için']),
       route('çay',isThere('süt'),'Für den Tee ist Milch da.', ['süt','var'])],
     T15: [['bugün','ne', ['görmek',{tense:'infinitive'}],present('istemek','sen')],
-      route('müze',['müze',['büyük',available]],'Das Museum ist groß.', ['müze','büyük']),
+      route('müze',['müze',['güzel',available]],'Das Museum ist klein, aber schön.', ['müze','küçük','ama','güzel']),
       route('köprü',['köprü',['güzel',available]],'Die Brücke ist schön.', ['köprü','güzel'])],
     T16: [['ne',present('istemek','sen')],
       route('Sriracha',['sos',['acı',available]],'Die Soße ist scharf.', ['sos','acı']),
@@ -243,7 +243,7 @@
       route('yemek',['anne','ne',past('pişirmek','o')],'Mama hat Suppe gekocht.', ['anne','çorba',past('pişirmek','o')])],
     T20: [['ne',['pişirmek',{tense:'infinitive'}],present('istemek','sen')],
       route('çorba',isThere('tencere'),'Der Topf steht auf dem Tisch.', ['tencere',at('masa')]),
-      route('suşi',isThere('pirinç'),'Für das Sushi ist noch Reis da.', ['pirinç','var'])],
+      route('suşi',isThere('pirinç'),'Reis ist da, aber der Lachs fehlt.', ['pirinç','var','ama','somon','yok'])],
     T21: [['ne',past('beğenmek','sen')],
       route('desen',['desen',['sevimli',available]],'Das Motiv ist süß.', ['desen','sevimli']),
       route('renk',['renk',['güzel',available]],'Dir gefällt die Farbe.', ['renk','güzel'])],
@@ -251,8 +251,8 @@
       route('kek',isThere('yumurta'),'Die Eier stehen auf dem Tisch.', ['yumurta',at('masa')]),
       route('çorba',isThere('tuz'),'Für die Suppe fehlt Salz.', ['tuz','yok'])],
     T23: [['ne',past('beğenmek','sen')],
-      route('yorum',['yorum',['komik',available]],'Der Kommentar war lustig.', ['yorum',['komik',{past:true}]]),
-      route('röportaj',['röportaj',['kısa',available]],'Das Interview war kurz.', ['röportaj',['kısa',{past:true}]])]
+      route('yorum',['yorum',['komik',available]],'Der Kommentar ist absurd, aber lustig.', ['yorum','saçma','ama','komik']),
+      route('röportaj',['röportaj',['kısa',available]],'Das Interview ist kurz und lustig.', ['röportaj','kısa','ve','komik'])]
   };
   for (const s of scenes) {
     const [question,...routes]=plans[s.theme];

@@ -200,6 +200,25 @@ test('the middle reply gets a contextual reaction and older two-turn saves still
   assert.equal(S.next(e),null);
 });
 
+test('the cooking fork asks real Turkish yes/no questions and accepts the contrasting ingredients as blocks',()=>{
+  const e=learner(81);
+  const {fork}=S.dialogues(e).find(c=>c.scene.theme==='T20');
+  const [soup,sushi]=fork.choices;
+  assert.equal(soup.question.answer,'tencere var mı');
+  assert.equal(sushi.question.answer,'pirinç var mı');
+  assert.equal(sushi.answer.answer,'pirinç var ama somon yok');
+  assert.ok(e.requiredFor(sushi.question).some(id=>id.startsWith('predicate:')));
+  const exercise=e.begin(sushi.answer);
+  const group=exercise.task.groups[0];
+  for(const slot of group.slots){
+    const token=exercise.tokens.find(t=>!t.group && t.lemma===slot.lemma);
+    assert.ok(token);token.group=group.id;
+  }
+  exercise.extra={kind:'dialog',index:3,mode:'build'};
+  assert.ok(A.check(e).correct);
+  assert.equal(exercise.delivery.sentText,sushi.answer.answer);
+});
+
 test('also recalls correctly unlocked words in spaced writing and never credits choosing a spelling',()=>{
   const e=learner();boundary(e,4);const first=S.next(e),id=first.extra.card.id;
   assert.equal(first.extra.mode,'write');assert.ok(!P.auto.has(id));
