@@ -135,7 +135,9 @@
   const listenButton=make('button','study-button','Anhören');listenButton.id='sentenceListen';listenButton.type='button';listenButton.addEventListener('click',listen);
   const textButton=make('button','journey-text-button','Als Text');textButton.type='button';textButton.addEventListener('click',()=>{cancelAudio();const cur=current();if(cur&&!cur.finished){cur.delivery.text=true;save();render();}});
   listenActions.append(listenButton,textButton);reading.insertBefore(listenActions,readingAnswer);
-  function cancelAudio(){audioGeneration++;audioState='';root.AndreSpeech?.cancel();}
+  const replay=make('button','sentence-btn secondary journey-replay','');replay.id='sentenceReplay';replay.type='button';replay.setAttribute('aria-label','Türkischen Satz anhören');replay.title='Türkischen Satz anhören';replay.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M15 8q5 4 0 8m3-11q8 7 0 14"/></svg>';replay.hidden=true;el('sentenceNextButton').parentElement?.append(replay);
+  replay.addEventListener('click',()=>{const cur=current();if(!running||!cur?.finished)return;if(['loading','playing'].includes(audioState)){cancelAudio();return;}cancelAudio();const token=audioGeneration;root.AndreSpeech.play(cur.task.answer,{onState:state=>{if(!running||document.hidden||token!==audioGeneration||current()!==cur)return;audioState=state;replay.setAttribute('aria-pressed',String(['loading','playing'].includes(state)));if(state==='unavailable')message(cur.task.answer+' · Audio nicht verfügbar.');}});});
+  function cancelAudio(){audioGeneration++;audioState='';replay.setAttribute('aria-pressed','false');root.AndreSpeech?.cancel();}
   function listen(){const cur=current();if(!running||!cur||cur.finished||cur.delivery?.mode!=='listen')return;
     cancelAudio();const token=audioGeneration;root.AndreSpeech.play(cur.task.answer,{onState:state=>{
       if(!running||token!==audioGeneration||current()!==cur||document.hidden)return;
@@ -153,7 +155,7 @@
     const pause=make('button','study-button','Für heute fertig');pause.type='button';pause.addEventListener('click',()=>root.closeSentenceTest());stageBreak.append(proceed,pause);AndreMotion.enter(stageBreak);proceed.focus({preventScroll:true});
   }
   function typeReading(key){const cur=current();if(!running||cur?.delivery?.mode!=='write'||cur.finished)return;AndreAnswerEditor.edit(cur,key,500);save();AndreAnswerEditor.draw(readingAnswer,cur,{animate:true});readingAnswer.classList.toggle('empty',!cur.draft);message('');}
-  function topicProgress(){const button=el('sentenceTestButton');if(button)button.setAttribute('aria-label','Mit André und Ben · alle Themen gemischt · '+(engine.state.started?'Weiterlernen':'Los geht’s'));}
+  function topicProgress(){const button=el('sentenceTestButton');if(!button)return;const missing=engine.missingWords().length,label=missing?'Wörter lernen':engine.state.started?'Weiterlernen':'Los geht’s';button.setAttribute('aria-label','Mit André und Ben · '+label);const action=button.querySelector('.journey-start-label'),subtitle=button.querySelector('.journey-subtitle');if(action)action.textContent=label;if(subtitle)subtitle.textContent=missing?missing+' Wörter für Level '+engine.preparationLevel():engine.flow.finished?'Alle Themen · frei üben':'Level '+engine.flow.level+' · alle Themen gemischt';}
 
   root.refreshSentenceTopics=topicProgress;
   function render(){
@@ -184,9 +186,10 @@
     listenActions.hidden=!listening||cur.finished;listenButton.disabled=['loading','playing'].includes(audioState);
     listenButton.textContent=audioState==='loading'?'Lädt …':audioState==='playing'?'Wird vorgelesen …':format.heard?'Noch einmal hören':'Anhören';textButton.hidden=format.text;
     readingAnswer.hidden=mode!=='write';readingOptions.hidden=!options.length;readingOptions.replaceChildren();
-    for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished||!canAnswer;choice.setAttribute('lang',cur.direction==='de'?'de':'tr');choice.setAttribute('aria-pressed',String(cur.draft===text));
+    for(const text of options){const choice=make('button','study-option',text);choice.type='button';choice.disabled=cur.finished||!canAnswer||format.rejected?.includes(text);choice.setAttribute('lang',cur.direction==='de'?'de':'tr');choice.setAttribute('aria-pressed',String(cur.draft===text));
+      if(format.rejected?.includes(text)){choice.classList.add('is-incorrect');choice.setAttribute('aria-label',text+' · Noch nicht richtig');}
       if(cur.finished&&text===(cur.direction==='de'?t.de:t.answer))choice.classList.add('is-correct');
-      choice.addEventListener('click',()=>{if(cur.finished||!canAnswer)return;cur.draft=text;save();check(false);});readingOptions.append(choice);
+      choice.addEventListener('click',()=>{if(choice.disabled)return;cur.draft=text;save();check(false);});readingOptions.append(choice);
     }
     if(mode==='write'){AndreAnswerEditor.draw(readingAnswer,cur,{editable:!cur.finished});readingAnswer._saveCaret=save;readingAnswer.classList.toggle('empty',!cur.draft);readingKeyboard.hidden=cur.finished;root.renderAppKeyboard('tr',{keyboard:readingKeyboard,onType:typeReading,onCheck:()=>check(false),onSkip:()=>check(true),reset:!sameTask,contextKey:cur.id});}
     else{readingKeyboard.hidden=true;AndreKeyboard.cancel(readingKeyboard);}
@@ -232,7 +235,7 @@
     }
     for(const id of ['checkSentenceButton','sentenceUnknownButton'])el(id).disabled=cur.finished;
     el('checkSentenceButton').hidden=cur.finished||mode!=='build';el('sentenceUnknownButton').hidden=cur.finished||mode==='write';
-    el('sentenceNextButton').hidden=!cur.finished;
+    el('sentenceNextButton').hidden=!cur.finished;replay.hidden=!cur.finished;
     el('sentenceStorageWarning').textContent=[engine.storageError,duel.model.storageError].filter(Boolean).join(' ');
     el('sentenceStorageWarning').hidden=!el('sentenceStorageWarning').textContent;
     AndreMotion.cards(before,[...el('wordBank').children,...el('answerZone').querySelectorAll('.sentence-token')].filter(node=>node.dataset.modernToken!==landingToken));
@@ -260,8 +263,9 @@
     for(const token of cur?.tokens||[])if(!Object.keys(token.features).length&&!token.form)token.features=B.baseFeatures(token.lemma);
     el('sentenceGameActive').style.display=cur?'':'none';el('sentenceComplete').classList.toggle('show',!cur);
     if(!cur){
-      duel.hide();document.querySelector('#sentenceComplete h2').textContent='Noch keine Wörter freigeschaltet';
-      document.querySelector('#sentenceComplete p').textContent='Schalte zuerst Wörter frei, damit sie hier erscheinen';
+      const hasLearned=[...engine.unlocked()].some(id=>!root.AndreLearningPath.auto.has(id));
+      duel.hide();document.querySelector('#sentenceComplete h2').textContent=hasLearned?'Neue Wörter für Level '+engine.preparationLevel():'Noch keine Wörter freigeschaltet';
+      document.querySelector('#sentenceComplete p').textContent=hasLearned?'Schalte die nächsten Wörter frei, dann geht es hier weiter.':'Schalte zuerst Wörter frei, damit sie hier erscheinen';
       const button=el('sentenceUnlockNeededButton');button.textContent='Benötigte Wörter freischalten';button.onclick=()=>openTypingFromFloating();
       return;
     }
@@ -282,14 +286,15 @@
     cancelAudio();const cue=duel.record(duelBefore,result,{unknown});render();duel.animate(cue);root.AndreJourneyRewards?.victory(cue,beforeProgress);
     const sounds={hit:'duelHit',assist:'duelHit',win:'duelWin',hurt:'duelHurt',help:'duelHelp'};
     root.AndreSound?.effect(result.transition?.pass||result.delta>0?'level':sounds[cue?.action]||(result.correct?'correct':'retry'));
+    const transition=result.transition,roundNote=!transition?'':transition.pass?(engine.flow.finished?'B2-Runde geschafft!':'Level '+transition.from+' geschafft · Weiter mit Level '+transition.to+'.'):'Runde beendet · Level '+transition.to+' üben. '+(transition.reason==='forms'?'Neue Formen brauchen noch Übung.':'Mehr direkt richtige Antworten nötig.');
     if(result.correct){
-      message(task().answer,'ok');
+      message(task().answer+(roundNote?' · '+roundNote:''),'ok');
       if(result.delta>0)AndreMotion.feedback(el('sentenceLevelText'),true);
       const milestone=engine.state.opened>previousSection||(result.level===160&&result.delta>0&&previousHighest<160);
       if(milestone)celebrateCorrectAnswer();
       el('sentenceNextButton').focus({preventScroll:true});
     }else{
-      if(unknown){message('Lösung: '+(current().direction==='de'?task().de:task().answer)+'. Weiter zum nächsten Satz.','bad');return;}
+      if(unknown){message('Lösung: '+(current().direction==='de'?task().de:task().answer)+(roundNote?' · '+roundNote:'. Weiter zum nächsten Satz.'),'bad');return;}
       const issue=current().delivery.mode==='build'?result.issue:{area:'grammar'};
       const hints={word:'Prüfe die Wörter.',role:'Prüfe den Satzteil.',missing:'Es fehlt noch etwas.',extra:'Ein Wort ist zu viel.',grammar:current().direction==='de'?'Prüfe die Bedeutung.':current().delivery.mode==='build'?'Prüfe die Endungen.':'Prüfe deinen Satz.'};
       message((hints[issue?.area]||'Versuch es noch einmal.')+(result.delta<0?' Level '+result.level+'.':''),'bad');
@@ -313,7 +318,7 @@
   const hero=make('span','journey-hero');hero.setAttribute('aria-hidden','true');
   for(const [name,svg] of [['andre',AndreDuelArt.andre],['ben',AndreDuelArt.ben]]){const figure=make('span','journey-hero-'+name);figure.innerHTML=svg;hero.append(figure);}
   mixed.classList.add('journey-start');mixed.append(hero,make('strong','journey-title','Mit André & Ben'),make('span','journey-subtitle','Alle Themen · gemeinsam üben'),make('span','journey-start-label','Los geht’s'));
-  mixed.addEventListener('click',()=>root.openSentenceTest(null));topicList.replaceChildren(mixed);
+  mixed.addEventListener('click',()=>engine.wordsReady()?root.openSentenceTest(null):root.openTypingFromFloating());topicList.replaceChildren(mixed);topicProgress();
   root.updateProfileLevel();
   el('sentenceUnknownButton').addEventListener('click',()=>check(true));
   el('sentenceNextButton').addEventListener('click',next);

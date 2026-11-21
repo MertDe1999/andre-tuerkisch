@@ -6,7 +6,7 @@
   function create(engine){
     const model=new D.Duel(root.localStorage),arena=make('section','sentence-duel');arena.id='sentenceDuel';arena.hidden=true;arena.setAttribute('role','group');
     const header=make('div','duel-header'),team=make('div','duel-team-label','André & Ben'),hearts=make('span','duel-hearts'),foe=make('div','duel-foe-label'),name=make('span','duel-name'),hp=make('progress','duel-health');
-    hp.setAttribute('aria-label','Lebenspunkte des Gegners');team.append(hearts);foe.append(name,hp);header.append(team,foe);
+    hp.setAttribute('aria-label','Lebenspunkte des Gegners');team.append(hearts);const remaining=make('span','duel-remaining');remaining.id='duelRemaining';foe.append(name,hp,remaining);header.append(team,foe);
     for(let i=0;i<3;i++){const h=make('span','duel-heart');h.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21S2 15 2 8a5.5 5.5 0 0 1 10-3 5.5 5.5 0 0 1 10 3c0 7-10 13-10 13Z"/></svg>';hearts.append(h);}
     const scene=make('div','duel-scene'),andre=make('div','duel-actor duel-andre'),ben=make('div','duel-actor duel-ben'),enemy=make('div','duel-actor duel-enemy'),spark=make('div','duel-spark','✦');
     scene.id='sentenceDuelScene';andre.id='duelAndre';ben.id='duelBen';enemy.id='duelEnemy';
@@ -22,7 +22,7 @@
       arena.style.setProperty('--duel-enemy','var(--'+summary.enemy.color+')');
       arena.style.setProperty('--duel-outline',summary.enemy.color==='blue'?'var(--text)':'var(--'+summary.enemy.color+'-dark)');
       if(enemyShape!==summary.enemy.shape){enemyShape=summary.enemy.shape;enemySprite.innerHTML=art.enemy(enemyShape);}
-      name.textContent=summary.enemy.name;hp.max=summary.maxHp;hp.value=summary.hp;
+      remaining.textContent=summary.outcome==='active'?'Noch '+summary.hp+' Treffer':'';name.textContent=summary.enemy.name;hp.max=summary.maxHp;hp.value=summary.hp;
       for(let i=0;i<hearts.children.length;i++)hearts.children[i].classList.toggle('is-empty',i>=summary.hearts);
       hearts.setAttribute('aria-label',summary.hearts+' von 3 Herzen'+(summary.rescues?' · Ben hat geholfen':''));
       status.textContent=summary.outcome==='won'?'Geschafft!':summary.outcome==='escaped'?'Gegner zieht weiter':'';
