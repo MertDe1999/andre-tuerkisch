@@ -62,7 +62,11 @@
         motion(andre.querySelector('.duel-arm-point'),armPose,strikeDuration);
         motion(andre.querySelector('.duel-arm-rest'),armPose.map(k=>({...k,opacity:1-k.opacity})),strikeDuration);
         motion(andre,[{transform:'rotate(0)'},{transform:'rotate(5deg)',offset:.18},{transform:'rotate(3deg)',offset:.54},{transform:'rotate(0)'}],strikeDuration);
-        motion(ben.querySelector('.duel-strike-paw'),[{transform:'rotate(0)'},{transform:'rotate(12deg)',offset:.34},{transform:'rotate(-66deg)',offset:.5},{transform:'rotate(0)',offset:.68},{transform:'rotate(0)'}],strikeDuration);
+        const stride=(offset,angle)=>({offset,transform:'rotate('+angle+'deg)'});
+        motion(ben.querySelector('.duel-front-paw'),[stride(0,0),stride(.16,12),stride(.26,-25),stride(.35,23),stride(.47,-18),
+          stride(.56,7),stride(.70,-22),stride(.83,21),stride(.92,-12),stride(1,0)],strikeDuration);
+        motion(ben.querySelector('.duel-strike-paw'),[stride(0,0),stride(.16,-12),stride(.26,23),stride(.35,-18),stride(.42,12),
+          stride(.50,-66),stride(.58,-28),stride(.70,20),stride(.83,-20),stride(.92,12),stride(1,0)],strikeDuration);
         const recoil=[{opacity:1,transform:'none'},{opacity:1,transform:'none',offset:.5},{opacity:1,transform:'translate(5px,-2px) scale(.91,1.05)',offset:.58}];
         recoil.push(cue.action==='win'?{opacity:0,transform:'translateY(-5px) scale(.55)'}:{opacity:1,transform:'none'});
         motion(enemy,recoil,strikeDuration);
